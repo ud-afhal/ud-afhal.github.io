@@ -1,0 +1,5674 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chicken-generic over Rice</title>
+
+  <script id="mathjax-config">
+    window.MathJax = {
+      startup: {
+        typeset: false
+      },
+      tex: {
+        inlineMath: [
+          ["\\(", "\\)"],
+          ["$", "$"]
+        ],
+        displayMath: [
+          ["\\[", "\\]"],
+          ["$$", "$$"]
+        ],
+        tags: "ams",
+        useLabelIds: true,
+        processEscapes: true,
+        macros: {
+          be: ["#1:\\text{#2}", 2],
+          proves: "\\vdash",
+          forces: "\\Vdash",
+          PA: "\\mathrm{PA}",
+          BST: "\\mathrm{BST}",
+          ZF: "\\mathrm{ZF}",
+          ZFC: "\\mathrm{ZFC}",
+          Con: "\\mathrm{Con}",
+          MA: "\\mathrm{MA}",
+          HF: "\\mathrm{HF}",
+          bval: ["\\left[\\!\\left[ #1 \\right]\\!\\right]", 1],
+          set: ["\\{{}#1{}\\}", 1],
+          power: "\\mathcal{P}",
+          Def: "\\mathrm{def}",
+          val: "\\mathrm{val}",
+          prm: "\\mathrm{prm}",
+          img: "\\text{``}",
+          dom: "\\mathrm{dom}",
+          ran: "\\mathrm{ran}",
+          inj: "\\overset{1-1}{\\longrightarrow}",
+          surj: "\\overset{onto}{\\longrightarrow}",
+          bij: "\\xrightarrow[onto]{1-1}",
+          iso: "\\overset{\\sim}{\\longrightarrow}",
+          ee: "\\overset{\\prec}{\\rightarrow}",
+          ON: "\\mathrm{ON}",
+          ot: "\\mathrm{ot}",
+          cf: "\\mathrm{cf}",
+          len: "\\mathrm{len}",
+          club: "\\mathrm{club}",
+          nonstat: "\\mathrm{nonstat}",
+          inn: "\\varepsilon",
+          obj: ["\\ulcorner #1\\urcorner", 1],
+          bbepsilon: "\\mathord{\\unicode{x03F5}}",
+          mathbbl: ["\\mathbb{#1}", 1]
+        }
+      },
+      chtml: {
+        displayAlign: "left",
+        displayIndent: "1.5em"
+      },
+      options: {
+        skipHtmlTags: [
+          "script",
+          "noscript",
+          "style",
+          "textarea",
+          "pre",
+          "code"
+        ]
+      }
+    };
+  </script>
+
+  <script
+    id="mathjax-loader"
+    defer
+    src="../MathJax-4.1.3/tex-chtml.js"
+  ></script>
+
+  <!--
+    共通CSSの原本。
+    編集画面にも適用し、公開用のstyle.cssとして保存する。
+  -->
+  <style id="public-styles">
+    :root {
+      --site-background: #f5eded;
+      --site-ink: #202020;
+      --site-border: #8d8585;
+      --site-link: #0000ee;
+      --site-visited: #a00000;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: auto;
+    }
+
+    body {
+      margin: 0;
+      background: var(--site-background);
+      color: var(--site-ink);
+      font-family: Arial, "Yu Gothic", "Meiryo", sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .site-header {
+      padding: 10px 16px 0;
+      border-bottom: 1px solid var(--site-border);
+    }
+
+    .site-brand {
+      display: inline-block;
+      margin: 0 0 8px;
+      color: var(--site-ink);
+      text-decoration: none;
+    }
+
+    .site-brand img {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+    }
+
+    .site-brand-text {
+      font-weight: 600;
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding: 7px 0 12px;
+    }
+
+    .site-nav a,
+    .site-footer a,
+    .paper a,
+    .document-heading a {
+      color: var(--site-link);
+      text-decoration: underline;
+    }
+
+    .site-nav a:visited,
+    .site-footer a:visited,
+    .paper a:visited,
+    .site-nav a:hover,
+    .site-footer a:hover,
+    .paper a:hover {
+      color: var(--site-visited);
+    }
+
+    .document-heading {
+      margin: 0;
+      padding: 18px 16px 0;
+    }
+
+    .document-heading h1 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .document-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: #555;
+      font-size: 13px;
+    }
+
+    .meta-separator {
+      padding: 0 2px;
+    }
+
+    .paper {
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      padding: 16px;
+      color: #202020;
+      font-family: Arial, "Yu Gothic", "Meiryo", sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .paper h1,
+    .paper h2,
+    .paper h3 {
+      padding: 0;
+      border: 0;
+      font-family: inherit;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .paper h1 {
+      font-size: 1.35em;
+    }
+
+    .paper h2 {
+      margin-top: 1.5em;
+      font-size: 1.2em;
+    }
+
+    .paper h3 {
+      margin-top: 1.3em;
+      font-size: 1.08em;
+    }
+
+    .paper p {
+      margin: .8em 0;
+    }
+
+    .paper ul,
+    .paper ol {
+      margin: .8em 0;
+      padding-left: 1.8em;
+    }
+
+    .paper li {
+      margin: .25em 0;
+    }
+
+    .paper .section-number {
+      margin-right: .15em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .paper .math-display {
+      max-width: 100%;
+      min-width: 0;
+      padding: .25em 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .paper .math-display mjx-container[display="true"] {
+      max-width: 100%;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      overflow-x: auto;
+      overflow-y: hidden;
+      text-align: left !important;
+    }
+
+    .paper .theorem-box {
+      position: relative;
+      min-width: 0;
+      margin: 1.15em 0;
+      padding: 9px 14px 10px 18px;
+      border: 0;
+      background: transparent;
+    }
+
+    .paper .theorem-box::before {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 4px;
+      background: var(--bar, #2563eb);
+      content: "";
+    }
+
+    .paper .box-title {
+      margin-bottom: .3em;
+      font-family: inherit;
+      font-size: 1em;
+      font-weight: 700;
+    }
+
+    .paper .box-title .number {
+      margin-left: .25em;
+      font-weight: 500;
+    }
+
+    .paper .theorem-box:not(.proof-box) > .box-title {
+      display: inline;
+      margin-right: .8em;
+      margin-bottom: 0;
+    }
+
+    .paper .theorem-box:not(.proof-box) > .theorem-content {
+      display: contents;
+    }
+
+    .paper .theorem-box:not(.proof-box)
+      > .theorem-content
+      > p:first-child {
+      display: inline;
+    }
+
+    .paper .proof-box {
+      --bar: rgba(0, 0, 0, .28);
+      padding-top: 7px;
+      padding-bottom: 8px;
+    }
+
+    .paper details.proof-box > summary {
+      display: flex;
+      align-items: baseline;
+      gap: .5em;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+
+    .paper details.proof-box > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .paper details.proof-box > summary::before {
+      display: inline-block;
+      flex: 0 0 auto;
+      font-size: .9em;
+      content: "▸";
+      transition: transform .15s ease;
+    }
+
+    .paper details.proof-box[open] > summary::before {
+      transform: rotate(90deg);
+    }
+
+    .paper .proof-content {
+      min-width: 0;
+      padding-top: .25em;
+    }
+
+    .paper .proof-end {
+      margin-top: .4em;
+      font-size: 1.4em;
+      line-height: 1;
+      text-align: right;
+    }
+
+    /*
+      括弧は親要素の高さに追従するSVG。
+      本文には通常のブロック要素を使用し、入れ子を許容する。
+    */
+    .paper .reason-box {
+      position: relative;
+      width: 100%;
+      min-width: 0;
+      margin: 1em 0;
+      padding: .15em 1em;
+    }
+
+    .paper .reason-paren {
+      position: absolute;
+      top: 0;
+      width: .75em;
+      height: 100%;
+      overflow: visible;
+      color: #4b5563;
+      pointer-events: none;
+    }
+
+    .paper .reason-paren--left {
+      left: 0;
+    }
+
+    .paper .reason-paren--right {
+      right: 0;
+    }
+
+    .paper .reason-inner {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      align-items: start;
+      column-gap: .65em;
+      min-width: 0;
+    }
+
+    .paper .reason-prefix {
+      display: inline-flex;
+      align-items: baseline;
+      gap: .3em;
+      white-space: nowrap;
+    }
+
+    .paper .reason-because {
+      font-weight: 600;
+    }
+
+    .paper .reason-toggle {
+      display: inline-block;
+      margin: 0;
+      padding: 0 .08em;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      line-height: inherit;
+      cursor: pointer;
+      transform: rotate(90deg);
+      transform-origin: center;
+      transition: transform .15s ease;
+    }
+
+    .paper .reason-toggle:focus-visible,
+    .paper details.proof-box > summary:focus-visible {
+      outline: 2px solid #314a67;
+      outline-offset: 3px;
+    }
+
+    .paper .reason-text {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .paper .reason-text > :first-child {
+      margin-top: 0;
+    }
+
+    .paper .reason-text > :last-child {
+      margin-bottom: 0;
+    }
+
+    .paper .reason-text[hidden] {
+      display: none !important;
+    }
+
+    .paper .reason-box.is-collapsed {
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .paper .reason-box.is-collapsed > .reason-inner {
+      grid-template-columns: max-content;
+      column-gap: 0;
+    }
+
+    .paper .reason-toggle[aria-expanded="false"] {
+      transform: rotate(0deg);
+    }
+
+    .paper .table-of-contents {
+      margin: 1.25em 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .paper .table-of-contents h2 {
+      margin: .1em 0 .4em;
+      font-size: 1.1em;
+    }
+
+    .paper .table-of-contents ol {
+      margin: .2em 0;
+      padding-left: 1.5em;
+    }
+
+    .paper .table-of-contents ol ol {
+      margin: .1em 0;
+    }
+
+    .paper ol.phase {
+      padding-left: 2.4em;
+      list-style: none;
+      counter-reset: phase;
+    }
+
+    .paper ol.phase > li {
+      position: relative;
+      margin: .35em 0;
+      counter-increment: phase;
+    }
+
+    .paper ol.phase > li::before {
+      position: absolute;
+      left: -2.2em;
+      content: counter(phase) "°";
+    }
+
+    .paper li.custom-item {
+      list-style: none;
+    }
+
+    .paper li.custom-item::before {
+      content: none;
+    }
+
+    .paper .item-label {
+      margin-right: .6em;
+    }
+
+    .paper .item-body {
+      display: contents;
+    }
+
+    .paper .custom-item > .item-body > p:first-child {
+      display: inline;
+    }
+
+    .paper .bibliography {
+      margin-top: 2.5em;
+    }
+
+    .paper .bibliography h2 {
+      padding-bottom: 0;
+      border: 0;
+    }
+
+    .paper .bibliography ol {
+      padding-left: 2.2em;
+    }
+
+    .paper .bibliography li {
+      margin: .6em 0;
+      padding-left: .25em;
+    }
+
+    .paper .bibliography li > p:first-child {
+      display: inline;
+    }
+
+    .paper .bibliography .custom-bib-label {
+      margin-right: .5em;
+    }
+
+    .site-footer {
+      margin-top: 32px;
+      padding: 14px 16px 24px;
+      border-top: 1px solid var(--site-border);
+      color: #202020;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .site-footer p {
+      margin: 4px 0;
+    }
+
+    .back-to-top {
+      margin-top: 1.5em;
+    }
+
+    @media (max-width: 600px) {
+      .site-header,
+      .document-heading,
+      .paper,
+      .site-footer {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .site-nav {
+        gap: 12px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .paper .reason-toggle,
+      .paper details.proof-box > summary::before {
+        transition: none;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+      }
+
+      .paper {
+        visibility: visible !important;
+      }
+
+      .site-nav a,
+      .site-footer a,
+      .paper a,
+      .document-heading a {
+        color: #000 !important;
+        text-decoration: none;
+      }
+
+      .paper details.proof-box {
+        break-inside: avoid;
+      }
+
+      .paper details.proof-box:not([open]) > .proof-content {
+        display: block !important;
+      }
+
+      .paper .reason-text[hidden] {
+        display: block !important;
+      }
+
+      .paper .reason-box.is-collapsed {
+        width: 100%;
+      }
+
+      .paper .reason-box.is-collapsed > .reason-inner {
+        grid-template-columns: max-content minmax(0, 1fr);
+        column-gap: .65em;
+      }
+
+      .paper .reason-toggle {
+        visibility: hidden;
+      }
+
+      .site-header,
+      .site-footer {
+        border-color: #888;
+      }
+    }
+  </style>
+
+  <!-- 編集画面の配置と従来のプレビュー外観。 -->
+  <style id="editor-styles">
+    .editor-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-bottom: 10px;
+      background: var(--site-background);
+    }
+
+.editor-toolbar .editor-logo-link {
+  display: block;
+  margin-right: auto;
+  flex-shrink: 0;
+}
+
+.editor-toolbar .editor-logo {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}
+
+    .editor-button {
+      padding: 7px 11px;
+      border: 1px solid var(--site-border);
+      border-radius: 2px;
+      background: transparent;
+      color: var(--site-ink);
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .editor-button.primary {
+      border-color: #314a67;
+      background: #314a67;
+      color: #fff;
+    }
+
+    .editor-button:hover {
+      filter: brightness(.97);
+    }
+
+    .editor-button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      filter: none;
+    }
+
+    .editor-button:focus-visible,
+    .settings-grid input:focus-visible,
+    .workspace-field input:focus-visible,
+    .workspace-field select:focus-visible,
+    .workspace-checkbox input:focus-visible,
+    #source:focus-visible {
+      outline: 2px solid #314a67;
+      outline-offset: 2px;
+    }
+
+    .editor-workspace,
+    .site-settings,
+    .syntax-guide {
+      max-width: 1600px;
+      margin: 14px auto 0;
+      padding: 0 16px;
+    }
+
+    .workspace-fields {
+      display: flex;
+      align-items: end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .workspace-field {
+      display: flex;
+      flex: 1 1 240px;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      color: #555;
+      font-size: 12px;
+    }
+
+    .workspace-field input,
+    .workspace-field select {
+      width: 100%;
+      min-width: 0;
+      padding: 8px;
+      border: 1px solid var(--site-border);
+      border-radius: 0;
+      background: #fff;
+      color: var(--site-ink);
+      font: 14px Arial, "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    .workspace-drafts {
+      flex-basis: 360px;
+    }
+
+    .workspace-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 38px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .workspace-checkbox input {
+      width: 1em;
+      height: 1em;
+      margin: 0;
+    }
+
+    .workspace-statuses {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 20px;
+      margin-top: 8px;
+    }
+
+    .workspace-statuses p,
+    .workspace-operation,
+    .workspace-note {
+      margin: 4px 0;
+      color: #555;
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .workspace-operation:empty {
+      display: none;
+    }
+
+    .editor-workspace [data-state="ok"] {
+      color: #237a3b;
+    }
+
+    .editor-workspace [data-state="warning"] {
+      color: #9a6700;
+    }
+
+    .editor-workspace [data-state="error"] {
+      color: #a00000;
+    }
+
+    .workspace-recovery {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border: 1px solid var(--site-border);
+      background: #fff;
+    }
+
+    .workspace-recovery[hidden] {
+      display: none;
+    }
+
+    .workspace-recovery h2 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+
+    .workspace-recovery p {
+      margin: 6px 0 10px;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .workspace-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+      gap: 16px;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .panel {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--site-border);
+      background: #fff;
+    }
+
+    .panel > .panel-title {
+      margin: 0;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--site-border);
+      background: var(--site-background);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    #source {
+      display: block;
+      width: 100%;
+      min-height: 78vh;
+      padding: 18px;
+      border: 0;
+      border-radius: 0;
+      color: #24292f;
+      background: #fff;
+      font: 16px/1.65 ui-monospace, SFMono-Regular, Consolas, monospace;
+      tab-size: 2;
+      resize: vertical;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    #source[readonly] {
+      cursor: default;
+    }
+
+    .preview-wrap {
+      min-height: 60vh;
+      background: #fff;
+    }
+
+    .site-settings > details,
+    .syntax-guide > details {
+      border: 1px solid var(--site-border);
+      background: transparent;
+    }
+
+    .site-settings > details > summary,
+    .syntax-guide > details > summary {
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px 14px;
+      padding: 0 14px;
+    }
+
+    .settings-grid label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      color: #555;
+      font-size: 12px;
+    }
+
+    .settings-grid input {
+      width: 100%;
+      min-width: 0;
+      padding: 8px;
+      border: 1px solid var(--site-border);
+      border-radius: 0;
+      background: #fff;
+      color: #202020;
+      font: 14px Arial, "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    .settings-note,
+    .syntax-note {
+      margin: 10px 14px 14px;
+      color: #555;
+      font-size: 12px;
+    }
+
+    .syntax-content {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0 14px 14px;
+    }
+
+    .syntax-group {
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid #c8bebe;
+    }
+
+    .syntax-group h3 {
+      margin: 0 0 7px;
+      font-size: 13px;
+    }
+
+    .syntax-group p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .syntax-group code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      overflow-wrap: anywhere;
+    }
+
+    .hint,
+    .diagnostics {
+      padding: 10px 14px;
+      border-top: 1px solid #d8d5cc;
+      color: #555;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .diagnostics:empty {
+      display: none;
+    }
+
+    .diagnostics p {
+      margin: 4px 0;
+    }
+
+    .diagnostics .warning {
+      color: #9a6700;
+    }
+
+    .diagnostics .ok {
+      color: #237a3b;
+    }
+
+    #preview {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: clamp(20px, 4vw, 48px) clamp(18px, 3vw, 32px);
+      background: transparent;
+      font-family:
+        Georgia,
+        "Yu Mincho",
+        "Hiragino Mincho ProN",
+        "YuMincho",
+        "MS PMincho",
+        serif;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    #preview h1,
+    #preview h2,
+    #preview h3 {
+      font-family: inherit;
+      line-height: 1.5;
+    }
+
+    #preview h1 {
+      padding-bottom: .25em;
+      border-bottom: 1px solid #bbb;
+      font-size: 1.55em;
+    }
+
+    #preview h2 {
+      margin-top: 1.6em;
+      font-size: 1.25em;
+    }
+
+    #preview p,
+    #preview ul,
+    #preview ol {
+      margin-top: .65em;
+      margin-bottom: .65em;
+    }
+
+    #preview a.reference {
+      color: #0000ee;
+      text-decoration: none;
+    }
+
+    #preview a.reference:hover {
+      text-decoration: underline;
+    }
+
+    #preview .citation,
+    #preview .backref {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    #preview .citation:hover,
+    #preview .backref:hover {
+      text-decoration: underline;
+    }
+
+    #preview .table-of-contents {
+      padding: 12px 18px;
+      border: 1px solid #ddd;
+    }
+
+    #preview .table-of-contents h2 {
+      margin: .1em 0 .4em;
+      font-size: 1.1em;
+    }
+
+    #preview .table-of-contents ol {
+      margin: .2em 0;
+    }
+
+    #preview .table-of-contents a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    #preview .table-of-contents a:hover {
+      text-decoration: underline;
+    }
+
+    #preview .bibliography h2 {
+      padding-bottom: .25em;
+      border-bottom: 1px solid #dadce0;
+    }
+
+    #preview .reason-text > :first-child {
+      margin-top: 0;
+    }
+
+    #preview .reason-text > :last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 900px) {
+      .editor-toolbar {
+        position: static;
+      }
+
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .syntax-content {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #source {
+        min-height: 40vh;
+      }
+
+      #preview {
+        padding: 24px 18px;
+      }
+
+      .preview-wrap {
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .settings-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .editor-workspace {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .workspace-fields {
+        align-items: stretch;
+      }
+
+      .workspace-field {
+        flex-basis: 100%;
+      }
+
+      .workspace-statuses {
+        display: block;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .settings-grid,
+      .syntax-content {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media print {
+      .editor-toolbar,
+      .editor-workspace,
+      .site-settings,
+      .syntax-guide,
+      .editor-source-panel,
+      .panel > .panel-title,
+      .diagnostics {
+        display: none;
+      }
+
+      .layout {
+        display: block;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .panel {
+        overflow: visible;
+        border: 0;
+      }
+
+      #preview {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+
+<body class="editor-page" id="top">
+  <header class="site-header editor-toolbar">
+    <a class="site-brand editor-logo-link" href="../index.html">
+  <img
+    src="../images/header.png"
+    alt="ホーム"
+    class="editor-logo"
+  >
+</a>
+    <button id="openSource" class="editor-button" type="button">
+      ソースを開く
+    </button>
+
+    <button id="saveSource" class="editor-button" type="button">
+      ソースを保存
+    </button>
+
+    <button id="copySource" class="editor-button" type="button">
+      ソースをコピー
+    </button>
+
+    <button id="render" class="editor-button" type="button">
+      今すぐ更新
+    </button>
+
+    <button id="publicDownload" class="editor-button primary" type="button">
+      公開用HTMLを生成
+    </button>
+
+    <button id="cssDownload" class="editor-button" type="button">
+      共通CSSを保存
+    </button>
+
+    <input
+      id="sourceFile"
+      type="file"
+      accept=".tex,.txt,text/plain,application/x-tex"
+      hidden
+    >
+  </header>
+
+  <section class="editor-workspace" aria-label="文書の保存とプレビュー設定">
+    <div class="workspace-fields">
+      <label class="workspace-field">
+        ソースのファイル名
+        <input
+          id="sourceFilename"
+          type="text"
+          value="note.tex"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </label>
+
+      <label class="workspace-checkbox">
+        <input id="autoPreview" type="checkbox" checked>
+        自動プレビュー
+      </label>
+
+      <label class="workspace-field workspace-drafts">
+        ブラウザー内の下書き
+        <select id="draftSelect">
+          <option value="">下書きがありません</option>
+        </select>
+      </label>
+
+      <button
+        id="openDraft"
+        class="editor-button"
+        type="button"
+        disabled
+      >
+        下書きを開く
+      </button>
+    </div>
+
+    <div class="workspace-statuses">
+      <p id="draftStatus" role="status" aria-live="polite">
+        下書きを確認しています。
+      </p>
+
+      <p id="previewStatus" role="status" aria-live="polite">
+        プレビューを準備しています。
+      </p>
+    </div>
+
+    <p
+      id="operationStatus"
+      class="workspace-operation"
+      role="status"
+      aria-live="polite"
+    ></p>
+
+    <section
+      id="recoveryPanel"
+      class="workspace-recovery"
+      aria-labelledby="recoveryTitle"
+      hidden
+    >
+      <h2 id="recoveryTitle">下書きの復元</h2>
+      <p id="recoveryMessage"></p>
+
+      <div class="workspace-actions">
+        <button
+          id="restoreDraft"
+          class="editor-button primary"
+          type="button"
+        >
+          下書きを復元
+        </button>
+
+        <button
+          id="keepCurrent"
+          class="editor-button"
+          type="button"
+        >
+          HTML内の本文を使用
+        </button>
+      </div>
+    </section>
+
+    <p class="workspace-note">
+      自動保存は、このブラウザー内に置く復旧用の下書きです。
+      独立したバックアップとして、ソースファイルも保存してください。
+      下書きの復元方法を選択するまでは、自動保存を開始しません。
+      ローカルHTMLを直接開いた場合、ブラウザー内保存の挙動は環境に依存します。
+      長い文書で描画が重い場合は、自動プレビューをオフにできます。
+    </p>
+  </section>
+
+  <section class="site-settings" aria-label="サイト設定">
+    <details id="siteSettingsDisclosure" open>
+      <summary>サイト設定（公開用HTMLのヘッダー・フッター）</summary>
+
+      <div class="settings-grid">
+        <label>
+          サイト名・筆名
+          <input id="siteName" value="" autocomplete="off">
+        </label>
+
+        <label>
+          ヘッダー画像 URL
+          <input
+            id="headerImageUrl"
+            value="../images/header.png"
+            placeholder="任意"
+            autocomplete="off"
+          >
+        </label>
+
+        <label>
+          共通スタイルシート URL
+          <input
+            id="stylesheetUrl"
+            value="../style.css"
+            autocomplete="off"
+          >
+        </label>
+
+        <label>
+          ホーム URL
+          <input id="homeUrl" value="../index.html" autocomplete="off">
+        </label>
+
+        <label>
+          資料一覧 URL
+          <input id="materialsUrl" value="index.html" autocomplete="off">
+        </label>
+
+        <label>
+          更新履歴 URL
+          <input id="updatesUrl" value="../updates.html" autocomplete="off">
+        </label>
+
+        <label>
+          サイト紹介 URL
+          <input id="aboutUrl" value="../about.html" autocomplete="off">
+        </label>
+
+        <label>
+          リンク集 URL
+          <input id="linksUrl" value="../links.html" autocomplete="off">
+        </label>
+
+        <label>
+          権利者表示
+          <input id="copyrightHolder" value="Ud.afhal" autocomplete="off">
+        </label>
+
+        <label>
+          著作権表示の年
+          <input
+            id="copyrightYear"
+            value="2026"
+            inputmode="numeric"
+            autocomplete="off"
+          >
+        </label>
+
+        <label>
+          資料の著者
+          <input
+            id="documentAuthor"
+            value="Ud.afhal"
+            placeholder="未入力なら表示しない"
+            autocomplete="off"
+          >
+        </label>
+
+        <label>
+          更新日
+          <input
+            id="updatedDate"
+            value=""
+            placeholder="YYYY-MM-DD"
+            autocomplete="off"
+          >
+        </label>
+      </div>
+
+      <p class="settings-note">
+        サイト設定はこのブラウザー内に保存され、次回の読み込み時に使用されます。
+        各URLは公開先のディレクトリ構成に合わせて指定してください。
+        共通スタイルシートURLを空欄にすると、公開HTMLに共通CSSを埋め込みます。
+        本文の下書きとは別の保存領域を使用します。
+      </p>
+    </details>
+  </section>
+
+  <aside class="syntax-guide" aria-label="対応しているLaTeX記法">
+    <details id="syntaxDisclosure" open>
+      <summary>対応しているLaTeX記法一覧</summary>
+
+      <div class="syntax-content">
+        <section class="syntax-group">
+          <h3>参照・番号付け</h3>
+          <p>
+            <code>\label{key}</code>、
+            <code>\ref{key}</code>、
+            <code>\eqref{key}</code><br>
+            定理番号はsectionごとにリセットします。
+            数式はAMS形式で番号付けします。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>定理・証明・理由</h3>
+          <p>
+            <code>definition</code>、<code>theorem</code>、
+            <code>proposition</code>、<code>lemma</code>、
+            <code>corollary</code>、<code>fact</code>、
+            <code>remark</code>、<code>statement</code>、
+            <code>proof</code>、<code>reason</code><br>
+            定理系環境とproofは角括弧による補足表題にも対応します。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>見出し・段落</h3>
+          <p>
+            <code>\section{...}</code>、
+            <code>\subsection{...}</code>、
+            <code>\tableofcontents</code><br>
+            空行で段落を分け、<code>\\</code>で明示的に改行します。
+            <code>\noindent</code>、<code>\smallskip</code>、
+            <code>\medskip</code>、<code>\bigskip</code>は簡易対応です。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>箇条書きと入れ子</h3>
+          <p>
+            <code>itemize</code>、<code>enumerate</code>、
+            <code>phase</code>と<code>\item</code><br>
+            <code>\item[ラベル]</code>にも対応します。
+            定理・証明・理由・箇条書きは、同種環境を含めて入れ子にできます。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>文字装飾・リンク</h3>
+          <p>
+            <code>\textbf{...}</code>、<code>\emph{...}</code>、
+            <code>\textit{...}</code>、<code>\texttt{...}</code><br>
+            <code>\url{...}</code>、<code>\href{URL}{表示文字}</code><br>
+            文字装飾の引数内でも対応コマンドを入れ子にできます。
+            エスケープされていない<code>%</code>以降は行末コメントです。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>数式</h3>
+          <p>
+            <code>$...$</code>、<code>\(...\)</code>、
+            <code>$$...$$</code>、<code>\[...\]</code><br>
+            <code>equation</code>、<code>align</code>、
+            <code>gather</code>、<code>multline</code>、
+            <code>flalign</code>、<code>alignat</code>とその星付き環境。
+            数式内の<code>aligned</code>や<code>cases</code>はMathJaxに渡します。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>独自コマンド</h3>
+          <p>
+            <code>\be</code>、<code>\proves</code>、
+            <code>\forces</code>、<code>\PA</code>、
+            <code>\BST</code>、<code>\ZF</code>、
+            <code>\ZFC</code>、<code>\Con</code>、
+            <code>\MA</code>、<code>\HF</code>、
+            <code>\bval</code>、<code>\set</code>、
+            <code>\power</code>、<code>\Def</code>、
+            <code>\val</code>、<code>\prm</code>、
+            <code>\img</code>、<code>\dom</code>、
+            <code>\ran</code>、<code>\inj</code>、
+            <code>\surj</code>、<code>\bij</code>、
+            <code>\iso</code>、<code>\ee</code>、
+            <code>\ON</code>、<code>\ot</code>、
+            <code>\cf</code>、<code>\len</code>、
+            <code>\club</code>、<code>\nonstat</code>、
+            <code>\inn</code>、<code>\obj</code>、
+            <code>\mathbbl</code>、<code>\bbepsilon</code>
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>参考文献</h3>
+          <p>
+            <code>\cite{key}</code>、
+            <code>\cite[注記]{key}</code><br>
+            <code>\begin{thebibliography}{9}</code>と
+            <code>\bibitem{key}</code>を使用します。
+            <code>\bibitem[表示ラベル]{key}</code>にも対応します。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>開閉状態と対応範囲</h3>
+          <p>
+            証明・理由は初期状態で開き、プレビュー更新時は状態を保持します。
+            一意のラベルを付けると、移動や編集後も対応を特定できます。
+            TikZ、bussproofs、任意のマクロ定義などには対応していません。
+          </p>
+        </section>
+      </div>
+
+      <p class="syntax-note">
+        これはブラウザー内の簡易変換であり、完全なLaTeX処理系ではありません。
+        MathJax本体と、設定に応じた拡張・フォントが読み込める必要があります。
+        ソース保存はUTF-8で行い、読み込みもUTF-8を対象とします。
+      </p>
+    </details>
+  </aside>
+
+  <main class="layout">
+    <section class="panel editor-source-panel">
+      <h2 class="panel-title">LaTeX風ソース</h2>
+
+      <textarea
+        id="source"
+        spellcheck="false"
+        aria-label="LaTeX source"
+      >\section{huge cardinalの基本的性質}
+
+\begin{definition}
+順序数$\kappa$が$n$-huge cardinalであるとは，次を満たす$j$を持つことをいう：
+\begin{itemize}
+\item $j:V\ee_\kappa M$
+\item $M^{j^n(\kappa)}\subseteq M$
+\end{itemize}
+\end{definition}
+\begin{remark}
+よく知られるKunenの結果より，$\omega$-huge cardinalは存在しない．ここで，順序数$\kappa$が$\omega$-huge carinalであるとは，$j:V\ee_\kappa M$で$M^{\sup_{n&lt;\omega}j^n(\kappa)}\subseteq M$を満たすものを持つことをいう．
+\end{remark}
+\begin{definition}
+$\mathcal{U}\subseteq \power(\power(\lambda))$が$\power(\lambda)$の正規フィルターであるとは，次を満たすことをいう：
+\begin{itemize}
+\item $\alpha&lt;\lambda$に対して$\set{x\in \power(\lambda):\alpha\in x}\in\mathcal{F}$
+\item $\langle X_\alpha:\alpha&lt;\lambda\rangle\in {}^\lambda\mathcal{F}$に対して$\bigtriangleup_{\alpha&lt;\lambda}X_\alpha=\set{x\in\power(\lambda):\forall \alpha\in x(x\in X_\alpha)}\in \mathcal{F}$
+\end{itemize}
+\end{definition}
+\begin{remark}
+$&lt;\lambda$-完備性
+\end{remark}
+定理 \ref{thm:reflexive} を参照。
+
+\begin{proof}
+各 $x\in A$ について $x\in A$ であるから、部分集合の定義より結論を得る。
+\end{proof}
+
+\begin{proposition}
+$\dom(f)$ と $\ran(f)$ はそれぞれ $f$ の定義域と値域を表す。
+\end{proposition}
+
+\begin{phase}
+\item まず仮定を確認する。
+\item 次に必要な包含関係を示す。
+\item 以上から結論が従う。
+\end{phase}
+
+\begin{remark}
+ここは注意環境の例。数式は $\bval{\varphi}$ のように記述できる。以下の式は式番号と参照の例である。
+\begin{equation}\label{eq:subset}
+A\subseteq B \implies \power(A)\subseteq \power(B)
+\end{equation}
+式 \eqref{eq:subset} を参照。
+\end{remark}
+
+\begin{reason}
+$A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $A\subseteq C$。
+\end{reason}</textarea>
+
+      <div class="hint">
+        自動プレビューは、入力が止まってから約800ミリ秒後に更新します。
+        IME変換中は新しいプレビュー更新を開始しません。
+        証明・理由の開閉状態は更新時に引き継ぎます。
+        別の文書を開いたときとページの再読み込み時は、すべて開きます。
+        本文の保存・コピーには、プレビュー更新前の入力内容も含まれます。
+        プレビューの本文は16px、行間は1.8です。
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">HTMLプレビュー</h2>
+
+      <div class="preview-wrap">
+        <article class="paper" id="preview"></article>
+      </div>
+
+      <div
+        id="diagnostics"
+        class="diagnostics"
+        aria-live="polite"
+      ></div>
+    </section>
+  </main>
+
+  <!-- 編集画面と公開ページで共有するDOM・MathJax処理。 -->
+  <script id="document-runtime">
+    const MystyleRuntime = (() => {
+      "use strict";
+
+      const TOGGLE_SELECTOR =
+        "details.proof-box[data-toggle-key], .reason-box[data-toggle-key]";
+
+      const revisions = new WeakMap();
+      const lockedStates = new WeakMap();
+
+      let queue = Promise.resolve();
+      let printState = null;
+
+      const mathReady = new Promise((resolve) => {
+        const loader = document.getElementById("mathjax-loader");
+        let settled = false;
+
+        const timer = window.setTimeout(() => finish(null), 20000);
+
+        function finish(value) {
+          if (settled) {
+            return;
+          }
+
+          settled = true;
+          window.clearTimeout(timer);
+          resolve(value);
+        }
+
+        async function loaded() {
+          try {
+            const mathJax = window.MathJax;
+
+            if (mathJax?.startup?.promise) {
+              await mathJax.startup.promise;
+            }
+
+            finish(mathJax?.typesetPromise ? mathJax : null);
+          } catch {
+            finish(null);
+          }
+        }
+
+        if (window.MathJax?.startup?.promise) {
+          loaded();
+        } else if (loader) {
+          loader.addEventListener("load", loaded, { once: true });
+          loader.addEventListener("error", () => finish(null), {
+            once: true
+          });
+        } else {
+          finish(null);
+        }
+      });
+
+      function schedule(task) {
+        const pending = queue
+          .catch(() => undefined)
+          .then(() => mathReady)
+          .then(async (initialMathJax) => {
+            const mathJax = window.MathJax?.typesetPromise
+              ? window.MathJax
+              : initialMathJax;
+
+            if (mathJax?.startup?.promise) {
+              await mathJax.startup.promise;
+            }
+
+            return task(mathJax);
+          });
+
+        queue = pending;
+        return pending;
+      }
+
+      function toggleElements(root) {
+        return Array.from(root.querySelectorAll(TOGGLE_SELECTOR));
+      }
+
+      function isExpanded(element) {
+        return element.matches("details.proof-box")
+          ? element.open
+          : !element.classList.contains("is-collapsed");
+      }
+
+      function setReasonExpanded(box, expanded) {
+        const button = box.querySelector(
+          ":scope > .reason-inner > .reason-prefix > .reason-toggle"
+        );
+
+        const content = box.querySelector(
+          ":scope > .reason-inner > .reason-text"
+        );
+
+        box.classList.toggle("is-collapsed", !expanded);
+
+        if (content) {
+          content.hidden = !expanded;
+        }
+
+        if (button) {
+          button.setAttribute("aria-expanded", String(expanded));
+          button.setAttribute(
+            "aria-label",
+            expanded ? "理由を折り畳む" : "理由を展開"
+          );
+        }
+      }
+
+      function setExpanded(element, expanded) {
+        if (element.matches("details.proof-box")) {
+          element.open = expanded;
+        } else {
+          setReasonExpanded(element, expanded);
+        }
+      }
+
+      function snapshot(root) {
+        if (lockedStates.has(root)) {
+          return new Map(lockedStates.get(root));
+        }
+
+        return new Map(
+          toggleElements(root).map((element) => [
+            element.dataset.toggleKey,
+            isExpanded(element)
+          ])
+        );
+      }
+
+      function restore(root, states) {
+        for (const element of toggleElements(root)) {
+          const key = element.dataset.toggleKey;
+
+          setExpanded(
+            element,
+            states.has(key) ? states.get(key) : true
+          );
+        }
+      }
+
+      function expandAll(root) {
+        for (const element of toggleElements(root)) {
+          setExpanded(element, true);
+        }
+      }
+
+      async function typesetOpen(root, mathJax, previousStates) {
+        const desiredStates = new Map(
+          toggleElements(root).map((element) => {
+            const key = element.dataset.toggleKey;
+
+            return [
+              key,
+              previousStates.has(key) ? previousStates.get(key) : true
+            ];
+          })
+        );
+
+        const oldVisibility = root.style.visibility;
+        const oldBusy = root.getAttribute("aria-busy");
+        const wasInert = root.hasAttribute("inert");
+
+        lockedStates.set(root, desiredStates);
+
+        /*
+          閉じた環境内で数式を計測しないよう、
+          一時的に全環境を開き、不可視・操作不可にして組版する。
+          入力欄自体は変更しない。
+        */
+        root.style.visibility = "hidden";
+        root.setAttribute("aria-busy", "true");
+        root.setAttribute("inert", "");
+
+        expandAll(root);
+
+        try {
+          mathJax.texReset();
+          await mathJax.typesetPromise([root]);
+        } finally {
+          restore(root, desiredStates);
+          lockedStates.delete(root);
+
+          root.style.visibility = oldVisibility;
+
+          if (oldBusy === null) {
+            root.removeAttribute("aria-busy");
+          } else {
+            root.setAttribute("aria-busy", oldBusy);
+          }
+
+          if (!wasInert) {
+            root.removeAttribute("inert");
+          }
+        }
+      }
+
+      function render(root, html) {
+        const revision = (revisions.get(root) || 0) + 1;
+        revisions.set(root, revision);
+
+        // MathJax待機中も本文のHTMLは先に表示する。
+        if (!window.MathJax?.typesetPromise) {
+          const states = snapshot(root);
+          root.innerHTML = html;
+          restore(root, states);
+        }
+
+        return schedule(async (mathJax) => {
+          if (revisions.get(root) !== revision) {
+            return Boolean(mathJax);
+          }
+
+          // 待機中のユーザー操作も、この時点で取り込む。
+          const states = snapshot(root);
+
+          if (mathJax) {
+            mathJax.typesetClear([root]);
+          }
+
+          root.innerHTML = html;
+
+          if (!mathJax) {
+            restore(root, states);
+            return false;
+          }
+
+          await typesetOpen(root, mathJax, states);
+          return true;
+        });
+      }
+
+      function typeset(root) {
+        return schedule(async (mathJax) => {
+          if (!root || !mathJax) {
+            return false;
+          }
+
+          await typesetOpen(root, mathJax, snapshot(root));
+          return true;
+        });
+      }
+
+      function revealTarget(target) {
+        for (
+          let element = target;
+          element;
+          element = element.parentElement
+        ) {
+          if (element.matches("details")) {
+            element.open = true;
+          }
+
+          if (element.matches(".reason-box")) {
+            setReasonExpanded(element, true);
+          }
+        }
+      }
+
+      function targetFromHash(hash) {
+        try {
+          const id = decodeURIComponent(hash.replace(/^#/, ""));
+          return id ? document.getElementById(id) : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function revealHash() {
+        const target = targetFromHash(window.location.hash);
+
+        if (target) {
+          revealTarget(target);
+          requestAnimationFrame(() => target.scrollIntoView());
+        }
+      }
+
+      document.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element)) {
+          return;
+        }
+
+        const button = event.target.closest(".reason-toggle");
+
+        if (button) {
+          const box = button.closest(".reason-box");
+
+          if (box) {
+            setReasonExpanded(box, !isExpanded(box));
+          }
+
+          return;
+        }
+
+        const link = event.target.closest('a[href^="#"]');
+
+        if (!link) {
+          return;
+        }
+
+        const hash = link.getAttribute("href");
+        const target = targetFromHash(hash);
+
+        if (!target) {
+          return;
+        }
+
+        event.preventDefault();
+        revealTarget(target);
+
+        try {
+          history.replaceState(null, "", hash);
+        } catch {
+          // file:で履歴操作が制限されても移動は続行する。
+        }
+
+        requestAnimationFrame(() => target.scrollIntoView());
+      });
+
+      window.addEventListener("hashchange", revealHash);
+
+      window.addEventListener("beforeprint", () => {
+        if (printState) {
+          return;
+        }
+
+        printState = Array.from(
+          document.querySelectorAll(".paper"),
+          (root) => ({
+            root,
+            states: snapshot(root)
+          })
+        );
+
+        for (const { root } of printState) {
+          expandAll(root);
+        }
+      });
+
+      window.addEventListener("afterprint", () => {
+        if (!printState) {
+          return;
+        }
+
+        for (const { root, states } of printState) {
+          if (root.isConnected) {
+            restore(root, states);
+          }
+        }
+
+        printState = null;
+      });
+
+      return {
+        render,
+        typeset,
+        snapshot,
+        restore,
+        revealHash
+      };
+    })();
+  </script>
+
+  <script id="editor-app">
+    (() => {
+      "use strict";
+
+      // ================================================================
+      // 定数・画面要素
+      // ================================================================
+
+      const SETTINGS_STORAGE_KEY = "mystyleHtmlSiteSettings";
+      const SCRIPT_END = "<" + "/script>";
+
+      const ENVIRONMENTS = Object.freeze({
+        reason: {
+          title: "理由",
+          color: "#6b7280",
+          numbered: false
+        },
+        definition: {
+          title: "定義",
+          color: "#c62828",
+          numbered: true
+        },
+        fact: {
+          title: "事実",
+          color: "#c62828",
+          numbered: true
+        },
+        proposition: {
+          title: "命題",
+          color: "#ef8c00",
+          numbered: true
+        },
+        lemma: {
+          title: "補題",
+          color: "#238636",
+          numbered: true
+        },
+        theorem: {
+          title: "定理",
+          color: "#2563eb",
+          numbered: true
+        },
+        corollary: {
+          title: "系",
+          color: "#4b5563",
+          numbered: true
+        },
+        remark: {
+          title: "注意",
+          color: "#ef8c00",
+          numbered: true
+        },
+        statement: {
+          title: "主張",
+          color: "#4b5563",
+          numbered: true
+        },
+        proof: {
+          title: "証明",
+          color: "rgba(0,0,0,.28)",
+          numbered: false
+        }
+      });
+
+      const LIST_NAMES = new Set([
+        "itemize",
+        "enumerate",
+        "phase"
+      ]);
+
+      const SITE_FIELDS = Object.freeze({
+        siteName: "siteName",
+        headerImageUrl: "headerImageUrl",
+        stylesheetUrl: "stylesheetUrl",
+        homeUrl: "homeUrl",
+        materialsUrl: "materialsUrl",
+        updatesUrl: "updatesUrl",
+        aboutUrl: "aboutUrl",
+        linksUrl: "linksUrl",
+        copyrightHolder: "copyrightHolder",
+        copyrightYear: "copyrightYear",
+        documentAuthor: "author",
+        updatedDate: "updatedDate"
+      });
+
+      const sourceElement = document.getElementById("source");
+      const previewElement = document.getElementById("preview");
+      const diagnosticsElement = document.getElementById("diagnostics");
+
+      const mathJaxConfigSource = document
+        .getElementById("mathjax-config")
+        .textContent
+        .trim();
+
+      const documentRuntimeSource = document
+        .getElementById("document-runtime")
+        .textContent
+        .trim();
+
+      const mathJaxLoaderUrl = document
+        .getElementById("mathjax-loader")
+        .getAttribute("src");
+
+      const publicStylesheet = document
+        .getElementById("public-styles")
+        .textContent
+        .trim();
+
+      let previousToggles = [];
+      let nextToggleId = 0;
+
+      // ================================================================
+      // 基本ユーティリティ
+      // ================================================================
+
+      function escapeHTML(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function safeURL(value) {
+        const url = String(value ?? "").trim();
+
+        if (/[\u0000-\u001f\u007f]/.test(url)) {
+          return "#";
+        }
+
+        const scheme = url
+          .replace(/\s/g, "")
+          .match(/^([a-z][a-z0-9+.-]*):/i);
+
+        if (scheme && !/^(https?|mailto|tel)$/i.test(scheme[1])) {
+          return "#";
+        }
+
+        return url;
+      }
+
+      function fragmentURL(id) {
+        return "#" + encodeURIComponent(id);
+      }
+
+      function isEscaped(text, index) {
+        let count = 0;
+
+        for (
+          let cursor = index - 1;
+          cursor >= 0 && text[cursor] === "\\";
+          cursor--
+        ) {
+          count++;
+        }
+
+        return count % 2 === 1;
+      }
+
+      function skipWhitespace(text, start) {
+        let cursor = start;
+
+        while (cursor < text.length && /\s/.test(text[cursor])) {
+          cursor++;
+        }
+
+        return cursor;
+      }
+
+      function readGroup(text, start, opening = "{", closing = "}") {
+        const begin = skipWhitespace(text, start);
+
+        if (text[begin] !== opening) {
+          return null;
+        }
+
+        let depth = 1;
+        let braceDepth = 0;
+
+        for (let index = begin + 1; index < text.length; index++) {
+          if (isEscaped(text, index)) {
+            continue;
+          }
+
+          const character = text[index];
+
+          if (opening === "[") {
+            if (character === "{") {
+              braceDepth++;
+              continue;
+            }
+
+            if (character === "}") {
+              braceDepth = Math.max(0, braceDepth - 1);
+              continue;
+            }
+
+            if (braceDepth > 0) {
+              continue;
+            }
+          }
+
+          if (character === opening) {
+            depth++;
+          } else if (character === closing) {
+            depth--;
+
+            if (depth === 0) {
+              return {
+                value: text.slice(begin + 1, index),
+                start: begin,
+                end: index + 1
+              };
+            }
+          }
+        }
+
+        return null;
+      }
+
+      function normalizeSource(source) {
+        return String(source)
+          .replace(/\r\n?/g, "\n")
+          .split("\n")
+          .map((line) => {
+            for (let index = 0; index < line.length; index++) {
+              if (line[index] === "%" && !isEscaped(line, index)) {
+                return line.slice(0, index);
+              }
+            }
+
+            return line;
+          })
+          .join("\n");
+      }
+
+      function matchedValues(source, pattern, group = 1) {
+        return Array.from(source.matchAll(pattern))
+          .filter((match) => !isEscaped(source, match.index))
+          .map((match) => match[group].trim());
+      }
+
+      function labelsIn(source) {
+        return matchedValues(
+          source,
+          /\\label\s*\{([^{}]+)\}/g
+        );
+      }
+
+      function citedKeysIn(source) {
+        return matchedValues(
+          source,
+          /\\cite(?:\s*\[[^\]]*\])?\s*\{([^{}]*)\}/g
+        ).flatMap((keys) => {
+          return keys
+            .split(",")
+            .map((key) => key.trim())
+            .filter(Boolean);
+        });
+      }
+
+      function labelAnchors(labels) {
+        return labels.map((key) => {
+          return `<span id="${escapeHTML("label-" + key)}"></span>`;
+        }).join("");
+      }
+
+      function labelIdAttribute(node) {
+        return node.labels?.length
+          ? ` id="${escapeHTML("label-" + node.labels[0])}"`
+          : "";
+      }
+
+      function downloadText(filename, content, mimeType) {
+        const blob = new Blob([content], {
+          type: mimeType
+        });
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = filename;
+
+        document.body.append(link);
+        link.click();
+        link.remove();
+
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      // ================================================================
+      // サイト設定
+      // ================================================================
+
+      function readSiteSettings() {
+        const settings = {};
+
+        for (const [id, key] of Object.entries(SITE_FIELDS)) {
+          settings[key] = document.getElementById(id).value;
+        }
+
+        return settings;
+      }
+
+      function saveSiteSettings() {
+        try {
+          localStorage.setItem(
+            SETTINGS_STORAGE_KEY,
+            JSON.stringify(readSiteSettings())
+          );
+        } catch {
+          setOperationStatus(
+            "サイト設定をブラウザー内に保存できませんでした。" +
+            "公開用HTMLの生成には画面上の設定を使用できます。",
+            "warning"
+          );
+        }
+      }
+
+      function loadSiteSettings() {
+        const yearElement = document.getElementById("copyrightYear");
+
+        if (!yearElement.value.trim()) {
+          yearElement.value = String(new Date().getFullYear());
+        }
+
+        try {
+          const saved = JSON.parse(
+            localStorage.getItem(SETTINGS_STORAGE_KEY) || "{}"
+          );
+
+          if (saved && typeof saved === "object") {
+            for (const [id, key] of Object.entries(SITE_FIELDS)) {
+              if (typeof saved[key] === "string") {
+                document.getElementById(id).value = saved[key];
+              }
+            }
+          }
+        } catch {
+          // 読み込めない場合はHTMLの初期値を使用する。
+        }
+
+        for (const id of Object.keys(SITE_FIELDS)) {
+          document
+            .getElementById(id)
+            .addEventListener("input", saveSiteSettings);
+        }
+      }
+
+      // ================================================================
+      // 数式を不透明なトークンとして保護する
+      // ================================================================
+
+      function createContext(source) {
+        let prefix = "@@MYSTYLE";
+
+        while (source.includes(prefix)) {
+          prefix += "_";
+        }
+
+        return {
+          prefix,
+          tokens: [],
+          headings: [],
+          labels: new Map(),
+          bibliographyLabels: new Map(),
+          citationCounts: new Map(),
+          citedKeys: new Set(citedKeysIn(source)),
+          issues: [],
+          declaredTitle: "",
+          protectedSource: ""
+        };
+      }
+
+      function tokenMarker(context, index) {
+        return `${context.prefix}:${index}@@`;
+      }
+
+      function tokenPattern(context) {
+        return new RegExp(`${context.prefix}:(\\d+)@@`, "g");
+      }
+
+      function restoreMathTokens(text, context) {
+        return text.replace(tokenPattern(context), (marker, index) => {
+          return context.tokens[Number(index)]?.tex || marker;
+        });
+      }
+
+      function findClosingDelimiter(source, delimiter, start) {
+        let position = source.indexOf(delimiter, start);
+
+        while (position !== -1 && isEscaped(source, position)) {
+          position = source.indexOf(
+            delimiter,
+            position + delimiter.length
+          );
+        }
+
+        return position;
+      }
+
+      function findMathEnvironmentEnd(source, start, name) {
+        const pattern = /\\(begin|end)\s*\{\s*([^{}]+?)\s*\}/g;
+        const stack = [name];
+
+        pattern.lastIndex = start;
+
+        let match;
+
+        while ((match = pattern.exec(source)) !== null) {
+          if (isEscaped(source, match.index)) {
+            continue;
+          }
+
+          if (match[1] === "begin") {
+            stack.push(match[2]);
+            continue;
+          }
+
+          if (stack.at(-1) !== match[2]) {
+            return null;
+          }
+
+          stack.pop();
+
+          if (stack.length === 0) {
+            return {
+              start: match.index,
+              end: pattern.lastIndex
+            };
+          }
+        }
+
+        return null;
+      }
+
+      function protectMath(source, context) {
+        const pattern =
+          /\\begin\s*\{\s*(equation\*?|align\*?|gather\*?|multline\*?|flalign\*?|alignat\*?|displaymath|math)\s*\}|\\\[|\\\(|\$\$|\$/g;
+
+        let output = "";
+        let cursor = 0;
+        let match;
+
+        while ((match = pattern.exec(source)) !== null) {
+          if (isEscaped(source, match.index)) {
+            continue;
+          }
+
+          const opening = match[0];
+          const environment = match[1] || "";
+
+          let closing;
+
+          if (environment) {
+            closing = findMathEnvironmentEnd(
+              source,
+              pattern.lastIndex,
+              environment
+            );
+          } else {
+            const delimiter = opening === "\\["
+              ? "\\]"
+              : opening === "\\("
+                ? "\\)"
+                : opening;
+
+            const start = findClosingDelimiter(
+              source,
+              delimiter,
+              pattern.lastIndex
+            );
+
+            if (start !== -1) {
+              closing = {
+                start,
+                end: start + delimiter.length
+              };
+            }
+          }
+
+          if (!closing) {
+            context.issues.push(
+              `数式の開始記号「${opening}」に対応する終端がありません。`
+            );
+            continue;
+          }
+
+          const display = environment
+            ? environment !== "math"
+            : opening === "\\[" || opening === "$$";
+
+          const node = {
+            type: display ? "math" : "inline-math",
+            environment,
+            body: source.slice(pattern.lastIndex, closing.start),
+            tex: source.slice(match.index, closing.end),
+            labels: []
+          };
+
+          const index = context.tokens.push(node) - 1;
+          const marker = tokenMarker(context, index);
+
+          output += source.slice(cursor, match.index);
+          output += display ? `\n${marker}\n` : marker;
+
+          cursor = closing.end;
+          pattern.lastIndex = closing.end;
+        }
+
+        return output + source.slice(cursor);
+      }
+
+      function splitMathRows(body) {
+        const pattern =
+          /\\(?:begin|end)\s*\{[^{}]*\}|\\\\\*?(?:\s*\[[^\]]*\])?|[{}]/g;
+
+        const rows = [];
+        let braceDepth = 0;
+        let environmentDepth = 0;
+        let cursor = 0;
+        let match;
+
+        while ((match = pattern.exec(body)) !== null) {
+          if (isEscaped(body, match.index)) {
+            continue;
+          }
+
+          const token = match[0];
+
+          if (token.startsWith("\\begin")) {
+            environmentDepth++;
+          } else if (token.startsWith("\\end")) {
+            environmentDepth = Math.max(0, environmentDepth - 1);
+          } else if (token === "{") {
+            braceDepth++;
+          } else if (token === "}") {
+            braceDepth = Math.max(0, braceDepth - 1);
+          } else if (braceDepth === 0 && environmentDepth === 0) {
+            rows.push(body.slice(cursor, match.index));
+            cursor = pattern.lastIndex;
+          }
+        }
+
+        rows.push(body.slice(cursor));
+        return rows;
+      }
+
+      // ================================================================
+      // 共通スタックによる環境・項目・見出しの構文解析
+      // ================================================================
+
+      function parseDocumentTree(source, context) {
+        const root = {
+          type: "root",
+          children: []
+        };
+
+        const stack = [{
+          node: root,
+          target: root.children
+        }];
+
+        const pattern = new RegExp(
+          `${context.prefix}:(\\d+)@@` +
+          String.raw`|\\(begin|end|section|subsection|title|tableofcontents|maketitle|item|bibitem|label)\b`,
+          "g"
+        );
+
+        let cursor = 0;
+        let match;
+
+        function append(node) {
+          const target = stack.at(-1).target;
+          const previous = target.at(-1);
+
+          if (node.type === "text" && previous?.type === "text") {
+            previous.value += node.value;
+          } else {
+            target.push(node);
+          }
+        }
+
+        function appendText(value) {
+          if (value) {
+            append({
+              type: "text",
+              value
+            });
+          }
+        }
+
+        function readOptional(start, description) {
+          const optional = readGroup(source, start, "[", "]");
+
+          if (
+            !optional &&
+            source[skipWhitespace(source, start)] === "["
+          ) {
+            context.issues.push(
+              `${description}を閉じる ] がありません。`
+            );
+          }
+
+          return optional;
+        }
+
+        while ((match = pattern.exec(source)) !== null) {
+          if (match[1] !== undefined) {
+            const node = context.tokens[Number(match[1])];
+
+            if (node.type === "inline-math") {
+              continue;
+            }
+
+            appendText(source.slice(cursor, match.index));
+            append(node);
+
+            cursor = pattern.lastIndex;
+            continue;
+          }
+
+          if (isEscaped(source, match.index)) {
+            continue;
+          }
+
+          appendText(source.slice(cursor, match.index));
+
+          const command = match[2];
+          let end = pattern.lastIndex;
+
+          if (command === "begin" || command === "end") {
+            const group = readGroup(source, end);
+
+            if (!group) {
+              context.issues.push(
+                `\\${command} の環境名を確認してください。`
+              );
+
+              appendText(match[0]);
+            } else {
+              const name = group.value.trim();
+              end = group.end;
+
+              if (command === "begin") {
+                const node = {
+                  type: "environment",
+                  name,
+                  children: [],
+                  items: [],
+                  labels: [],
+                  headingNote: "",
+                  start: match.index,
+                  end: source.length
+                };
+
+                if (ENVIRONMENTS[name] && name !== "reason") {
+                  const note = readOptional(
+                    end,
+                    `環境「${name}」の補足表題`
+                  );
+
+                  if (note) {
+                    node.headingNote = note.value.trim();
+                    end = note.end;
+                  }
+                } else if (name === "thebibliography") {
+                  const width = readGroup(source, end);
+
+                  if (width) {
+                    end = width.end;
+                  }
+                }
+
+                if (
+                  !ENVIRONMENTS[name] &&
+                  !LIST_NAMES.has(name) &&
+                  name !== "thebibliography" &&
+                  name !== "document"
+                ) {
+                  context.issues.push(
+                    `環境「${name}」はHTML変換の対象外です。開始・終了記号を本文に残します。`
+                  );
+                }
+
+                append(node);
+
+                stack.push({
+                  node,
+                  target: node.children
+                });
+              } else {
+                let index = stack.length - 1;
+
+                while (
+                  index > 0 &&
+                  stack[index].node.name !== name
+                ) {
+                  index--;
+                }
+
+                if (index === 0) {
+                  context.issues.push(
+                    `環境「${name}」の終了に対応する開始がありません。`
+                  );
+
+                  appendText(source.slice(match.index, end));
+                } else {
+                  for (
+                    let unclosed = stack.length - 1;
+                    unclosed > index;
+                    unclosed--
+                  ) {
+                    const node = stack[unclosed].node;
+                    node.end = match.index;
+
+                    context.issues.push(
+                      `環境「${node.name}」を閉じる前に「${name}」が終了しています。`
+                    );
+                  }
+
+                  stack[index].node.end = end;
+                  stack.length = index;
+                }
+              }
+            }
+          } else if (
+            command === "section" ||
+            command === "subsection" ||
+            command === "title"
+          ) {
+            const starred = source[end] === "*";
+
+            if (starred) {
+              end++;
+            }
+
+            const group = readGroup(source, end);
+
+            if (!group) {
+              context.issues.push(
+                `\\${command} の引数を確認してください。`
+              );
+
+              appendText(source.slice(match.index, end));
+            } else {
+              end = group.end;
+
+              if (command === "title") {
+                context.declaredTitle = group.value;
+              } else {
+                append({
+                  type: "heading",
+                  level: command === "section" ? 1 : 2,
+                  title: group.value,
+                  starred,
+                  labels: []
+                });
+              }
+            }
+          } else if (command === "label") {
+            const group = readGroup(source, end);
+
+            if (!group) {
+              context.issues.push(
+                "\\label の引数を確認してください。"
+              );
+
+              appendText(match[0]);
+            } else {
+              end = group.end;
+
+              append({
+                type: "label",
+                key: group.value.trim(),
+                labels: [],
+                standalone: false
+              });
+            }
+          } else if (
+            command === "item" ||
+            command === "bibitem"
+          ) {
+            const note = readOptional(
+              end,
+              `\\${command} のラベル`
+            );
+
+            if (note) {
+              end = note.end;
+            }
+
+            let key = "";
+
+            if (command === "bibitem") {
+              const group = readGroup(source, end);
+
+              if (group) {
+                key = group.value.trim();
+                end = group.end;
+              }
+            }
+
+            const frame = stack.at(-1);
+
+            const valid = command === "item"
+              ? LIST_NAMES.has(frame.node.name)
+              : (
+                frame.node.name === "thebibliography" &&
+                Boolean(key)
+              );
+
+            if (!valid) {
+              context.issues.push(
+                `\\${command} の配置または引数を確認してください。`
+              );
+
+              appendText(source.slice(match.index, end));
+            } else {
+              const item = {
+                type: command === "item" ? "item" : "bibitem",
+                key,
+                headingNote: note?.value.trim() || "",
+                children: [],
+                labels: []
+              };
+
+              frame.node.items.push(item);
+              frame.target = item.children;
+            }
+          } else if (command === "tableofcontents") {
+            append({
+              type: "toc"
+            });
+          }
+
+          // maketitleは本文上では無視する。
+          cursor = end;
+          pattern.lastIndex = end;
+        }
+
+        appendText(source.slice(cursor));
+
+        for (let index = 1; index < stack.length; index++) {
+          context.issues.push(
+            `環境「${stack[index].node.name}」が閉じられていません。`
+          );
+        }
+
+        return root;
+      }
+
+      // ================================================================
+      // 番号付け・ラベル・参考文献
+      // ================================================================
+
+      function decorateTree(root, context) {
+        let section = 0;
+        let subsection = 0;
+        let theorem = 0;
+        let equation = 0;
+        let bibliography = 0;
+
+        function registerLabel(key, target, number) {
+          if (!key || context.labels.has(key)) {
+            return;
+          }
+
+          target.labels ??= [];
+          target.labels.push(key);
+
+          context.labels.set(key, {
+            number: String(number ?? "?"),
+            node: target
+          });
+        }
+
+        function decorateMath(node) {
+          const multipleRows =
+            /^(?:align|alignat|flalign|gather)\*?$/.test(
+              node.environment
+            );
+
+          const rows = multipleRows
+            ? splitMathRows(node.body)
+            : [node.body];
+
+          const automatic =
+            /^(?:equation|align|alignat|flalign|gather|multline)$/.test(
+              node.environment
+            );
+
+          for (const row of rows) {
+            if (!row.trim()) {
+              continue;
+            }
+
+            const tagCommand = /\\tag\*?\s*/.exec(row);
+
+            const tag = tagCommand
+              ? readGroup(
+                row,
+                tagCommand.index + tagCommand[0].length
+              )
+              : null;
+
+            const suppressed = /\\(?:notag|nonumber)\b/.test(row);
+            let number = "?";
+
+            if (tag) {
+              number = tag.value;
+            } else if (automatic && !suppressed) {
+              number = String(++equation);
+            }
+
+            node.number ??= number;
+
+            for (const label of labelsIn(row)) {
+              registerLabel(label, node, number);
+            }
+          }
+        }
+
+        function hasVisibleContent(nodes) {
+          return nodes.some((node) => {
+            if (node.type === "text") {
+              return Boolean(node.value.trim());
+            }
+
+            return node.type !== "label";
+          });
+        }
+
+        function visit(nodes, owner = null, initialTarget = owner) {
+          let currentTarget = initialTarget;
+
+          for (const node of nodes) {
+            if (node.type === "heading") {
+              if (!node.starred) {
+                if (node.level === 1) {
+                  section++;
+                  subsection = 0;
+                  theorem = 0;
+                  node.number = String(section);
+                } else {
+                  subsection++;
+                  node.number = `${section || 1}.${subsection}`;
+                }
+              } else {
+                node.number = "";
+              }
+
+              node.id = node.starred
+                ? `heading-${context.headings.length + 1}`
+                : node.level === 1
+                  ? `section-${node.number}`
+                  : `subsection-${node.number.replace(/\./g, "-")}`;
+
+              context.headings.push(node);
+              currentTarget = node;
+              continue;
+            }
+
+            if (node.type === "label") {
+              const target = owner || currentTarget || node;
+
+              node.standalone = target === node;
+              registerLabel(node.key, target, target.number || "?");
+              continue;
+            }
+
+            if (node.type === "math") {
+              decorateMath(node);
+              currentTarget = node;
+              continue;
+            }
+
+            if (node.type !== "environment") {
+              continue;
+            }
+
+            const environment = ENVIRONMENTS[node.name];
+
+            if (environment) {
+              node.number = environment.numbered
+                ? `${section || 1}.${++theorem}`
+                : (
+                  (owner || currentTarget)?.number ||
+                  environment.title
+                );
+
+              visit(node.children, node, node);
+              currentTarget = node;
+              continue;
+            }
+
+            if (LIST_NAMES.has(node.name)) {
+              if (hasVisibleContent(node.children)) {
+                context.issues.push(
+                  `環境「${node.name}」の最初の \\item より前に本文があります。`
+                );
+              }
+
+              visit(node.children, owner, currentTarget);
+
+              for (const item of node.items) {
+                visit(item.children, owner, currentTarget);
+              }
+
+              continue;
+            }
+
+            if (node.name === "thebibliography") {
+              visit(node.children, owner, currentTarget);
+
+              for (const item of node.items) {
+                item.number = String(++bibliography);
+                item.displayLabel = item.headingNote || item.number;
+
+                const duplicate = context.bibliographyLabels.has(
+                  item.key
+                );
+
+                item.bibId = duplicate
+                  ? `bib-duplicate-${bibliography}`
+                  : `bib-${item.key}`;
+
+                if (!duplicate) {
+                  context.bibliographyLabels.set(
+                    item.key,
+                    item.displayLabel
+                  );
+                }
+
+                visit(item.children, item, item);
+              }
+
+              continue;
+            }
+
+            visit(node.children, owner, currentTarget);
+          }
+        }
+
+        visit(root.children);
+      }
+
+      // ================================================================
+      // 更新前後のトグル識別子の対応付け
+      // ================================================================
+
+      function collectToggles(root, context) {
+        const descriptors = [];
+
+        function visit(nodes, parentPath) {
+          let environmentIndex = 0;
+
+          for (const node of nodes) {
+            if (node.type !== "environment") {
+              continue;
+            }
+
+            const path =
+              `${parentPath}/${node.name}:${environmentIndex++}`;
+
+            if (node.name === "proof" || node.name === "reason") {
+              const signature = restoreMathTokens(
+                context.protectedSource.slice(node.start, node.end),
+                context
+              )
+                .replace(/\s+/g, " ")
+                .trim();
+
+              descriptors.push({
+                node,
+                name: node.name,
+                label: node.labels[0] || "",
+                signature,
+                path,
+                key: ""
+              });
+            }
+
+            visit(node.children, path);
+
+            node.items.forEach((item, index) => {
+              visit(item.children, `${path}/item:${index}`);
+            });
+          }
+        }
+
+        visit(root.children, "root");
+        return descriptors;
+      }
+
+      function reconcileToggles(current, previous) {
+        const used = new Set();
+
+        function matchBy(selector) {
+          for (const descriptor of current) {
+            if (descriptor.key) {
+              continue;
+            }
+
+            const identity = selector(descriptor);
+
+            if (!identity) {
+              continue;
+            }
+
+            const candidates = previous.filter((old) => {
+              return !used.has(old) && selector(old) === identity;
+            });
+
+            const selected =
+              candidates.find((old) => old.path === descriptor.path) ||
+              candidates[0];
+
+            if (selected) {
+              descriptor.key = selected.key;
+              used.add(selected);
+            }
+          }
+        }
+
+        matchBy((item) => {
+          return item.label ? `${item.name}\0${item.label}` : "";
+        });
+
+        matchBy((item) => {
+          return `${item.name}\0${item.signature}`;
+        });
+
+        matchBy((item) => {
+          return item.label ? "" : `${item.name}\0${item.path}`;
+        });
+
+        for (const descriptor of current) {
+          descriptor.key ||= `fold-${++nextToggleId}`;
+          descriptor.node.toggleKey = descriptor.key;
+        }
+
+        return current;
+      }
+
+      // ================================================================
+      // インライン要素
+      // ================================================================
+
+      function renderReference(command, key, context, interactive) {
+        const trimmedKey = key.trim();
+        const number = context.labels.get(trimmedKey)?.number ?? "?";
+        const text = command === "eqref" ? `(${number})` : number;
+
+        if (!interactive) {
+          return escapeHTML(text);
+        }
+
+        const href = fragmentURL("label-" + trimmedKey);
+
+        return `
+          <a class="reference" href="${escapeHTML(href)}">${escapeHTML(text)}</a>
+        `.trim();
+      }
+
+      function renderCitation(note, keys, context, interactive) {
+        const citations = keys
+          .split(",")
+          .map((key) => key.trim())
+          .filter(Boolean)
+          .map((key) => {
+            const label = context.bibliographyLabels.get(key) ?? "?";
+            const text = `[${label}]`;
+
+            if (!interactive) {
+              return escapeHTML(text);
+            }
+
+            const count = (context.citationCounts.get(key) || 0) + 1;
+            context.citationCounts.set(key, count);
+
+            const id = count === 1
+              ? `cite-${key}`
+              : `cite-${key}-${count}`;
+
+            return `
+              <a
+                class="citation"
+                id="${escapeHTML(id)}"
+                href="${escapeHTML(fragmentURL("bib-" + key))}"
+              >${escapeHTML(text)}</a>
+            `.trim();
+          })
+          .join(", ");
+
+        return (note ? escapeHTML(note) + " " : "") + citations;
+      }
+
+      function renderInline(text, context, interactive = true) {
+        const markerPattern = new RegExp(
+          `^${context.prefix}:(\\d+)@@`
+        );
+
+        const tags = {
+          textbf: "strong",
+          emph: "em",
+          textit: "em",
+          texttt: "code"
+        };
+
+        let output = "";
+        let plain = "";
+        let position = 0;
+
+        function flushPlain() {
+          output += escapeHTML(plain);
+          plain = "";
+        }
+
+        while (position < text.length) {
+          if (text.startsWith(context.prefix + ":", position)) {
+            const marker = markerPattern.exec(text.slice(position));
+
+            if (marker) {
+              flushPlain();
+
+              const node = context.tokens[Number(marker[1])];
+              output += escapeHTML(node?.tex || marker[0]);
+
+              position += marker[0].length;
+              continue;
+            }
+          }
+
+          if (text[position] !== "\\") {
+            if (text[position] === "~") {
+              flushPlain();
+              output += "&nbsp;";
+            } else {
+              plain += text[position];
+            }
+
+            position++;
+            continue;
+          }
+
+          const match = /^\\([A-Za-z]+|[\s\S])/.exec(
+            text.slice(position)
+          );
+
+          if (!match) {
+            plain += text[position++];
+            continue;
+          }
+
+          const command = match[1];
+          const commandEnd = position + match[0].length;
+
+          let end = commandEnd;
+          let replacement = null;
+
+          if (command === "\\") {
+            replacement = "<br>";
+
+            const spacing = readGroup(text, end, "[", "]");
+
+            if (spacing) {
+              end = spacing.end;
+            }
+          } else if (
+            tags[command] ||
+            ["url", "href", "ref", "eqref"].includes(command)
+          ) {
+            const first = readGroup(text, end);
+
+            if (first) {
+              end = first.end;
+
+              if (tags[command]) {
+                const tag = tags[command];
+
+                replacement =
+                  `<${tag}>` +
+                  renderInline(first.value, context, interactive) +
+                  `</${tag}>`;
+              } else if (command === "ref" || command === "eqref") {
+                replacement = renderReference(
+                  command,
+                  first.value,
+                  context,
+                  interactive
+                );
+              } else {
+                const url = first.value.replace(
+                  /\\([%&#_$])/g,
+                  "$1"
+                );
+
+                let label = escapeHTML(url);
+
+                if (command === "href") {
+                  const second = readGroup(text, end);
+
+                  if (!second) {
+                    plain += text.slice(position, commandEnd);
+                    position = commandEnd;
+                    continue;
+                  }
+
+                  end = second.end;
+
+                  label = renderInline(
+                    second.value,
+                    context,
+                    interactive
+                  );
+                }
+
+                replacement = interactive
+                  ? (
+                    `<a href="${escapeHTML(safeURL(url))}">` +
+                    label +
+                    `</a>`
+                  )
+                  : label;
+              }
+            }
+          } else if (command === "cite") {
+            const note = readGroup(text, end, "[", "]");
+
+            if (note) {
+              end = note.end;
+            }
+
+            const keys = readGroup(text, end);
+
+            if (keys) {
+              end = keys.end;
+
+              replacement = renderCitation(
+                note?.value || "",
+                keys.value,
+                context,
+                interactive
+              );
+            }
+          } else if (/^[%&#_${}]$/.test(command)) {
+            replacement = escapeHTML(command);
+          } else if (command === "textbackslash") {
+            replacement = "\\";
+          } else if (command === "quad") {
+            replacement = "&emsp;";
+          } else if (command === "qquad") {
+            replacement = "&emsp;&emsp;";
+          } else if (command === "," || command === ";") {
+            replacement = "&#8201;";
+          } else if (command === " ") {
+            replacement = " ";
+          }
+
+          if (replacement === null) {
+            plain += text.slice(position, commandEnd);
+            position = commandEnd;
+          } else {
+            flushPlain();
+            output += replacement;
+            position = end;
+          }
+        }
+
+        flushPlain();
+        return output;
+      }
+
+      // ================================================================
+      // ブロック要素
+      // ================================================================
+
+      function renderParagraphs(text, context) {
+        const cleaned = text
+          .replace(/\\(?:smallskip|medskip|bigskip|par)\b/g, "\n\n")
+          .replace(/\\noindent\b/g, "")
+          .trim();
+
+        if (!cleaned) {
+          return "";
+        }
+
+        return cleaned
+          .split(/\n\s*\n+/)
+          .map((paragraph) => paragraph.trim())
+          .filter(Boolean)
+          .map((paragraph) => {
+            const content = renderInline(
+              paragraph.replace(/\s*\n\s*/g, " "),
+              context
+            );
+
+            return `<p>${content}</p>`;
+          })
+          .join("\n");
+      }
+
+      function renderHeading(node, context) {
+        const tag = node.level === 1 ? "h1" : "h2";
+
+        const number = node.number
+          ? `
+            <span class="section-number">${escapeHTML(
+              node.level === 1 ? node.number + "." : node.number
+            )}</span>
+          `.trim()
+          : "";
+
+        return `
+          <${tag} id="${escapeHTML(node.id)}">
+            ${labelAnchors(node.labels)}
+            ${number}
+            ${renderInline(node.title, context)}
+          </${tag}>
+        `;
+      }
+
+      function renderTableOfContents(context) {
+        const groups = [];
+
+        for (const heading of context.headings) {
+          if (heading.starred) {
+            continue;
+          }
+
+          if (heading.level === 1) {
+            groups.push({
+              heading,
+              children: []
+            });
+          } else if (groups.length > 0) {
+            groups.at(-1).children.push(heading);
+          } else {
+            groups.push({
+              heading,
+              children: []
+            });
+          }
+        }
+
+        if (groups.length === 0) {
+          return `
+            <nav class="table-of-contents" aria-label="目次">
+              <h2>目次</h2>
+              <p>番号付きの見出しがありません。</p>
+            </nav>
+          `;
+        }
+
+        function headingLink(heading) {
+          return `
+            <a href="${escapeHTML(fragmentURL(heading.id))}">
+              ${escapeHTML(heading.number)}
+              ${renderInline(heading.title, context, false)}
+            </a>
+          `.trim();
+        }
+
+        const items = groups.map(({ heading, children }) => {
+          const nested = children.length
+            ? `
+              <ol>
+                ${children.map((child) => {
+                  return `<li>${headingLink(child)}</li>`;
+                }).join("\n")}
+              </ol>
+            `
+            : "";
+
+          return `
+            <li>
+              ${headingLink(heading)}
+              ${nested}
+            </li>
+          `;
+        }).join("\n");
+
+        return `
+          <nav class="table-of-contents" aria-label="目次">
+            <h2>目次</h2>
+            <ol>
+              ${items}
+            </ol>
+          </nav>
+        `;
+      }
+
+      function renderParenthesis(side) {
+        const path = side === "left"
+          ? "M 13 2 C 2 20 2 80 13 98"
+          : "M 3 2 C 14 20 14 80 3 98";
+
+        return `
+          <svg
+            class="reason-paren reason-paren--${side}"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="${path}"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        `;
+      }
+
+      function renderBox(node, context) {
+        const environment = ENVIRONMENTS[node.name];
+
+        // 引用IDは表示順に採番する。
+        const note = node.headingNote
+          ? `
+            <span class="theorem-note">(${renderInline(
+              node.headingNote,
+              context
+            )})</span>
+          `.trim()
+          : "";
+
+        const content = renderFlow(node.children, context);
+        const anchors = labelAnchors(node.labels.slice(1));
+
+        if (node.name === "proof") {
+          return `
+            <details
+              class="theorem-box proof-box"${labelIdAttribute(node)}
+              data-toggle-key="${escapeHTML(node.toggleKey)}"
+              style="--bar:${environment.color}"
+              open
+            >
+              <summary class="box-title">
+                ${anchors}
+                <span>${environment.title}${note ? " " + note : ""}</span>
+              </summary>
+              <div class="proof-content">
+                ${content}
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          `;
+        }
+
+        if (node.name === "reason") {
+          const contentId = `${node.toggleKey}-content`;
+
+          return `
+            <div
+              class="reason-box"${labelIdAttribute(node)}
+              data-toggle-key="${escapeHTML(node.toggleKey)}"
+            >
+              ${renderParenthesis("left")}
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  ${anchors}
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="${escapeHTML(contentId)}"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="${escapeHTML(contentId)}"
+                >
+                  ${content}
+                </div>
+              </div>
+              ${renderParenthesis("right")}
+            </div>
+          `;
+        }
+
+        return `
+          <div
+            class="theorem-box"${labelIdAttribute(node)}
+            style="--bar:${environment.color}"
+          >
+            <div class="box-title">
+              ${anchors}${environment.title}
+              <span class="number">${escapeHTML(node.number)}</span>
+              ${note}
+            </div>
+            <div class="theorem-content">
+              ${content}
+            </div>
+          </div>
+        `;
+      }
+
+      function renderList(node, context) {
+        const tag = node.name === "itemize" ? "ul" : "ol";
+
+        const className = node.name === "phase"
+          ? ' class="phase"'
+          : "";
+
+        const preamble = renderFlow(node.children, context);
+
+        const items = node.items.map((item) => {
+          const itemLabel = item.headingNote
+            ? renderInline(item.headingNote, context)
+            : "";
+
+          const content = renderFlow(item.children, context);
+
+          if (!item.headingNote) {
+            return `<li>${content}</li>`;
+          }
+
+          return `
+            <li class="custom-item">
+              <span class="item-label">${itemLabel}</span>
+              <div class="item-body">${content}</div>
+            </li>
+          `;
+        }).join("\n");
+
+        return `
+          ${preamble}
+          <${tag}${className}>
+            ${items}
+          </${tag}>
+        `;
+      }
+
+      function renderBibliography(node, context) {
+        const preamble = renderFlow(node.children, context);
+
+        const items = node.items.map((item) => {
+          const numericLabel = /^\d+$/.test(item.displayLabel);
+
+          const value = numericLabel
+            ? ` value="${escapeHTML(item.displayLabel)}"`
+            : ' style="list-style:none"';
+
+          const label = numericLabel
+            ? ""
+            : `
+              <span class="custom-bib-label">
+                [${escapeHTML(item.displayLabel)}]
+              </span>
+            `;
+
+          const backref = context.citedKeys.has(item.key)
+            ? `
+              <a
+                class="backref"
+                href="${escapeHTML(fragmentURL("cite-" + item.key))}"
+                aria-label="本文の引用へ戻る"
+              >↩</a>
+            `
+            : "";
+
+          return `
+            <li id="${escapeHTML(item.bibId)}"${value}>
+              ${labelAnchors(item.labels)}
+              ${label}
+              ${renderFlow(item.children, context)}
+              ${backref}
+            </li>
+          `;
+        }).join("\n");
+
+        return `
+          <section class="bibliography">
+            <h2>参考文献</h2>
+            ${preamble}
+            <ol>
+              ${items}
+            </ol>
+          </section>
+        `;
+      }
+
+      function renderEnvironment(node, context) {
+        if (ENVIRONMENTS[node.name]) {
+          return renderBox(node, context);
+        }
+
+        if (LIST_NAMES.has(node.name)) {
+          return renderList(node, context);
+        }
+
+        if (node.name === "thebibliography") {
+          return renderBibliography(node, context);
+        }
+
+        const content = renderFlow(node.children, context);
+
+        if (node.name === "document") {
+          return content;
+        }
+
+        return `
+          <div class="unsupported-environment">
+            <p>${escapeHTML("\\begin{" + node.name + "}")}</p>
+            ${content}
+            <p>${escapeHTML("\\end{" + node.name + "}")}</p>
+          </div>
+        `;
+      }
+
+      function renderFlow(nodes, context) {
+        const output = [];
+        let text = "";
+
+        function flushText() {
+          const rendered = renderParagraphs(text, context);
+
+          if (rendered) {
+            output.push(rendered);
+          }
+
+          text = "";
+        }
+
+        for (const node of nodes) {
+          if (node.type === "text") {
+            text += node.value;
+            continue;
+          }
+
+          if (node.type === "label") {
+            if (node.standalone) {
+              flushText();
+              output.push(labelAnchors(node.labels));
+            }
+
+            continue;
+          }
+
+          flushText();
+
+          if (node.type === "heading") {
+            output.push(renderHeading(node, context));
+          } else if (node.type === "math") {
+            output.push(`
+              <div class="math-display">
+                ${labelAnchors(node.labels)}
+                ${escapeHTML(node.tex)}
+              </div>
+            `);
+          } else if (node.type === "toc") {
+            output.push(renderTableOfContents(context));
+          } else if (node.type === "environment") {
+            output.push(renderEnvironment(node, context));
+          }
+        }
+
+        flushText();
+        return output.join("\n");
+      }
+
+      // ================================================================
+      // 診断・変換の入口
+      // ================================================================
+
+      function inspectReferences(source) {
+        const labels = labelsIn(source);
+
+        const references = matchedValues(
+          source,
+          /\\(?:ref|eqref)\s*\{([^{}]+)\}/g
+        );
+
+        const bibliographyKeys = matchedValues(
+          source,
+          /\\bibitem(?:\s*\[[^\]]*\])?\s*\{([^{}]+)\}/g
+        );
+
+        const citations = citedKeysIn(source);
+        const issues = [];
+
+        function inspectDuplicates(values, description) {
+          const counts = new Map();
+
+          for (const value of values) {
+            counts.set(value, (counts.get(value) || 0) + 1);
+          }
+
+          for (const [value, count] of counts) {
+            if (count > 1) {
+              issues.push(
+                `${description}「${value}」が重複しています。`
+              );
+            }
+          }
+        }
+
+        inspectDuplicates(labels, "ラベル");
+        inspectDuplicates(bibliographyKeys, "文献キー");
+
+        const definedLabels = new Set(labels);
+        const definedBibliography = new Set(bibliographyKeys);
+
+        for (const key of new Set(references)) {
+          if (!definedLabels.has(key)) {
+            issues.push(
+              `参照「${key}」のラベルが定義されていません。`
+            );
+          }
+        }
+
+        for (const key of new Set(citations)) {
+          if (!definedBibliography.has(key)) {
+            issues.push(
+              `引用キー「${key}」に対応する \\bibitem がありません。`
+            );
+          }
+        }
+
+        return issues;
+      }
+
+      function compileDocument(source, previous = []) {
+        const clean = normalizeSource(source);
+        const context = createContext(clean);
+
+        context.protectedSource = protectMath(clean, context);
+
+        const root = parseDocumentTree(
+          context.protectedSource,
+          context
+        );
+
+        decorateTree(root, context);
+
+        const toggles = reconcileToggles(
+          collectToggles(root, context),
+          previous
+        );
+
+        const html = renderFlow(root.children, context);
+
+        const titleSource =
+          context.declaredTitle ||
+          context.headings[0]?.title ||
+          "note";
+
+        const titleContainer = document.createElement("div");
+
+        titleContainer.innerHTML = renderInline(
+          titleSource,
+          context,
+          false
+        );
+
+        return {
+          html,
+          title: titleContainer.textContent.trim() || "note",
+          toggles,
+          issues: Array.from(new Set([
+            ...inspectReferences(clean),
+            ...context.issues
+          ]))
+        };
+      }
+
+      function showDiagnostics(issues) {
+        if (issues.length === 0) {
+          diagnosticsElement.innerHTML = `
+            <p class="ok">
+              構造・ラベル・参照・引用キーに明らかな不整合は検出されませんでした。
+              TeX全体や数学的内容を検証するものではありません。
+            </p>
+          `;
+          return;
+        }
+
+        diagnosticsElement.innerHTML = `
+          <strong>確認が必要な箇所 (${issues.length})</strong>
+          ${issues.map((issue) => {
+            return `<p class="warning">${escapeHTML(issue)}</p>`;
+          }).join("\n")}
+        `;
+      }
+
+      // ================================================================
+      // ワークスペースの定数・状態
+      // ================================================================
+
+      const AUTOSAVE_DELAY = 500;
+      const AUTOSAVE_MAX_WAIT = 5000;
+      const PREVIEW_DELAY = 800;
+
+      const WORKSPACE_NAMESPACE =
+        "mystyleEditorWorkspace:v1:" +
+        encodeURIComponent(window.location.pathname);
+
+      const DRAFT_PREFIX = WORKSPACE_NAMESPACE + ":draft:";
+      const ACTIVE_DOCUMENT_KEY = WORKSPACE_NAMESPACE + ":active";
+
+      const ui = Object.freeze({
+        filename: document.getElementById("sourceFilename"),
+        autoPreview: document.getElementById("autoPreview"),
+        fileInput: document.getElementById("sourceFile"),
+        openSource: document.getElementById("openSource"),
+        saveSource: document.getElementById("saveSource"),
+        copySource: document.getElementById("copySource"),
+        draftSelect: document.getElementById("draftSelect"),
+        openDraft: document.getElementById("openDraft"),
+        draftStatus: document.getElementById("draftStatus"),
+        previewStatus: document.getElementById("previewStatus"),
+        operationStatus: document.getElementById("operationStatus"),
+        recoveryPanel: document.getElementById("recoveryPanel"),
+        recoveryTitle: document.getElementById("recoveryTitle"),
+        recoveryMessage: document.getElementById("recoveryMessage"),
+        restoreDraft: document.getElementById("restoreDraft"),
+        keepCurrent: document.getElementById("keepCurrent")
+      });
+
+      const initialSource = sourceElement.value;
+      const initialFilename = normalizeFilename(ui.filename.value);
+      const tabId = createIdentifier("tab");
+
+      // 一覧には本文を保持せず、識別子・名前・日時だけを保持する。
+      const draftCatalog = new Map();
+
+      const draftState = {
+        ready: false,
+        id: "",
+        revision: null,
+        saved: null,
+        recovery: null,
+        error: "",
+        pointerWarning: ""
+      };
+
+      const previewState = {
+        epoch: 0,
+        timer: null,
+        pending: null,
+        running: false,
+        currentJob: null,
+        lastRendered: null,
+        error: "",
+        manualAfterComposition: false
+      };
+
+      let openedSnapshot = {
+        source: initialSource,
+        name: initialFilename
+      };
+
+      let composing = false;
+      let switchingSource = false;
+      let saveTimer = null;
+      let saveMaxTimer = null;
+      let saveInFlight = null;
+      let unloadGuardAttached = false;
+
+      // ================================================================
+      // ワークスペースの基本操作
+      // ================================================================
+
+      function createIdentifier(prefix) {
+        if (globalThis.crypto?.randomUUID) {
+          return prefix + "-" + globalThis.crypto.randomUUID();
+        }
+
+        return (
+          prefix +
+          "-" +
+          Date.now().toString(36) +
+          "-" +
+          Math.random().toString(36).slice(2) +
+          "-" +
+          Math.random().toString(36).slice(2)
+        );
+      }
+
+      function normalizeFilename(value) {
+        let name = String(value ?? "")
+          .trim()
+          .replace(/[\\/:*?"<>|\u0000-\u001f\u007f]/g, "_");
+
+        if (!name || /^\.+$/.test(name)) {
+          name = "note.tex";
+        }
+
+        if (!/\.(?:tex|txt)$/i.test(name)) {
+          name += ".tex";
+        }
+
+        return name;
+      }
+
+      function currentSnapshot() {
+        return {
+          source: sourceElement.value,
+          name: normalizeFilename(ui.filename.value)
+        };
+      }
+
+      function sameContents(record, snapshot = currentSnapshot()) {
+        return Boolean(
+          record &&
+          record.source === snapshot.source &&
+          record.name === snapshot.name
+        );
+      }
+
+      function formatSavedTime(timestamp) {
+        return new Date(timestamp).toLocaleString("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        });
+      }
+
+      function setStatus(element, text, state = "") {
+        if (element.textContent !== text) {
+          element.textContent = text;
+        }
+
+        element.dataset.state = state;
+      }
+
+      function setOperationStatus(text, state = "") {
+        setStatus(ui.operationStatus, text, state);
+      }
+
+      function hasUnsavedDraft() {
+        return draftState.ready && !sameContents(draftState.saved);
+      }
+
+      function needsUnloadProtection() {
+        return Boolean(
+          draftState.ready &&
+          (
+            hasUnsavedDraft() ||
+            draftState.recovery?.kind === "conflict" ||
+            draftState.error
+          )
+        );
+      }
+
+      function beforeUnload(event) {
+        // 終了時の非同期処理だけには依存しない。
+        void flushDraft();
+
+        if (needsUnloadProtection()) {
+          event.preventDefault();
+          event.returnValue = "";
+        }
+      }
+
+      function updateUnloadGuard() {
+        const required = needsUnloadProtection();
+
+        if (required === unloadGuardAttached) {
+          return;
+        }
+
+        unloadGuardAttached = required;
+
+        if (required) {
+          window.addEventListener("beforeunload", beforeUnload);
+        } else {
+          window.removeEventListener("beforeunload", beforeUnload);
+        }
+      }
+
+      function updateControls() {
+        const locked =
+          switchingSource ||
+          !draftState.ready ||
+          draftState.recovery?.kind === "startup";
+
+        sourceElement.readOnly = locked;
+        ui.filename.disabled = locked;
+        ui.openSource.disabled = locked;
+        ui.fileInput.disabled = locked;
+        ui.draftSelect.disabled = locked;
+
+        ui.openDraft.disabled =
+          locked ||
+          !draftCatalog.has(ui.draftSelect.value) ||
+          ui.draftSelect.value === draftState.id;
+
+        ui.restoreDraft.disabled =
+          switchingSource ||
+          !draftState.recovery?.record;
+
+        ui.keepCurrent.disabled = switchingSource;
+      }
+
+      function updateDraftStatus() {
+        if (draftState.recovery?.kind === "startup") {
+          setStatus(
+            ui.draftStatus,
+            "下書きの復元方法を選択するまで、自動保存と本文編集を停止しています。",
+            "warning"
+          );
+        } else if (draftState.recovery?.kind === "conflict") {
+          setStatus(
+            ui.draftStatus,
+            "別タブとの競合を検出したため、自動保存を停止しています。",
+            "warning"
+          );
+        } else if (draftState.error) {
+          setStatus(
+            ui.draftStatus,
+            "下書きを保存・確認できません：" +
+              draftState.error +
+              " ソースファイルでも保存してください。",
+            "error"
+          );
+        } else if (saveInFlight) {
+          setStatus(
+            ui.draftStatus,
+            "下書きを保存しています。"
+          );
+        } else if (hasUnsavedDraft()) {
+          setStatus(
+            ui.draftStatus,
+            "下書きの保存待ちです。"
+          );
+        } else if (draftState.saved) {
+          const warning = draftState.pointerWarning
+            ? " " + draftState.pointerWarning
+            : "";
+
+          setStatus(
+            ui.draftStatus,
+            "ブラウザー内に下書き保存済み：" +
+              formatSavedTime(draftState.saved.updatedAt) +
+              warning,
+            draftState.pointerWarning ? "warning" : "ok"
+          );
+        } else {
+          setStatus(
+            ui.draftStatus,
+            "下書きはまだ保存されていません。"
+          );
+        }
+
+        updateUnloadGuard();
+      }
+
+      // ================================================================
+      // 下書きストレージ
+      // ================================================================
+
+      function draftStorageKey(id) {
+        return DRAFT_PREFIX + id;
+      }
+
+      function parseDraft(raw, expectedId) {
+        if (raw === null) {
+          return null;
+        }
+
+        const record = JSON.parse(raw);
+
+        if (
+          !record ||
+          record.version !== 1 ||
+          record.id !== expectedId ||
+          typeof record.name !== "string" ||
+          typeof record.source !== "string" ||
+          typeof record.revision !== "string" ||
+          typeof record.writer !== "string" ||
+          !Number.isFinite(record.updatedAt)
+        ) {
+          throw new Error(
+            "下書きデータの形式を確認してください。"
+          );
+        }
+
+        return record;
+      }
+
+      function readDraft(id) {
+        if (!id) {
+          return null;
+        }
+
+        return parseDraft(
+          localStorage.getItem(draftStorageKey(id)),
+          id
+        );
+      }
+
+      function makeDraftRecord(id, snapshot) {
+        return {
+          version: 1,
+          id,
+          name: snapshot.name,
+          source: snapshot.source,
+          updatedAt: Date.now(),
+          revision: createIdentifier("revision"),
+          writer: tabId
+        };
+      }
+
+      function refreshDraftSelect(preferredId) {
+        const previousSelection =
+          preferredId ??
+          ui.draftSelect.value ??
+          draftState.id;
+
+        const records = Array.from(draftCatalog.values())
+          .sort((left, right) => right.updatedAt - left.updatedAt);
+
+        ui.draftSelect.replaceChildren();
+
+        const placeholder = document.createElement("option");
+
+        placeholder.value = "";
+        placeholder.textContent = records.length
+          ? "保存済みの下書きを選択"
+          : "下書きがありません";
+
+        ui.draftSelect.append(placeholder);
+
+        for (const record of records) {
+          const option = document.createElement("option");
+
+          option.value = record.id;
+
+          option.textContent =
+            record.name +
+            " — " +
+            formatSavedTime(record.updatedAt) +
+            (record.id === draftState.id ? "（現在）" : "");
+
+          ui.draftSelect.append(option);
+        }
+
+        if (draftCatalog.has(previousSelection)) {
+          ui.draftSelect.value = previousSelection;
+        } else if (draftCatalog.has(draftState.id)) {
+          ui.draftSelect.value = draftState.id;
+        } else {
+          ui.draftSelect.value = "";
+        }
+
+        updateControls();
+      }
+
+      function indexDraft(record) {
+        draftCatalog.set(record.id, {
+          id: record.id,
+          name: record.name,
+          updatedAt: record.updatedAt
+        });
+
+        refreshDraftSelect();
+      }
+
+      function scanDraftCatalog() {
+        draftCatalog.clear();
+
+        let unreadable = 0;
+
+        for (let index = 0; index < localStorage.length; index++) {
+          const key = localStorage.key(index);
+
+          if (!key?.startsWith(DRAFT_PREFIX)) {
+            continue;
+          }
+
+          const id = key.slice(DRAFT_PREFIX.length);
+
+          try {
+            const record = readDraft(id);
+
+            if (record) {
+              draftCatalog.set(record.id, {
+                id: record.id,
+                name: record.name,
+                updatedAt: record.updatedAt
+              });
+            }
+          } catch {
+            unreadable++;
+          }
+        }
+
+        refreshDraftSelect();
+
+        if (unreadable > 0) {
+          setOperationStatus(
+            `${unreadable}件の下書きを読み取れませんでした。` +
+            "元の保存データは削除していません。",
+            "warning"
+          );
+        }
+      }
+
+      function rememberedDocumentId() {
+        try {
+          const id = sessionStorage.getItem(ACTIVE_DOCUMENT_KEY);
+
+          if (id) {
+            return id;
+          }
+        } catch {
+          // タブ単位の保存が使えない場合はlocalStorageを参照する。
+        }
+
+        try {
+          return localStorage.getItem(ACTIVE_DOCUMENT_KEY) || "";
+        } catch {
+          return "";
+        }
+      }
+
+      function rememberActiveDocument(id) {
+        let localPointerSaved = false;
+
+        try {
+          sessionStorage.setItem(ACTIVE_DOCUMENT_KEY, id);
+        } catch {
+          // 本文の保存成否とは分離する。
+        }
+
+        try {
+          localStorage.setItem(ACTIVE_DOCUMENT_KEY, id);
+          localPointerSaved = true;
+        } catch {
+          // 下書き本体が保存済みなら一覧から開ける。
+        }
+
+        draftState.pointerWarning = localPointerSaved
+          ? ""
+          : "前回文書の選択情報は保存できませんでした。";
+      }
+
+      function markPersisted(record) {
+        draftState.revision = record.revision;
+        draftState.saved = record;
+        draftState.error = "";
+
+        indexDraft(record);
+        rememberActiveDocument(record.id);
+      }
+
+      function cancelDraftTimers() {
+        window.clearTimeout(saveTimer);
+        window.clearTimeout(saveMaxTimer);
+
+        saveTimer = null;
+        saveMaxTimer = null;
+      }
+
+      function showRecovery(kind, id, record) {
+        cancelDraftTimers();
+
+        draftState.recovery = {
+          kind,
+          id,
+          record
+        };
+
+        ui.recoveryPanel.hidden = false;
+
+        if (kind === "startup") {
+          ui.recoveryTitle.textContent = "前回の下書きがあります";
+
+          ui.recoveryMessage.textContent = record
+            ? (
+              `${record.name}（${formatSavedTime(record.updatedAt)}）は、` +
+              "HTML内の本文と異なります。" +
+              "復元するか、HTML内の本文を別の文書として使用するかを選択してください。" +
+              "どちらを選んでも、既存の下書きを無条件には上書きしません。"
+            )
+            : (
+              "確認していた下書きが削除されたか、読み取れなくなりました。" +
+              "HTML内の本文を使用できます。"
+            );
+
+          ui.restoreDraft.textContent = "下書きを復元";
+          ui.keepCurrent.textContent = "HTML内の本文を使用";
+        } else {
+          ui.recoveryTitle.textContent = "別タブの変更を検出しました";
+
+          ui.recoveryMessage.textContent = record
+            ? (
+              `${record.name}の別の保存内容` +
+              `（${formatSavedTime(record.updatedAt)}）があります。` +
+              "現在の入力はそのまま保持しています。" +
+              "別タブの下書きを開くか、現在の本文を別の下書きとして保存してください。"
+            )
+            : (
+              "この文書の下書きが別タブで削除されたか、保存状態が変わりました。" +
+              "現在の本文を別の下書きとして保存できます。"
+            );
+
+          ui.restoreDraft.textContent = "別タブの下書きを開く";
+          ui.keepCurrent.textContent = "現在の本文を別の下書きにする";
+        }
+
+        updateControls();
+        updateDraftStatus();
+      }
+
+      function clearRecovery() {
+        draftState.recovery = null;
+        ui.recoveryPanel.hidden = true;
+        updateControls();
+      }
+
+      /*
+        保存直前にrevisionを照合する。
+        Web Locksが利用できる場合は、照合と書き込みを排他区間で行う。
+      */
+      function writeCurrentDraft(expectedId) {
+        if (
+          !draftState.ready ||
+          draftState.recovery ||
+          draftState.id !== expectedId
+        ) {
+          return false;
+        }
+
+        const snapshot = currentSnapshot();
+        const remote = readDraft(expectedId);
+        const remoteRevision = remote?.revision ?? null;
+
+        if (remoteRevision !== draftState.revision) {
+          if (sameContents(remote, snapshot)) {
+            markPersisted(remote);
+            return true;
+          }
+
+          showRecovery("conflict", expectedId, remote);
+          return false;
+        }
+
+        if (sameContents(remote, snapshot)) {
+          markPersisted(remote);
+          return true;
+        }
+
+        const record = makeDraftRecord(expectedId, snapshot);
+
+        localStorage.setItem(
+          draftStorageKey(expectedId),
+          JSON.stringify(record)
+        );
+
+        /*
+          Web Locksが使えない場合も再確認とstorageイベントで検出を補う。
+          ただし、それだけでは完全な排他制御にはならない。
+        */
+        const verified = readDraft(expectedId);
+
+        if (verified?.revision !== record.revision) {
+          showRecovery("conflict", expectedId, verified);
+          return false;
+        }
+
+        markPersisted(record);
+        return true;
+      }
+
+      function flushDraft() {
+        cancelDraftTimers();
+
+        if (saveInFlight) {
+          return saveInFlight;
+        }
+
+        if (!draftState.ready || draftState.recovery) {
+          updateDraftStatus();
+          return Promise.resolve(false);
+        }
+
+        const expectedId = draftState.id;
+
+        saveInFlight = Promise.resolve()
+          .then(async () => {
+            if (navigator.locks?.request) {
+              return navigator.locks.request(
+                WORKSPACE_NAMESPACE + ":lock:" + expectedId,
+                () => writeCurrentDraft(expectedId)
+              );
+            }
+
+            return writeCurrentDraft(expectedId);
+          })
+          .catch((error) => {
+            console.warn("下書き保存に失敗しました。", error);
+
+            if (draftState.id === expectedId) {
+              draftState.error =
+                "ブラウザーの保存制限、空き容量、または保存データを確認してください。";
+            }
+
+            return false;
+          })
+          .finally(() => {
+            saveInFlight = null;
+            updateDraftStatus();
+
+            if (
+              hasUnsavedDraft() &&
+              !switchingSource &&
+              !draftState.recovery &&
+              !draftState.error
+            ) {
+              scheduleDraftSave();
+            }
+          });
+
+        updateDraftStatus();
+        return saveInFlight;
+      }
+
+      function scheduleDraftSave() {
+        if (
+          !draftState.ready ||
+          draftState.recovery ||
+          switchingSource
+        ) {
+          updateDraftStatus();
+          return;
+        }
+
+        if (!hasUnsavedDraft()) {
+          cancelDraftTimers();
+          updateDraftStatus();
+          return;
+        }
+
+        window.clearTimeout(saveTimer);
+
+        saveTimer = window.setTimeout(
+          () => void flushDraft(),
+          AUTOSAVE_DELAY
+        );
+
+        if (saveMaxTimer === null) {
+          saveMaxTimer = window.setTimeout(
+            () => void flushDraft(),
+            AUTOSAVE_MAX_WAIT
+          );
+        }
+
+        updateDraftStatus();
+      }
+
+      /*
+        文書切り替え時の退避。
+        元の下書きとは別の識別子で保存し、一覧から復元できるようにする。
+      */
+      function persistIndependentDraft(snapshot) {
+        let id;
+
+        do {
+          id = createIdentifier("doc");
+        } while (
+          localStorage.getItem(draftStorageKey(id)) !== null
+        );
+
+        const record = makeDraftRecord(id, snapshot);
+
+        localStorage.setItem(
+          draftStorageKey(id),
+          JSON.stringify(record)
+        );
+
+        const verified = readDraft(id);
+
+        if (verified?.revision !== record.revision) {
+          throw new Error(
+            "退避用の下書きを確認できませんでした。"
+          );
+        }
+
+        indexDraft(record);
+        return record;
+      }
+
+      function synchronizeCurrentDraft() {
+        const recovery = draftState.recovery;
+
+        if (recovery?.kind === "startup") {
+          try {
+            showRecovery(
+              "startup",
+              recovery.id,
+              readDraft(recovery.id)
+            );
+          } catch {
+            showRecovery("startup", recovery.id, null);
+          }
+
+          return;
+        }
+
+        if (!draftState.ready || !draftState.id) {
+          return;
+        }
+
+        try {
+          const remote = readDraft(draftState.id);
+          const remoteRevision = remote?.revision ?? null;
+
+          if (remoteRevision === draftState.revision) {
+            return;
+          }
+
+          if (sameContents(remote)) {
+            clearRecovery();
+            markPersisted(remote);
+            updateDraftStatus();
+          } else {
+            showRecovery("conflict", draftState.id, remote);
+          }
+        } catch {
+          draftState.error =
+            "保存済みの下書きを読み取れませんでした。元データは上書きしていません。";
+
+          updateDraftStatus();
+        }
+      }
+
+      // ================================================================
+      // 最新一件だけを待機させるプレビュー更新
+      // ================================================================
+
+      function cancelPreviewTimer() {
+        window.clearTimeout(previewState.timer);
+        previewState.timer = null;
+      }
+
+      function updatePreviewStatus() {
+        if (previewState.running) {
+          const changed =
+            previewState.currentJob?.epoch !== previewState.epoch ||
+            previewState.currentJob?.source !== sourceElement.value;
+
+          setStatus(
+            ui.previewStatus,
+            changed
+              ? "プレビュー更新中です。後からの変更は別途反映します。"
+              : "プレビューを更新しています。"
+          );
+
+          return;
+        }
+
+        if (composing) {
+          setStatus(
+            ui.previewStatus,
+            ui.autoPreview.checked || previewState.manualAfterComposition
+              ? "IME変換終了後にプレビューを更新します。"
+              : "IME変換中です。プレビューは手動更新です。"
+          );
+
+          return;
+        }
+
+        if (previewState.pending || previewState.timer !== null) {
+          setStatus(
+            ui.previewStatus,
+            "プレビュー更新待ちです。"
+          );
+
+          return;
+        }
+
+        if (previewState.error) {
+          setStatus(
+            ui.previewStatus,
+            previewState.error,
+            "error"
+          );
+
+          return;
+        }
+
+        const last = previewState.lastRendered;
+
+        if (
+          last &&
+          last.epoch === previewState.epoch &&
+          last.source === sourceElement.value
+        ) {
+          setStatus(
+            ui.previewStatus,
+            last.available
+              ? `プレビュー更新済み（${last.elapsed} ms）。`
+              : "本文は反映済みですが、MathJaxを読み込めませんでした。",
+            last.available ? "ok" : "warning"
+          );
+
+          return;
+        }
+
+        setStatus(
+          ui.previewStatus,
+          ui.autoPreview.checked
+            ? "本文に未反映の変更があります。"
+            : "手動更新です。変更の反映には「今すぐ更新」を押してください。"
+        );
+      }
+
+      function requestPreview({
+        immediate = false,
+        force = false
+      } = {}) {
+        cancelPreviewTimer();
+
+        // まだ開始していない古い版を破棄する。
+        previewState.pending = null;
+        previewState.error = "";
+
+        if (composing) {
+          if (immediate) {
+            previewState.manualAfterComposition = true;
+          }
+
+          updatePreviewStatus();
+          return;
+        }
+
+        if (!ui.autoPreview.checked && !immediate) {
+          updatePreviewStatus();
+          return;
+        }
+
+        const enqueue = () => {
+          previewState.timer = null;
+
+          if (composing) {
+            if (immediate) {
+              previewState.manualAfterComposition = true;
+            }
+
+            updatePreviewStatus();
+            return;
+          }
+
+          previewState.pending = {
+            source: sourceElement.value,
+            epoch: previewState.epoch,
+            force
+          };
+
+          void runPendingPreview();
+        };
+
+        if (immediate) {
+          enqueue();
+        } else {
+          previewState.timer = window.setTimeout(
+            enqueue,
+            PREVIEW_DELAY
+          );
+        }
+
+        updatePreviewStatus();
+      }
+
+      async function runPendingPreview() {
+        if (
+          previewState.running ||
+          composing ||
+          !previewState.pending
+        ) {
+          return;
+        }
+
+        const job = previewState.pending;
+        previewState.pending = null;
+
+        if (job.epoch !== previewState.epoch) {
+          updatePreviewStatus();
+          return;
+        }
+
+        const last = previewState.lastRendered;
+
+        if (
+          !job.force &&
+          last &&
+          last.epoch === job.epoch &&
+          last.source === job.source
+        ) {
+          updatePreviewStatus();
+          return;
+        }
+
+        previewState.running = true;
+        previewState.currentJob = job;
+        previewState.error = "";
+
+        updatePreviewStatus();
+
+        const started = performance.now();
+        let result = null;
+
+        try {
+          result = compileDocument(
+            job.source,
+            previousToggles
+          );
+
+          previousToggles = result.toggles;
+
+          const available = await MystyleRuntime.render(
+            previewElement,
+            result.html
+          );
+
+          if (job.epoch === previewState.epoch) {
+            previewState.lastRendered = {
+              source: job.source,
+              epoch: job.epoch,
+              available,
+              elapsed: Math.round(performance.now() - started)
+            };
+
+            showDiagnostics(
+              available
+                ? result.issues
+                : [
+                  ...result.issues,
+                  "MathJaxを読み込めませんでした。ローダーの配置・相対パス、および拡張やフォントの読み込み先を確認してください。"
+                ]
+            );
+          }
+        } catch (error) {
+          console.error(error);
+
+          if (job.epoch === previewState.epoch) {
+            previewState.lastRendered = null;
+
+            previewState.error =
+              "プレビュー更新に失敗しました。本文の保存・コピーは利用できます。";
+
+            showDiagnostics([
+              ...(result?.issues || []),
+              result
+                ? "数式の描画に失敗しました。数式の記法とMathJax関連ファイルを確認してください。"
+                : "変換処理に失敗しました。環境の対応関係と入力内容を確認してください。"
+            ]);
+          }
+        } finally {
+          previewState.running = false;
+          previewState.currentJob = null;
+
+          updatePreviewStatus();
+
+          if (previewState.pending && !composing) {
+            // 入力・保存イベントへ実行機会を渡してから次を処理する。
+            window.setTimeout(() => {
+              void runPendingPreview();
+            }, 0);
+          }
+        }
+      }
+
+      function resetPreviewForDocument() {
+        cancelPreviewTimer();
+
+        previewState.epoch++;
+        previewState.pending = null;
+        previewState.lastRendered = null;
+        previewState.error = "";
+        previewState.manualAfterComposition = false;
+
+        previousToggles = [];
+
+        requestPreview({
+          immediate: true,
+          force: true
+        });
+      }
+
+      // ================================================================
+      // 文書の切り替え・復元
+      // ================================================================
+
+      function setSourceValues(snapshot) {
+        if (sourceElement.value !== snapshot.source) {
+          sourceElement.value = snapshot.source;
+        }
+
+        ui.filename.value = normalizeFilename(snapshot.name);
+        openedSnapshot = currentSnapshot();
+      }
+
+      function activateNewDocument(snapshot) {
+        cancelDraftTimers();
+
+        draftState.ready = true;
+        draftState.id = createIdentifier("doc");
+        draftState.revision = null;
+        draftState.saved = null;
+        draftState.error = "";
+        draftState.pointerWarning = "";
+
+        clearRecovery();
+        setSourceValues(snapshot);
+        refreshDraftSelect("");
+        updateControls();
+        updateDraftStatus();
+
+        resetPreviewForDocument();
+        void flushDraft();
+      }
+
+      function activateStoredDocument(record) {
+        cancelDraftTimers();
+
+        draftState.ready = true;
+        draftState.id = record.id;
+        draftState.error = "";
+        draftState.pointerWarning = "";
+
+        clearRecovery();
+
+        setSourceValues({
+          source: record.source,
+          name: record.name
+        });
+
+        markPersisted(record);
+        refreshDraftSelect(record.id);
+        updateControls();
+        updateDraftStatus();
+
+        resetPreviewForDocument();
+      }
+
+      async function withSourceSwitch(task) {
+        if (switchingSource) {
+          return;
+        }
+
+        if (composing) {
+          setOperationStatus(
+            "IME変換を確定してから、文書を切り替えてください。",
+            "warning"
+          );
+
+          return;
+        }
+
+        switchingSource = true;
+        cancelDraftTimers();
+        updateControls();
+
+        try {
+          // 旧文書の保存処理を、新文書の保存処理と混同させない。
+          if (saveInFlight) {
+            await saveInFlight;
+          }
+
+          await task();
+        } catch (error) {
+          console.error(error);
+
+          setOperationStatus(
+            error instanceof Error
+              ? error.message
+              : "文書の切り替えに失敗しました。",
+            "error"
+          );
+        } finally {
+          switchingSource = false;
+
+          updateControls();
+          updateDraftStatus();
+
+          if (
+            hasUnsavedDraft() &&
+            !draftState.recovery &&
+            !draftState.error
+          ) {
+            scheduleDraftSave();
+          }
+        }
+      }
+
+      async function protectBeforeReplacement(target) {
+        const snapshot = currentSnapshot();
+
+        if (sameContents(target, snapshot)) {
+          return true;
+        }
+
+        const editedSinceOpen =
+          snapshot.source !== openedSnapshot.source ||
+          snapshot.name !== openedSnapshot.name;
+
+        if (
+          editedSinceOpen &&
+          !window.confirm(
+            "現在の文書には変更があります。" +
+            "内容を下書きに残してから、別の文書に切り替えますか？"
+          )
+        ) {
+          return false;
+        }
+
+        if (!draftState.recovery) {
+          const saved = await flushDraft();
+
+          if (saved && sameContents(draftState.saved, snapshot)) {
+            return true;
+          }
+        }
+
+        // 競合中や通常保存の失敗時は、別の識別子へ退避する。
+        try {
+          persistIndependentDraft({
+            source: snapshot.source,
+            name: snapshot.name.replace(
+              /(\.(?:tex|txt))$/i,
+              "-切替前$1"
+            )
+          });
+
+          return true;
+        } catch (error) {
+          console.warn(
+            "切り替え前の退避に失敗しました。",
+            error
+          );
+
+          return window.confirm(
+            "切り替え前の内容をブラウザー内に退避できませんでした。" +
+            "必要であればキャンセルして「ソースを保存」を実行してください。" +
+            "退避せずに本文を置き換えますか？"
+          );
+        }
+      }
+
+      async function restorePendingDraft() {
+        const pending = draftState.recovery;
+
+        if (!pending?.id) {
+          return;
+        }
+
+        await withSourceSwitch(async () => {
+          const target = readDraft(pending.id);
+
+          if (!target) {
+            throw new Error(
+              "対象の下書きが見つかりません。現在の本文は変更していません。"
+            );
+          }
+
+          /*
+            起動時の本文はHTML内に残り、復元選択前は読み取り専用。
+            競合時に置き換える場合は、現在の本文を保護する。
+          */
+          if (
+            pending.kind !== "startup" &&
+            !(await protectBeforeReplacement(target))
+          ) {
+            return;
+          }
+
+          const latest = readDraft(pending.id);
+
+          if (!latest) {
+            throw new Error(
+              "対象の下書きが削除されました。現在の本文は変更していません。"
+            );
+          }
+
+          activateStoredDocument(latest);
+
+          setOperationStatus(
+            `下書き「${latest.name}」を開きました。`,
+            "ok"
+          );
+        });
+      }
+
+      async function keepCurrentAsNewDraft() {
+        await withSourceSwitch(async () => {
+          const snapshot = currentSnapshot();
+
+          activateNewDocument(snapshot);
+
+          const saved = await flushDraft();
+
+          setOperationStatus(
+            saved
+              ? "現在の本文を、別の下書きとして保存しました。"
+              : "現在の本文は維持しています。下書きの保存状態を確認してください。",
+            saved ? "ok" : "warning"
+          );
+        });
+      }
+
+      async function openSelectedDraft() {
+        const id = ui.draftSelect.value;
+
+        if (!id || id === draftState.id) {
+          return;
+        }
+
+        await withSourceSwitch(async () => {
+          const target = readDraft(id);
+
+          if (!target) {
+            throw new Error(
+              "選択した下書きが見つかりません。"
+            );
+          }
+
+          if (!(await protectBeforeReplacement(target))) {
+            return;
+          }
+
+          const latest = readDraft(id);
+
+          if (!latest) {
+            throw new Error(
+              "対象の下書きが削除されました。現在の本文は変更していません。"
+            );
+          }
+
+          activateStoredDocument(latest);
+
+          setOperationStatus(
+            `下書き「${latest.name}」を開きました。`,
+            "ok"
+          );
+        });
+      }
+
+      async function openSourceFile(file) {
+        await withSourceSwitch(async () => {
+          setOperationStatus(
+            "ソースファイルを読み込んでいます。"
+          );
+
+          let text;
+
+          try {
+            const buffer = await file.arrayBuffer();
+
+            text = new TextDecoder("utf-8", {
+              fatal: true
+            }).decode(buffer);
+          } catch {
+            throw new Error(
+              "UTF-8のテキストとして読み込めませんでした。" +
+              "ファイルの文字コードと内容を確認してください。"
+            );
+          }
+
+          const snapshot = {
+            source: text.replace(/\r\n?/g, "\n"),
+            name: normalizeFilename(file.name)
+          };
+
+          if (!(await protectBeforeReplacement(snapshot))) {
+            setOperationStatus(
+              "ソースの読み込みを取り消しました。"
+            );
+
+            return;
+          }
+
+          /*
+            同名ファイルでも別の文書IDにする。
+            切り替え前の下書きは一覧に残す。
+          */
+          activateNewDocument(snapshot);
+
+          setOperationStatus(
+            `ソース「${snapshot.name}」を読み込みました。`,
+            "ok"
+          );
+        });
+      }
+
+      // ================================================================
+      // ソースのダウンロード・コピー
+      // ================================================================
+
+      function saveSourceFile() {
+        const snapshot = currentSnapshot();
+
+        ui.filename.value = snapshot.name;
+
+        try {
+          downloadText(
+            snapshot.name,
+            snapshot.source,
+            "text/plain;charset=utf-8"
+          );
+
+          setOperationStatus(
+            `「${snapshot.name}」のダウンロードを開始しました。` +
+            "ファイル保存の完了はブラウザー側で確認してください。",
+            "ok"
+          );
+        } catch (error) {
+          console.error(error);
+
+          setOperationStatus(
+            "ソースのダウンロードを開始できませんでした。",
+            "error"
+          );
+        }
+
+        void flushDraft();
+      }
+
+      async function copySourceText() {
+        const text = sourceElement.value;
+
+        try {
+          if (!navigator.clipboard?.writeText) {
+            throw new Error(
+              "Clipboard APIを利用できません。"
+            );
+          }
+
+          // ユーザーのクリックから直接呼び出す。
+          await navigator.clipboard.writeText(text);
+
+          setOperationStatus(
+            "ボタンを押した時点のソース全文をコピーしました。",
+            "ok"
+          );
+        } catch {
+          /*
+            execCommandには依存せず、通常のコピー操作へ切り替える。
+          */
+          sourceElement.focus({
+            preventScroll: true
+          });
+
+          sourceElement.select();
+
+          setOperationStatus(
+            "自動コピーを利用できないため、入力欄の現在の全文を選択しました。" +
+            "Ctrl+C（Macは⌘C）、またはブラウザーのコピー操作を使用してください。",
+            "warning"
+          );
+        }
+      }
+
+      // ================================================================
+      // 公開用HTML
+      // ================================================================
+
+      function makePublicHTML() {
+        // プレビュー更新前の入力も、そのまま書き出す。
+        const result = compileDocument(sourceElement.value);
+        const settings = readSiteSettings();
+
+        const title = escapeHTML(result.title);
+        const siteName = escapeHTML(settings.siteName.trim());
+
+        const pageTitle = siteName
+          ? `${title} — ${siteName}`
+          : title;
+
+        const urls = {};
+
+        for (const key of [
+          "headerImageUrl",
+          "stylesheetUrl",
+          "homeUrl",
+          "materialsUrl",
+          "updatesUrl",
+          "aboutUrl",
+          "linksUrl"
+        ]) {
+          urls[key] = escapeHTML(safeURL(settings[key]));
+        }
+
+        const stylesheetHTML = settings.stylesheetUrl.trim()
+          ? `
+            <link rel="stylesheet" href="${urls.stylesheetUrl}">
+          `.trim()
+          : `
+            <style>
+${publicStylesheet}
+            </style>
+          `.trim();
+
+        const metadata = [];
+
+        if (settings.author.trim()) {
+          metadata.push(
+            `<span>著者：${escapeHTML(settings.author)}</span>`
+          );
+        }
+
+        if (settings.updatedDate.trim()) {
+          const date = settings.updatedDate.trim();
+
+          const datetime = /^\d{4}-\d{2}-\d{2}$/.test(date)
+            ? ` datetime="${escapeHTML(date)}"`
+            : "";
+
+          metadata.push(`
+            <span>
+              更新日：<time${datetime}>${escapeHTML(date)}</time>
+            </span>
+          `.trim());
+        }
+
+        const metadataHTML = metadata.length
+          ? `
+            <div class="document-meta">
+              ${metadata.join(
+                '\n<span class="meta-separator">·</span>\n'
+              )}
+            </div>
+          `
+          : "";
+
+        const brandHTML = settings.headerImageUrl.trim()
+          ? `
+            <img
+              src="${urls.headerImageUrl}"
+              alt="${siteName || "ホーム"}"
+            >
+          `
+          : `
+            <span class="site-brand-text">
+              ${siteName || "ホーム"}
+            </span>
+          `;
+
+        return `<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${pageTitle}</title>
+  ${stylesheetHTML}
+
+  <script id="mathjax-config">
+${mathJaxConfigSource}
+  ${SCRIPT_END}
+
+  <script
+    id="mathjax-loader"
+    defer
+    src="${escapeHTML(mathJaxLoaderUrl)}"
+  >${SCRIPT_END}
+</head>
+
+<body id="top">
+  <header class="site-header">
+    <a class="site-brand" href="${urls.homeUrl}">
+      ${brandHTML}
+    </a>
+
+    <nav class="site-nav" aria-label="メインナビゲーション">
+      <a href="${urls.homeUrl}">ホーム</a>
+      <a href="${urls.materialsUrl}">資料</a>
+      <a href="${urls.updatesUrl}">更新履歴</a>
+      <a href="${urls.aboutUrl}">このサイトについて</a>
+      <a href="${urls.linksUrl}">リンク</a>
+    </nav>
+  </header>
+
+  <header class="document-heading">
+    <h1>${title}</h1>
+    ${metadataHTML}
+  </header>
+
+  <main class="paper">
+    ${result.html}
+
+    <p class="back-to-top">
+      <a href="#top">ページ先頭に戻る</a>
+    </p>
+
+    <p>
+      <a href="${urls.materialsUrl}">資料一覧に戻る</a>
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    © ${escapeHTML(settings.copyrightYear)} ${escapeHTML(settings.copyrightHolder)}
+  </footer>
+
+  <script id="document-runtime">
+${documentRuntimeSource}
+  ${SCRIPT_END}
+
+  <script>
+    MystyleRuntime
+      .typeset(document.querySelector(".paper"))
+      .then(() => MystyleRuntime.revealHash())
+      .catch((error) => {
+        console.error(error);
+        MystyleRuntime.revealHash();
+      });
+  ${SCRIPT_END}
+</body>
+</html>
+`;
+      }
+
+      // ================================================================
+      // 初期化
+      // ================================================================
+
+      function initializeWorkspace() {
+        loadSiteSettings();
+
+        try {
+          scanDraftCatalog();
+        } catch {
+          setOperationStatus(
+            "ブラウザー内の下書き保存を利用できない可能性があります。" +
+            "ソースファイルへの保存は別途利用できます。",
+            "warning"
+          );
+        }
+
+        let saved = null;
+        const rememberedId = rememberedDocumentId();
+
+        if (rememberedId) {
+          try {
+            saved = readDraft(rememberedId);
+          } catch {
+            setOperationStatus(
+              "前回の下書きを読み取れませんでした。" +
+              "元の保存データは上書きしていません。",
+              "warning"
+            );
+          }
+        }
+
+        /*
+          空文字も有効な本文として扱う。
+          本文が異なる場合、復元の選択が終わるまで保存しない。
+        */
+        if (saved && saved.source !== initialSource) {
+          showRecovery("startup", saved.id, saved);
+
+          requestPreview({
+            immediate: true,
+            force: true
+          });
+
+          return;
+        }
+
+        if (saved) {
+          activateStoredDocument(saved);
+        } else {
+          activateNewDocument({
+            source: initialSource,
+            name: initialFilename
+          });
+        }
+      }
+
+      // ================================================================
+      // 入力とIME
+      // ================================================================
+
+      sourceElement.addEventListener("compositionstart", () => {
+        composing = true;
+
+        if (previewState.pending?.force) {
+          previewState.manualAfterComposition = true;
+        }
+
+        cancelPreviewTimer();
+        previewState.pending = null;
+
+        updatePreviewStatus();
+      });
+
+      sourceElement.addEventListener("compositionend", () => {
+        composing = false;
+        scheduleDraftSave();
+
+        const manual = previewState.manualAfterComposition;
+        previewState.manualAfterComposition = false;
+
+        /*
+          compositionendに続く最後のinputイベントも取り込んでから、
+          手動更新の要求を処理する。
+        */
+        if (manual) {
+          window.setTimeout(() => {
+            requestPreview({
+              immediate: true,
+              force: true
+            });
+          }, 0);
+        } else {
+          requestPreview();
+        }
+      });
+
+      sourceElement.addEventListener("input", (event) => {
+        // 保存はプレビュー変換・MathJaxから独立させる。
+        scheduleDraftSave();
+
+        if (event.isComposing || composing) {
+          cancelPreviewTimer();
+          previewState.pending = null;
+
+          updatePreviewStatus();
+          return;
+        }
+
+        requestPreview();
+      });
+
+      ui.filename.addEventListener("input", scheduleDraftSave);
+
+      ui.filename.addEventListener("blur", () => {
+        ui.filename.value = normalizeFilename(ui.filename.value);
+        scheduleDraftSave();
+      });
+
+      ui.autoPreview.addEventListener("change", () => {
+        if (ui.autoPreview.checked) {
+          requestPreview();
+        } else {
+          cancelPreviewTimer();
+          previewState.pending = null;
+          previewState.manualAfterComposition = false;
+
+          updatePreviewStatus();
+        }
+      });
+
+      // ================================================================
+      // ボタン
+      // ================================================================
+
+      document
+        .getElementById("render")
+        .addEventListener("click", () => {
+          requestPreview({
+            immediate: true,
+            force: true
+          });
+        });
+
+      ui.openSource.addEventListener("click", () => {
+        if (composing) {
+          setOperationStatus(
+            "IME変換を確定してからソースを開いてください。",
+            "warning"
+          );
+
+          return;
+        }
+
+        ui.fileInput.click();
+      });
+
+      ui.fileInput.addEventListener("change", () => {
+        const file = ui.fileInput.files?.[0];
+
+        // 同じファイルを再選択した場合もchangeを受け取れるようにする。
+        ui.fileInput.value = "";
+
+        if (file) {
+          void openSourceFile(file);
+        }
+      });
+
+      ui.saveSource.addEventListener("click", saveSourceFile);
+
+      ui.copySource.addEventListener("click", () => {
+        void copySourceText();
+      });
+
+      ui.draftSelect.addEventListener("change", updateControls);
+
+      ui.openDraft.addEventListener("click", () => {
+        void openSelectedDraft();
+      });
+
+      ui.restoreDraft.addEventListener("click", () => {
+        void restorePendingDraft();
+      });
+
+      ui.keepCurrent.addEventListener("click", () => {
+        void keepCurrentAsNewDraft();
+      });
+
+      document
+        .getElementById("publicDownload")
+        .addEventListener("click", () => {
+          try {
+            const filename = normalizeFilename(ui.filename.value)
+              .replace(/\.(?:tex|txt)$/i, ".html");
+
+            downloadText(
+              filename,
+              makePublicHTML(),
+              "text/html;charset=utf-8"
+            );
+
+            setOperationStatus(
+              "公開用HTMLのダウンロードを開始しました。",
+              "ok"
+            );
+          } catch (error) {
+            console.error(error);
+
+            setOperationStatus(
+              "公開用HTMLの生成に失敗しました。入力内容を確認してください。",
+              "error"
+            );
+          }
+        });
+
+      document
+        .getElementById("cssDownload")
+        .addEventListener("click", () => {
+          try {
+            downloadText(
+              "style.css",
+              publicStylesheet + "\n",
+              "text/css;charset=utf-8"
+            );
+
+            setOperationStatus(
+              "共通CSSのダウンロードを開始しました。",
+              "ok"
+            );
+          } catch (error) {
+            console.error(error);
+
+            setOperationStatus(
+              "共通CSSのダウンロードを開始できませんでした。",
+              "error"
+            );
+          }
+        });
+
+      // ================================================================
+      // 外部更新・ページの表示状態
+      // ================================================================
+
+      window.addEventListener("storage", (event) => {
+        try {
+          if (event.storageArea !== localStorage) {
+            return;
+          }
+
+          if (event.key === null) {
+            scanDraftCatalog();
+            synchronizeCurrentDraft();
+            return;
+          }
+
+          if (!event.key.startsWith(DRAFT_PREFIX)) {
+            return;
+          }
+
+          const id = event.key.slice(DRAFT_PREFIX.length);
+          let record = null;
+
+          try {
+            // イベントが古い可能性があるので現在の値を読み直す。
+            record = readDraft(id);
+          } catch {
+            // 読めないレコードのデータ自体は削除しない。
+          }
+
+          if (record) {
+            indexDraft(record);
+          } else {
+            draftCatalog.delete(id);
+            refreshDraftSelect();
+          }
+
+          if (
+            id === draftState.id ||
+            id === draftState.recovery?.id
+          ) {
+            synchronizeCurrentDraft();
+          }
+        } catch {
+          draftState.error =
+            "別タブの保存状態を確認できませんでした。";
+
+          updateDraftStatus();
+        }
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+          void flushDraft();
+        } else {
+          synchronizeCurrentDraft();
+        }
+      });
+
+      window.addEventListener("focus", synchronizeCurrentDraft);
+
+      window.addEventListener("pagehide", () => {
+        void flushDraft();
+      });
+
+      initializeWorkspace();
+    })();
+  </script>
+</body>
+</html>
