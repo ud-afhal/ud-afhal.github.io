@@ -1,0 +1,1195 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>$2$-huge cardinalとhyper- huge cardinal — Chicken-generic over Rice</title>
+  <link rel="stylesheet" href="../style.css">
+
+  <script id="mathjax-config">
+window.MathJax = {
+      startup: {
+        typeset: false
+      },
+      tex: {
+        inlineMath: [
+          ["\\(", "\\)"],
+          ["$", "$"]
+        ],
+        displayMath: [
+          ["\\[", "\\]"],
+          ["$$", "$$"]
+        ],
+        tags: "ams",
+        useLabelIds: true,
+        processEscapes: true,
+        macros: {
+          be: ["#1:\\text{#2}", 2],
+          proves: "\\vdash",
+          forces: "\\Vdash",
+          PA: "\\mathrm{PA}",
+          BST: "\\mathrm{BST}",
+          ZF: "\\mathrm{ZF}",
+          ZFC: "\\mathrm{ZFC}",
+          Con: "\\mathrm{Con}",
+          MA: "\\mathrm{MA}",
+          HF: "\\mathrm{HF}",
+          bval: ["\\left[\\!\\left[ #1 \\right]\\!\\right]", 1],
+          set: ["\\{{}#1{}\\}", 1],
+          power: "\\mathcal{P}",
+          Def: "\\mathrm{def}",
+          val: "\\mathrm{val}",
+          prm: "\\mathrm{prm}",
+          img: "\\text{``}",
+          dom: "\\mathrm{dom}",
+          ran: "\\mathrm{ran}",
+          inj: "\\overset{1-1}{\\longrightarrow}",
+          surj: "\\overset{onto}{\\longrightarrow}",
+          bij: "\\xrightarrow[onto]{1-1}",
+          iso: "\\overset{\\sim}{\\longrightarrow}",
+          ee: "\\overset{\\prec}{\\rightarrow}",
+          ON: "\\mathrm{ON}",
+          ot: "\\mathrm{ot}",
+          cf: "\\mathrm{cf}",
+          len: "\\mathrm{len}",
+          club: "\\mathrm{club}",
+          nonstat: "\\mathrm{nonstat}",
+          inn: "\\varepsilon",
+          obj: ["\\ulcorner #1\\urcorner", 1],
+          bbepsilon: "\\mathord{\\unicode{x03F5}}",
+          mathbbl: ["\\mathbb{#1}", 1]
+        }
+      },
+      chtml: {
+        displayAlign: "left",
+        displayIndent: "1.5em"
+      },
+      options: {
+        skipHtmlTags: [
+          "script",
+          "noscript",
+          "style",
+          "textarea",
+          "pre",
+          "code"
+        ]
+      }
+    };
+  </script>
+
+  <script
+    id="mathjax-loader"
+    defer
+    src="../MathJax-4.1.3/tex-chtml.js"
+  ></script>
+</head>
+
+<body id="top">
+  <header class="site-header">
+    <a class="site-brand" href="../index.html">
+      
+            <img
+              src="../images/header.png"
+              alt="Chicken-generic over Rice"
+            >
+          
+    </a>
+
+    <nav class="site-nav" aria-label="メインナビゲーション">
+      <a href="../index.html">ホーム</a>
+      <a href="../materials.html">資料</a>
+      <a href="../updates.html">更新履歴</a>
+      <a href="../about.html">このサイトについて</a>
+      <a href="../links.html">リンク</a>
+    </nav>
+  </header>
+
+  <header class="document-heading">
+    <h1>$2$-huge cardinalとhyper- huge cardinal</h1>
+    
+            <div class="document-meta">
+              <span>著者：Ud.afhal</span>
+<span class="meta-separator">·</span>
+<span>
+              更新日：<time datetime="2026-10-12">2026-10-12</time>
+            </span>
+            </div>
+          
+  </header>
+
+  <main class="paper">
+    
+          <h1 id="section-1">
+            
+            <span class="section-number">1.</span>
+            $2$-huge cardinalとhyper- huge cardinal
+          </h1>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">1.1</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>順序数$\kappa$が$n$-huge cardinalであるとは，次を満たす$j$を持つことをいう：</p>
+
+          
+          <ul>
+            <li><p>$j:V\ee_\kappa M$</p></li>
+<li><p>$M^{j^n(\kappa)}\subseteq M$</p></li>
+          </ul>
+        
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">1.2</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>よく知られるKunenの結果より，$\omega$-huge cardinalは存在しない．ここで，順序数$\kappa$が$\omega$-huge carinalであるとは，$j:V\ee_\kappa M$で$M^{\sup_{n&lt;\omega}j^n(\kappa)}\subseteq M$を満たすものを持つことをいう．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">1.3</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\mathcal{U}\subseteq \power(\power(\lambda))$が$\power(\lambda)$の正規フィルターであるとは，次を満たすことをいう：</p>
+
+          
+          <ul>
+            <li><p>$\alpha&lt;\lambda$に対して$\set{x\in \power(\lambda):\alpha\in x}\in\mathcal{F}$</p></li>
+<li><p>$\langle X_\alpha:\alpha&lt;\lambda\rangle\in {}^\lambda\mathcal{F}$に対して$\bigtriangleup_{\alpha&lt;\lambda}X_\alpha=\set{x\in\power(\lambda):\forall \alpha\in x(x\in X_\alpha)}\in \mathcal{F}$</p></li>
+          </ul>
+        
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">1.4</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\power(\lambda)$の正規フィルター$\mathcal{F}$に対して，Fodorの補題が成り立つ．すなわち，$f:\power(\lambda)\to \lambda$がある$\mathcal{F}$-stationary set上で選択関数となっていれば，ある$\mathcal{F}$-stationary set上である$\alpha&lt;\lambda$に対する定数関数になっている．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">1.5</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\power(\lambda)$の正規超フィルターで非単項であるものは $\mathcal{U}=\set{X\subseteq\power(\lambda):\lambda\in X}$に限る．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#238636"
+          >
+            <div class="box-title">
+              補題
+              <span class="number">1.6</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\kappa&gt;\omega$に対して次は同値：</p>
+
+          
+          <ol>
+            <li><p>$\be{\kappa}{$n$-huge}$</p></li>
+<li><p>ある$\lambda&gt;\kappa$と $\power(\lambda)$の非単項$\kappa$-完備正規超フィルター$\mathcal{U}$が存在して，ある$\kappa=\lambda_0&lt;\lambda_1&lt;\cdots&lt;\lambda_n=\lambda$に対して以下が成り立つ：</p>
+
+              <div class="math-display">
+                
+                \[
+\set{x\in\power(\lambda):\bigwedge_{i&lt;n}\ot(x\cap \lambda_{i+1})=\lambda_i}\in \mathcal{U}
+\]
+              </div>
+            </li>
+          </ol>
+        
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-34"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$2\implies1$： $j_{\mathcal{U}}:V\ee M_{\mathcal{U}}$が$\kappa$に関する$n$-huge embeddingであるのを示す．</p>
+<p>$\checkmark$ $\kappa\leq\mathrm{crit}(j_{\mathcal{U}})$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-35"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-35-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-35-content"
+                >
+                  <p>$\mathcal{U}$の$\kappa$-完備性より従う．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          
+<p>$\checkmark$ $[\mathrm{id}]=j_{\mathcal{U}}\img \lambda$．特に$M_{\mathcal{U}}^{\lambda}\subseteq M_{\mathcal{U}}$．</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-36"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-36-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-36-content"
+                >
+                  <p>$\mathcal{U}$の正規性より従う．「特に」の部分は$j_{\mathcal{U}}\img\lambda\in M_{\mathcal{U}}$より一般論から従う．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          
+<p>$\checkmark$ $j_{\mathcal{U}}^n(\kappa)=\lambda$．特に$\mathrm{crit}(j_{\mathcal{U}})=\kappa$．</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-37"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-37-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-37-content"
+                >
+                  <p>$\mathcal{U}$の仮定から$M\models\bigwedge_{i&lt;n}\mathrm{ot}(j_{\mathcal{U}}\img\lambda\cap j_{\mathcal{U}}(\lambda_{i+1}))=j_{\mathcal{U}}(\lambda_i)$ より$\bigwedge_{i&lt;n}\lambda_{i+1}=j_{\mathcal{U}}(\lambda_i)$．よって$i&lt;n$に対して$j_{\mathcal{U}} ^i(\kappa)=\lambda_i$となる．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          
+<p>$1\implies 2$：$j:V\ee_\kappa M$を$n$-huge embeddingとする．$\lambda:=j^n(\kappa)$に対して，$\power(\lambda)$の非単項$\kappa$-完備正規超フィルター$\mathcal{U}$を</p>
+
+              <div class="math-display">
+                
+                \[
+\mathcal{U}=\set{X\subseteq \power(\lambda):j\img \lambda\in j(X)}
+\]
+              </div>
+            
+<p>によって定める．すると，$i&lt;n$に対して$\lambda_i:=j^i(\kappa)$と定めれば，</p>
+
+              <div class="math-display">
+                
+                \[
+\set{x\in\power(\lambda):\bigwedge_{i&lt;n}\ot(x\cap \lambda_{i+1})=\lambda_i}\in \mathcal{U}
+\iff
+j\img\lambda\in j(\set{x\in\power(\lambda):\bigwedge_{i&lt;n}\ot(x\cap \lambda_{i+1})=\lambda_i})
+\iff
+\bigwedge_{i&lt;n}\ot(j\img\lambda\cap j(\lambda_{i+1}))=j(\lambda_i)
+\iff
+\bigwedge_{i&lt;n}\ot(j\img j^n(\lambda)\cap j(j^{i+1}(\kappa)))=j^{i+1}(\kappa)
+\iff
+\top
+\]
+              </div>
+            
+<p>となるから，これが望むものである．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">1.7</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\omega&lt;\kappa\leq\lambda&lt;\kappa&#39;\leq\lambda&#39;$に対して，$(\kappa,\lambda)\to(\kappa&#39;,\lambda&#39;)$を次の主張とする：</p>
+
+          
+          <ul>
+            <li><p>$j:V\ee_\kappa M$</p></li>
+<li><p>$\kappa\leq \lambda&lt;j(\kappa)$</p></li>
+<li><p>$M^{j(\lambda)}\subseteq M$</p></li>
+<li><p>$(j(\kappa),j(\lambda))=(\kappa&#39;,\lambda&#39;)$</p></li>
+          </ul>
+        
+<p>$\kappa$がhyper-huge cardinalであるとは，任意の$\lambda\geq\kappa$に対して$\exists\kappa&#39;\exists\lambda&#39;[(\kappa,\lambda)\to(\kappa&#39;,\lambda&#39;)]$となることをいう．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#238636"
+          >
+            <div class="box-title">
+              補題
+              <span class="number">1.8</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\omega&lt;\kappa\leq\lambda&lt;\kappa&#39;\leq\lambda&#39;$に対して次は同値：</p>
+
+          
+          <ol>
+            <li><p>$(\kappa,\lambda)\to (\kappa&#39;,\lambda&#39;)$</p></li>
+<li><p>$\power(\lambda&#39;)$上の非単項正規超フィルター$\mathcal{U}$で，次を満たすものが存在：</p>
+
+              <div class="math-display">
+                
+                \[
+\set{x\in\power(\lambda&#39;):x\cap\kappa\in \kappa\land\ot(x\cap \kappa&#39;)=\kappa\land \ot(x)=\lambda}\in \mathcal{U}
+\]
+              </div>
+            </li>
+          </ol>
+        
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-38"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$1\implies 2$は$\mathcal{U}=\set{X\subseteq\power(\lambda&#39;):j\img\lambda&#39;\in j(X)}$と取れば良い．</p>
+<p>$2\implies 1$は$\mathcal{U}$の正規性から $[\mathrm{id}]=j_{\mathcal{U}}\img\lambda&#39;$に注意すれば明らか．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">1.9</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\ZFC$の推移的モデル$M$に対して，$V_{\lambda&#39;+3}\subseteq M$かつ$(\kappa,\lambda)\to(\kappa&#39;,\lambda&#39;)$ならば，$M\models (\kappa,\lambda)\to(\kappa&#39;,\lambda&#39;)$．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#2563eb"
+          >
+            <div class="box-title">
+              定理
+              <span class="number">1.10</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\be{\kappa}{$2$-huge cardinal}$に対して，</p>
+
+              <div class="math-display">
+                
+                \[
+V_\kappa\models\ZFC+ \text{``Thre are proper class many hyper-huge cardinals&#39;&#39;}
+\]
+              </div>
+            
+<p>特に，</p>
+
+              <div class="math-display">
+                
+                \[
+\ZFC+\exists \text{$2$-huge}\proves \Con(\ZFC+\exists \text{hyper-huge})
+\]
+              </div>
+            
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-39"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$\be{\kappa}{$2$-huge}$，$\be{j:V\ee_\kappa M}{$2$-huge embedding}$を固定する．</p>
+<p>$V_{j(\kappa)}\models \ZFC+\be{\kappa}{hyper-huge}$を示せば，$M_{j(\kappa)}=V_{j(\kappa)}\models \be{\kappa}{hyper-huge}$より$V_\kappa\models\ZFC+\text{``Thre are proper class many hyper-huge cardinals&#39;&#39;}$となって望む結論が得られる．</p>
+<p>$\checkmark$ $\be{j(\kappa),j(j(\kappa))}{inaccessible}$．特に，$V_{j(\kappa)}\models \ZFC$．</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-40"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-40-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-40-content"
+                >
+                  <p>$\be{\kappa}{inaccessible}$より$M\models\be{j(\kappa)}{inaccessible}$より，$M^{j(\kappa)}\subseteq M$より$\be{j(\kappa)}{inaccessible}$．同様に，$M^{j(j(\kappa))}\subseteq M$に注意して$\be{j(j(\kappa))}{inaccessible}$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          
+<p>$\checkmark$ $\be{\kappa}{$j(\kappa)$-supercompact}$かつ$\be{j(\kappa)}{$j(j(\kappa))$-supercompact}$．</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-41"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-41-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-41-content"
+                >
+                  <p>前半は定義から明らか．後半は，$\be{\kappa}{$j(\kappa)$-supercompact}$より$M\models\be{j(\kappa)}{$j(j(\kappa))$-supercompact}$であるから，$|\power_{j(\kappa)}j(j(\kappa))|=j(j(\kappa))$かつ$M^{j(j(\kappa))}\subseteq M$に注意して，明らか．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          
+<p>$\be{k:V\ee_{j(\kappa)} N}{$j(j(\kappa))$-supercompact embedding}$を固定する．</p>
+<p>任意の$\kappa\leq\lambda&lt;j(\kappa)&lt;j(\lambda)&lt;j(j(\kappa))$に対して，定義より$(\kappa,\lambda)\to(j(\kappa),j(\lambda))$であるから，</p>
+
+              <div class="math-display">
+                
+                \[
+\exists \kappa&#39;,\lambda&#39;&lt;j(j(\kappa))[(\kappa,\lambda)\to(\kappa&#39;,\lambda&#39;)]
+\]
+              </div>
+            
+<p>より，$N^{j(j(\kappa))}\subseteq N$に注意して</p>
+
+              <div class="math-display">
+                
+                \[
+N\models\exists \kappa&#39;,\lambda&#39;&lt;j(j(\kappa))[(\kappa,\lambda)\to(\kappa&#39;,\lambda&#39;)]
+\]
+              </div>
+            
+<p>より特に</p>
+
+              <div class="math-display">
+                
+                \[
+N\models\exists \kappa&#39;,\lambda&#39;&lt;k(j(\kappa))[(\kappa,\lambda)\to(\kappa&#39;,\lambda&#39;)]
+\]
+              </div>
+            
+<p>より</p>
+
+              <div class="math-display">
+                
+                \[
+\exists \kappa&#39;,\lambda&#39;&lt;j(\kappa)[(\kappa,\lambda)\to(\kappa&#39;,\lambda&#39;)]
+\]
+              </div>
+            
+<p>となる．故に$V_{j(\kappa)}\models \exists \kappa&#39;,\lambda&#39;[
+(\kappa,\lambda)\to(\kappa&#39;,\lambda&#39;)]$．</p>
+<p>以上より$V_{j(\kappa)}\models \be{\kappa}{hyper-huge}$となる．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <section class="bibliography">
+            <h2>参考文献</h2>
+            
+            <ol>
+              
+            <li id="bib-Usuba" value="1">
+              
+              
+              <p>T. Usuba, The downward directed grounds hypothesis and very large cardinals, J. Math. Log. <strong>17</strong> (2017), no.&nbsp;2, 1750009, 24 pp.; MR3730565</p>
+              
+            </li>
+          
+
+            <li id="bib-Kanamori" value="2">
+              
+              
+              <p>A. Kanamori, <em>The higher infinite</em>, second edition Paperback reprint of the 2003 edition, Springer Monographs in Mathematics, Springer, Berlin, 2009; MR2731169</p>
+              
+            </li>
+          
+            </ol>
+          </section>
+        
+
+    <p class="back-to-top">
+      <a href="#top">ページ先頭に戻る</a>
+    </p>
+
+    <p>
+      <a href="../materials.html">資料一覧に戻る</a>
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 Ud.afhal
+  </footer>
+
+  <script id="document-runtime">
+const MystyleRuntime = (() => {
+      "use strict";
+
+      const TOGGLE_SELECTOR =
+        "details.proof-box[data-toggle-key], .reason-box[data-toggle-key]";
+
+      const revisions = new WeakMap();
+      const lockedStates = new WeakMap();
+
+      let queue = Promise.resolve();
+      let printState = null;
+
+      const mathReady = new Promise((resolve) => {
+        const loader = document.getElementById("mathjax-loader");
+        let settled = false;
+
+        const timer = window.setTimeout(() => finish(null), 20000);
+
+        function finish(value) {
+          if (settled) {
+            return;
+          }
+
+          settled = true;
+          window.clearTimeout(timer);
+          resolve(value);
+        }
+
+        async function loaded() {
+          try {
+            const mathJax = window.MathJax;
+
+            if (mathJax?.startup?.promise) {
+              await mathJax.startup.promise;
+            }
+
+            finish(mathJax?.typesetPromise ? mathJax : null);
+          } catch {
+            finish(null);
+          }
+        }
+
+        if (window.MathJax?.startup?.promise) {
+          loaded();
+        } else if (loader) {
+          loader.addEventListener("load", loaded, { once: true });
+          loader.addEventListener("error", () => finish(null), {
+            once: true
+          });
+        } else {
+          finish(null);
+        }
+      });
+
+      function schedule(task) {
+        const pending = queue
+          .catch(() => undefined)
+          .then(() => mathReady)
+          .then(async (initialMathJax) => {
+            const mathJax = window.MathJax?.typesetPromise
+              ? window.MathJax
+              : initialMathJax;
+
+            if (mathJax?.startup?.promise) {
+              await mathJax.startup.promise;
+            }
+
+            return task(mathJax);
+          });
+
+        queue = pending;
+        return pending;
+      }
+
+      function toggleElements(root) {
+        return Array.from(root.querySelectorAll(TOGGLE_SELECTOR));
+      }
+
+      function isExpanded(element) {
+        return element.matches("details.proof-box")
+          ? element.open
+          : !element.classList.contains("is-collapsed");
+      }
+
+      function setReasonExpanded(box, expanded) {
+        const button = box.querySelector(
+          ":scope > .reason-inner > .reason-prefix > .reason-toggle"
+        );
+
+        const content = box.querySelector(
+          ":scope > .reason-inner > .reason-text"
+        );
+
+        box.classList.toggle("is-collapsed", !expanded);
+
+        if (content) {
+          content.hidden = !expanded;
+        }
+
+        if (button) {
+          button.setAttribute("aria-expanded", String(expanded));
+          button.setAttribute(
+            "aria-label",
+            expanded ? "理由を折り畳む" : "理由を展開"
+          );
+        }
+      }
+
+      function setExpanded(element, expanded) {
+        if (element.matches("details.proof-box")) {
+          element.open = expanded;
+        } else {
+          setReasonExpanded(element, expanded);
+        }
+      }
+
+      function snapshot(root) {
+        if (lockedStates.has(root)) {
+          return new Map(lockedStates.get(root));
+        }
+
+        return new Map(
+          toggleElements(root).map((element) => [
+            element.dataset.toggleKey,
+            isExpanded(element)
+          ])
+        );
+      }
+
+      function restore(root, states) {
+        for (const element of toggleElements(root)) {
+          const key = element.dataset.toggleKey;
+
+          setExpanded(
+            element,
+            states.has(key) ? states.get(key) : true
+          );
+        }
+      }
+
+      function expandAll(root) {
+        for (const element of toggleElements(root)) {
+          setExpanded(element, true);
+        }
+      }
+
+      async function typesetOpen(root, mathJax, previousStates) {
+        const desiredStates = new Map(
+          toggleElements(root).map((element) => {
+            const key = element.dataset.toggleKey;
+
+            return [
+              key,
+              previousStates.has(key) ? previousStates.get(key) : true
+            ];
+          })
+        );
+
+        const oldVisibility = root.style.visibility;
+        const oldBusy = root.getAttribute("aria-busy");
+        const wasInert = root.hasAttribute("inert");
+
+        lockedStates.set(root, desiredStates);
+
+        /*
+          閉じた環境内で数式を計測しないよう、
+          一時的に全環境を開き、不可視・操作不可にして組版する。
+          入力欄自体は変更しない。
+        */
+        root.style.visibility = "hidden";
+        root.setAttribute("aria-busy", "true");
+        root.setAttribute("inert", "");
+
+        expandAll(root);
+
+        try {
+          mathJax.texReset();
+          await mathJax.typesetPromise([root]);
+        } finally {
+          restore(root, desiredStates);
+          lockedStates.delete(root);
+
+          root.style.visibility = oldVisibility;
+
+          if (oldBusy === null) {
+            root.removeAttribute("aria-busy");
+          } else {
+            root.setAttribute("aria-busy", oldBusy);
+          }
+
+          if (!wasInert) {
+            root.removeAttribute("inert");
+          }
+        }
+      }
+
+      function render(root, html) {
+        const revision = (revisions.get(root) || 0) + 1;
+        revisions.set(root, revision);
+
+        // MathJax待機中も本文のHTMLは先に表示する。
+        if (!window.MathJax?.typesetPromise) {
+          const states = snapshot(root);
+          root.innerHTML = html;
+          restore(root, states);
+        }
+
+        return schedule(async (mathJax) => {
+          if (revisions.get(root) !== revision) {
+            return Boolean(mathJax);
+          }
+
+          // 待機中のユーザー操作も、この時点で取り込む。
+          const states = snapshot(root);
+
+          if (mathJax) {
+            mathJax.typesetClear([root]);
+          }
+
+          root.innerHTML = html;
+
+          if (!mathJax) {
+            restore(root, states);
+            return false;
+          }
+
+          await typesetOpen(root, mathJax, states);
+          return true;
+        });
+      }
+
+      function typeset(root) {
+        return schedule(async (mathJax) => {
+          if (!root || !mathJax) {
+            return false;
+          }
+
+          await typesetOpen(root, mathJax, snapshot(root));
+          return true;
+        });
+      }
+
+      function revealTarget(target) {
+        for (
+          let element = target;
+          element;
+          element = element.parentElement
+        ) {
+          if (element.matches("details")) {
+            element.open = true;
+          }
+
+          if (element.matches(".reason-box")) {
+            setReasonExpanded(element, true);
+          }
+        }
+      }
+
+      function targetFromHash(hash) {
+        try {
+          const id = decodeURIComponent(hash.replace(/^#/, ""));
+          return id ? document.getElementById(id) : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function revealHash() {
+        const target = targetFromHash(window.location.hash);
+
+        if (target) {
+          revealTarget(target);
+          requestAnimationFrame(() => target.scrollIntoView());
+        }
+      }
+
+      document.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element)) {
+          return;
+        }
+
+        const button = event.target.closest(".reason-toggle");
+
+        if (button) {
+          const box = button.closest(".reason-box");
+
+          if (box) {
+            setReasonExpanded(box, !isExpanded(box));
+          }
+
+          return;
+        }
+
+        const link = event.target.closest('a[href^="#"]');
+
+        if (!link) {
+          return;
+        }
+
+        const hash = link.getAttribute("href");
+        const target = targetFromHash(hash);
+
+        if (!target) {
+          return;
+        }
+
+        event.preventDefault();
+        revealTarget(target);
+
+        try {
+          history.replaceState(null, "", hash);
+        } catch {
+          // file:で履歴操作が制限されても移動は続行する。
+        }
+
+        requestAnimationFrame(() => target.scrollIntoView());
+      });
+
+      window.addEventListener("hashchange", revealHash);
+
+      window.addEventListener("beforeprint", () => {
+        if (printState) {
+          return;
+        }
+
+        printState = Array.from(
+          document.querySelectorAll(".paper"),
+          (root) => ({
+            root,
+            states: snapshot(root)
+          })
+        );
+
+        for (const { root } of printState) {
+          expandAll(root);
+        }
+      });
+
+      window.addEventListener("afterprint", () => {
+        if (!printState) {
+          return;
+        }
+
+        for (const { root, states } of printState) {
+          if (root.isConnected) {
+            restore(root, states);
+          }
+        }
+
+        printState = null;
+      });
+
+      return {
+        render,
+        typeset,
+        snapshot,
+        restore,
+        revealHash
+      };
+    })();
+  </script>
+
+  <script>
+    MystyleRuntime
+      .typeset(document.querySelector(".paper"))
+      .then(() => MystyleRuntime.revealHash())
+      .catch((error) => {
+        console.error(error);
+        MystyleRuntime.revealHash();
+      });
+  </script>
+</body>
+</html>
