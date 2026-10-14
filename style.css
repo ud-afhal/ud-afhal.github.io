@@ -257,10 +257,6 @@
       text-align: right;
     }
 
-    /*
-      括弧は親要素の高さに追従するSVG。
-      本文には通常のブロック要素を使用し、入れ子を許容する。
-    */
     .paper .reason-box {
       position: relative;
       width: 100%;
@@ -425,23 +421,6 @@
       border: 0;
     }
 
-    .paper .bibliography ol {
-      padding-left: 2.2em;
-    }
-
-    .paper .bibliography li {
-      margin: .6em 0;
-      padding-left: .25em;
-    }
-
-    .paper .bibliography li > p:first-child {
-      display: inline;
-    }
-
-    .paper .bibliography .custom-bib-label {
-      margin-right: .5em;
-    }
-
     .site-footer {
       margin-top: 32px;
       padding: 14px 16px 24px;
@@ -526,5 +505,147 @@
       .site-header,
       .site-footer {
         border-color: #888;
+      }
+    }
+
+.paper .table-of-contents ol,
+    .paper .table-of-contents li {
+      list-style: none;
+      counter-increment: none;
+    }
+
+    .paper .table-of-contents > ol {
+      padding-left: 0;
+    }
+
+    .paper .table-of-contents ol ol {
+      padding-left: 1.5em;
+    }
+
+    .paper .table-of-contents li::marker {
+      content: "";
+    }
+
+    .paper .table-of-contents li::before {
+      content: none;
+    }
+
+    .paper .bibliography ol.bibliography-list {
+      margin: .8em 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .paper .bibliography .bibliography-list > li.bibliography-entry {
+      display: grid;
+      grid-template-columns:
+        minmax(0, min(var(--bib-label-width, 8ch), 30%))
+        minmax(0, 1fr);
+      align-items: baseline;
+      column-gap: .85em;
+      margin: .8em 0;
+      padding: 0;
+      list-style: none;
+      counter-increment: none;
+    }
+
+    .paper .bibliography .bibliography-entry::marker {
+      content: "";
+    }
+
+    .paper .bibliography .bibliography-entry::before {
+      content: none;
+    }
+
+    .paper .bibliography .bib-label {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .paper .bibliography .bib-content {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .paper .bibliography .bib-content > :first-child {
+      margin-top: 0;
+    }
+
+    .paper .bibliography .bib-content > :last-child {
+      margin-bottom: 0;
+    }
+
+    .paper .bibliography .bib-content > p:first-child {
+      display: inline;
+    }
+
+    .paper .bibliography .backref {
+      margin-left: .4em;
+    }
+
+    .public-page .public-document {
+      width: 100%;
+      max-width: 52rem;
+      min-width: 0;
+      margin: 0 auto;
+    }
+
+    .public-page .public-document > .document-heading,
+    .public-page .public-document > .paper {
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      margin-left: 0;
+      margin-right: 0;
+      padding-left: clamp(16px, 4vw, 32px);
+      padding-right: clamp(16px, 4vw, 32px);
+    }
+
+    .public-page .public-document > .document-heading {
+      padding-top: 24px;
+      overflow-wrap: anywhere;
+    }
+
+    .public-page .public-document > .paper {
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .public-page .paper .math-display,
+    .public-page .paper mjx-container[display="true"] {
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .public-page .paper pre {
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .public-page .paper img,
+    .public-page .paper video {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 600px) {
+      .public-page .public-document > .document-heading,
+      .public-page .public-document > .paper {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+    }
+
+    @media print {
+      .public-page .public-document {
+        max-width: none;
+      }
+
+      .public-page .public-document > .document-heading,
+      .public-page .public-document > .paper {
+        padding-left: 0;
+        padding-right: 0;
       }
     }
