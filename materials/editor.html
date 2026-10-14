@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Chicken-generic over Rice</title>
+  <title>Chicken-generic over Rice</title>
 
   <script id="mathjax-config">
     window.MathJax = {
@@ -82,10 +82,6 @@
     src="../MathJax-4.1.3/tex-chtml.js"
   ></script>
 
-  <!--
-    共通CSSの原本。
-    編集画面にも適用し、公開用のstyle.cssとして保存する。
-  -->
   <style id="public-styles">
     :root {
       --site-background: #f5eded;
@@ -346,10 +342,6 @@
       text-align: right;
     }
 
-    /*
-      括弧は親要素の高さに追従するSVG。
-      本文には通常のブロック要素を使用し、入れ子を許容する。
-    */
     .paper .reason-box {
       position: relative;
       width: 100%;
@@ -514,23 +506,6 @@
       border: 0;
     }
 
-    .paper .bibliography ol {
-      padding-left: 2.2em;
-    }
-
-    .paper .bibliography li {
-      margin: .6em 0;
-      padding-left: .25em;
-    }
-
-    .paper .bibliography li > p:first-child {
-      display: inline;
-    }
-
-    .paper .bibliography .custom-bib-label {
-      margin-right: .5em;
-    }
-
     .site-footer {
       margin-top: 32px;
       padding: 14px 16px 24px;
@@ -619,7 +594,155 @@
     }
   </style>
 
-  <!-- 編集画面の配置と従来のプレビュー外観。 -->
+  <!--
+    目次・参考文献・公開ページ本文幅の追加スタイル。
+    共通CSSの保存時に基本スタイルと結合して書き出す。
+    生成する公開用HTMLには埋め込まず、外部の共通CSSから適用する。
+  -->
+  <style id="publication-styles">
+    .paper .table-of-contents ol,
+    .paper .table-of-contents li {
+      list-style: none;
+      counter-increment: none;
+    }
+
+    .paper .table-of-contents > ol {
+      padding-left: 0;
+    }
+
+    .paper .table-of-contents ol ol {
+      padding-left: 1.5em;
+    }
+
+    .paper .table-of-contents li::marker {
+      content: "";
+    }
+
+    .paper .table-of-contents li::before {
+      content: none;
+    }
+
+    .paper .bibliography ol.bibliography-list {
+      margin: .8em 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .paper .bibliography .bibliography-list > li.bibliography-entry {
+      display: grid;
+      grid-template-columns:
+        minmax(0, min(var(--bib-label-width, 8ch), 30%))
+        minmax(0, 1fr);
+      align-items: baseline;
+      column-gap: .85em;
+      margin: .8em 0;
+      padding: 0;
+      list-style: none;
+      counter-increment: none;
+    }
+
+    .paper .bibliography .bibliography-entry::marker {
+      content: "";
+    }
+
+    .paper .bibliography .bibliography-entry::before {
+      content: none;
+    }
+
+    .paper .bibliography .bib-label {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .paper .bibliography .bib-content {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .paper .bibliography .bib-content > :first-child {
+      margin-top: 0;
+    }
+
+    .paper .bibliography .bib-content > :last-child {
+      margin-bottom: 0;
+    }
+
+    .paper .bibliography .bib-content > p:first-child {
+      display: inline;
+    }
+
+    .paper .bibliography .backref {
+      margin-left: .4em;
+    }
+
+    .public-page .public-document {
+      width: 100%;
+      max-width: 52rem;
+      min-width: 0;
+      margin: 0 auto;
+    }
+
+    .public-page .public-document > .document-heading,
+    .public-page .public-document > .paper {
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      margin-left: 0;
+      margin-right: 0;
+      padding-left: clamp(16px, 4vw, 32px);
+      padding-right: clamp(16px, 4vw, 32px);
+    }
+
+    .public-page .public-document > .document-heading {
+      padding-top: 24px;
+      overflow-wrap: anywhere;
+    }
+
+    .public-page .public-document > .paper {
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .public-page .paper .math-display,
+    .public-page .paper mjx-container[display="true"] {
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .public-page .paper pre {
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .public-page .paper img,
+    .public-page .paper video {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 600px) {
+      .public-page .public-document > .document-heading,
+      .public-page .public-document > .paper {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+    }
+
+    @media print {
+      .public-page .public-document {
+        max-width: none;
+      }
+
+      .public-page .public-document > .document-heading,
+      .public-page .public-document > .paper {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  </style>
+
   <style id="editor-styles">
     .editor-toolbar {
       position: sticky;
@@ -633,18 +756,18 @@
       background: var(--site-background);
     }
 
-.editor-toolbar .editor-logo-link {
-  display: block;
-  margin-right: auto;
-  flex-shrink: 0;
-}
+    .editor-toolbar .editor-logo-link {
+      display: block;
+      margin-right: auto;
+      flex-shrink: 0;
+    }
 
-.editor-toolbar .editor-logo {
-  display: block;
-  width: auto;
-  height: auto;
-  max-width: 100%;
-}
+    .editor-toolbar .editor-logo {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+    }
 
     .editor-button {
       padding: 7px 11px;
@@ -718,6 +841,10 @@
       background: #fff;
       color: var(--site-ink);
       font: 14px Arial, "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    .workspace-title {
+      flex-basis: 360px;
     }
 
     .workspace-drafts {
@@ -896,6 +1023,7 @@
       margin: 10px 14px 14px;
       color: #555;
       font-size: 12px;
+      line-height: 1.65;
     }
 
     .syntax-content {
@@ -1140,12 +1268,13 @@
 <body class="editor-page" id="top">
   <header class="site-header editor-toolbar">
     <a class="site-brand editor-logo-link" href="../index.html">
-  <img
-    src="../images/header.png"
-    alt="ホーム"
-    class="editor-logo"
-  >
-</a>
+      <img
+        src="../images/header.png"
+        alt="ホーム"
+        class="editor-logo"
+      >
+    </a>
+
     <button id="openSource" class="editor-button" type="button">
       ソースを開く
     </button>
@@ -1156,10 +1285,6 @@
 
     <button id="copySource" class="editor-button" type="button">
       ソースをコピー
-    </button>
-
-    <button id="render" class="editor-button" type="button">
-      今すぐ更新
     </button>
 
     <button id="publicDownload" class="editor-button primary" type="button">
@@ -1188,6 +1313,17 @@
           value="note.tex"
           autocomplete="off"
           spellcheck="false"
+        >
+      </label>
+
+      <label class="workspace-field workspace-title">
+        公開ページの表題
+        <input
+          id="documentTitle"
+          type="text"
+          value=""
+          placeholder="未入力ならソースの \title{...} を使用"
+          autocomplete="off"
         >
       </label>
 
@@ -1259,11 +1395,22 @@
     </section>
 
     <p class="workspace-note">
+      公開ページの表題は、この入力欄、ソースの
+      <code>\title{...}</code>、「無題」の順に決定します。
+      最初のsectionは表題として使用しません。
+      この入力欄は文書ごとの下書きに保存しますが、
+      ソースの保存・コピーは入力されたソース本文をそのまま対象とします。
+      表題もソースファイルに残す場合は、ソースに
+      <code>\title{...}</code>を記述してください。
+    </p>
+
+    <p class="workspace-note">
       自動保存は、このブラウザー内に置く復旧用の下書きです。
       独立したバックアップとして、ソースファイルも保存してください。
       下書きの復元方法を選択するまでは、自動保存を開始しません。
       ローカルHTMLを直接開いた場合、ブラウザー内保存の挙動は環境に依存します。
-      長い文書で描画が重い場合は、自動プレビューをオフにできます。
+      自動プレビューをオフにすると更新を停止し、オンにすると再開します。
+      公開用HTMLは、自動プレビューの状態にかかわらず最新の入力から生成します。
     </p>
   </section>
 
@@ -1360,8 +1507,13 @@
       <p class="settings-note">
         サイト設定はこのブラウザー内に保存され、次回の読み込み時に使用されます。
         各URLは公開先のディレクトリ構成に合わせて指定してください。
-        共通スタイルシートURLを空欄にすると、公開HTMLに共通CSSを埋め込みます。
-        本文の下書きとは別の保存領域を使用します。
+        共通スタイルシートURLが空欄の場合は、
+        <code>../style.css</code>を参照します。
+        公開用HTMLにスタイルシートは埋め込みません。
+        「共通CSSを保存」で保存される<code>style.css</code>には、
+        目次・参考文献・公開本文幅の修正が含まれます。
+        保存したファイルで、公開先の<code>style.css</code>を手動で置き換えてください。
+        サイト設定は本文の下書きとは別の保存領域を使用します。
       </p>
     </details>
   </section>
@@ -1395,11 +1547,13 @@
         </section>
 
         <section class="syntax-group">
-          <h3>見出し・段落</h3>
+          <h3>表題・見出し・段落</h3>
           <p>
+            <code>\title{...}</code>、
             <code>\section{...}</code>、
             <code>\subsection{...}</code>、
             <code>\tableofcontents</code><br>
+            表題とsectionは独立しています。
             空行で段落を分け、<code>\\</code>で明示的に改行します。
             <code>\noindent</code>、<code>\smallskip</code>、
             <code>\medskip</code>、<code>\bigskip</code>は簡易対応です。
@@ -1413,6 +1567,7 @@
             <code>phase</code>と<code>\item</code><br>
             <code>\item[ラベル]</code>にも対応します。
             定理・証明・理由・箇条書きは、同種環境を含めて入れ子にできます。
+            目次では見出し番号だけを表示し、リスト自身の番号は表示しません。
           </p>
         </section>
 
@@ -1463,13 +1618,16 @@
         </section>
 
         <section class="syntax-group">
-          <h3>参考文献</h3>
+          <h3>参考文献：AMSalpha型の表示</h3>
           <p>
             <code>\cite{key}</code>、
             <code>\cite[注記]{key}</code><br>
-            <code>\begin{thebibliography}{9}</code>と
-            <code>\bibitem{key}</code>を使用します。
-            <code>\bibitem[表示ラベル]{key}</code>にも対応します。
+            <code>\begin{thebibliography}{Kun80}</code>と
+            <code>\bibitem[Kun80]{key}</code>を使用すると、
+            本文と文献一覧の双方に角括弧付きのラベルを表示します。
+            複数引用は<code>[Kun80, Jec03]</code>、
+            注記付き引用は<code>[Kun80, p. 10]</code>の形です。
+            表示ラベルが未指定の場合は文献キーを表示し、診断に通知します。
           </p>
         </section>
 
@@ -1484,9 +1642,13 @@
       </div>
 
       <p class="syntax-note">
-        これはブラウザー内の簡易変換であり、完全なLaTeX処理系ではありません。
+        これはブラウザー内の簡易変換であり、完全なLaTeX・BibTeX処理系ではありません。
+        AMSalphaのラベルは、明示的に指定したものを使用します。
+        自由記述の文献本文から著者・年を推測したり、
+        amsalpha.bstによる文献書式の生成や並べ替えを実行したりはしません。
+        厳密なAMSalphaの文献を使用する場合は、BibTeXで生成したラベル・順序・文献本文を使用してください。
         MathJax本体と、設定に応じた拡張・フォントが読み込める必要があります。
-        ソース保存はUTF-8で行い、読み込みもUTF-8を対象とします。
+        ソース保存・読み込みはUTF-8を対象とします。
       </p>
     </details>
   </aside>
@@ -1574,7 +1736,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
     </section>
   </main>
 
-  <!-- 編集画面と公開ページで共有するDOM・MathJax処理。 -->
   <script id="document-runtime">
     const MystyleRuntime = (() => {
       "use strict";
@@ -1621,7 +1782,10 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         if (window.MathJax?.startup?.promise) {
           loaded();
         } else if (loader) {
-          loader.addEventListener("load", loaded, { once: true });
+          loader.addEventListener("load", loaded, {
+            once: true
+          });
+
           loader.addEventListener("error", () => finish(null), {
             once: true
           });
@@ -1740,11 +1904,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
         lockedStates.set(root, desiredStates);
 
-        /*
-          閉じた環境内で数式を計測しないよう、
-          一時的に全環境を開き、不可視・操作不可にして組版する。
-          入力欄自体は変更しない。
-        */
         root.style.visibility = "hidden";
         root.setAttribute("aria-busy", "true");
         root.setAttribute("inert", "");
@@ -1776,7 +1935,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         const revision = (revisions.get(root) || 0) + 1;
         revisions.set(root, revision);
 
-        // MathJax待機中も本文のHTMLは先に表示する。
         if (!window.MathJax?.typesetPromise) {
           const states = snapshot(root);
           root.innerHTML = html;
@@ -1788,7 +1946,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
             return Boolean(mathJax);
           }
 
-          // 待機中のユーザー操作も、この時点で取り込む。
           const states = snapshot(root);
 
           if (mathJax) {
@@ -1942,10 +2099,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
     (() => {
       "use strict";
 
-      // ================================================================
-      // 定数・画面要素
-      // ================================================================
-
       const SETTINGS_STORAGE_KEY = "mystyleHtmlSiteSettings";
       const SCRIPT_END = "<" + "/script>";
 
@@ -2041,10 +2194,20 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         .getElementById("mathjax-loader")
         .getAttribute("src");
 
-      const publicStylesheet = document
+      const basePublicStylesheet = document
         .getElementById("public-styles")
         .textContent
         .trim();
+
+      const publicationStylesheet = document
+        .getElementById("publication-styles")
+        .textContent
+        .trim();
+
+      const publicStylesheet = [
+        basePublicStylesheet,
+        publicationStylesheet
+      ].join("\n\n");
 
       let previousToggles = [];
       let nextToggleId = 0;
@@ -2290,7 +2453,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       }
 
       // ================================================================
-      // 数式を不透明なトークンとして保護する
+      // 数式トークン
       // ================================================================
 
       function createContext(source) {
@@ -2306,6 +2469,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
           headings: [],
           labels: new Map(),
           bibliographyLabels: new Map(),
+          bibliographyLabelDepth: 0,
           citationCounts: new Map(),
           citedKeys: new Set(citedKeysIn(source)),
           issues: [],
@@ -2489,7 +2653,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       }
 
       // ================================================================
-      // 共通スタックによる環境・項目・見出しの構文解析
+      // 構文解析
       // ================================================================
 
       function parseDocumentTree(source, context) {
@@ -2776,7 +2940,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
             });
           }
 
-          // maketitleは本文上では無視する。
           cursor = end;
           pattern.lastIndex = end;
         }
@@ -2793,7 +2956,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       }
 
       // ================================================================
-      // 番号付け・ラベル・参考文献
+      // 番号・ラベル・文献ラベル
       // ================================================================
 
       function decorateTree(root, context) {
@@ -2802,6 +2965,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         let theorem = 0;
         let equation = 0;
         let bibliography = 0;
+
+        const bibliographyLabelOwners = new Map();
 
         function registerLabel(key, target, number) {
           if (!key || context.labels.has(key)) {
@@ -2956,8 +3121,22 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
               visit(node.children, owner, currentTarget);
 
               for (const item of node.items) {
-                item.number = String(++bibliography);
-                item.displayLabel = item.headingNote || item.number;
+                bibliography++;
+
+                // 自由記述の文献から著者・年を推測しない。
+                // ラベル未指定時も数値連番ではなく文献キーを使用する。
+                item.displayLabel = item.headingNote || item.key;
+                item.number = restoreMathTokens(
+                  item.displayLabel,
+                  context
+                );
+
+                if (!item.headingNote) {
+                  context.issues.push(
+                    `文献「${item.key}」は表示ラベルが未指定のため、文献キーを表示します。` +
+                    "AMSalpha型のラベルは \\bibitem[Kun80]{key} のように指定してください。"
+                  );
+                }
 
                 const duplicate = context.bibliographyLabels.has(
                   item.key
@@ -2971,6 +3150,27 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
                   context.bibliographyLabels.set(
                     item.key,
                     item.displayLabel
+                  );
+                }
+
+                const labelIdentity = restoreMathTokens(
+                  item.displayLabel,
+                  context
+                );
+
+                const previousOwner = bibliographyLabelOwners.get(
+                  labelIdentity
+                );
+
+                if (previousOwner && previousOwner !== item.key) {
+                  context.issues.push(
+                    `文献「${previousOwner}」と「${item.key}」の表示ラベルが重複しています。` +
+                    "必要に応じて Kun80a、Kun80b のように区別してください。"
+                  );
+                } else {
+                  bibliographyLabelOwners.set(
+                    labelIdentity,
+                    item.key
                   );
                 }
 
@@ -2988,7 +3188,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       }
 
       // ================================================================
-      // 更新前後のトグル識別子の対応付け
+      // 証明・理由の開閉状態の対応付け
       // ================================================================
 
       function collectToggles(root, context) {
@@ -3086,7 +3286,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       }
 
       // ================================================================
-      // インライン要素
+      // インライン変換・引用
       // ================================================================
 
       function renderReference(command, key, context, interactive) {
@@ -3105,37 +3305,61 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         `.trim();
       }
 
+      function renderBibliographyLabel(label, context) {
+        if (context.bibliographyLabelDepth >= 4) {
+          return escapeHTML(restoreMathTokens(label, context));
+        }
+
+        context.bibliographyLabelDepth++;
+
+        try {
+          return renderInline(label, context, false);
+        } finally {
+          context.bibliographyLabelDepth--;
+        }
+      }
+
       function renderCitation(note, keys, context, interactive) {
-        const citations = keys
+        const entries = keys
           .split(",")
           .map((key) => key.trim())
-          .filter(Boolean)
-          .map((key) => {
-            const label = context.bibliographyLabels.get(key) ?? "?";
-            const text = `[${label}]`;
+          .filter(Boolean);
 
-            if (!interactive) {
-              return escapeHTML(text);
-            }
+        if (entries.length === 0) {
+          return "[?]";
+        }
 
-            const count = (context.citationCounts.get(key) || 0) + 1;
-            context.citationCounts.set(key, count);
+        const citations = entries.map((key) => {
+          const label = context.bibliographyLabels.get(key) ?? "?";
+          const text = renderBibliographyLabel(label, context);
 
-            const id = count === 1
-              ? `cite-${key}`
-              : `cite-${key}-${count}`;
+          if (!interactive) {
+            return text;
+          }
 
-            return `
-              <a
-                class="citation"
-                id="${escapeHTML(id)}"
-                href="${escapeHTML(fragmentURL("bib-" + key))}"
-              >${escapeHTML(text)}</a>
-            `.trim();
-          })
-          .join(", ");
+          const count = (context.citationCounts.get(key) || 0) + 1;
+          context.citationCounts.set(key, count);
 
-        return (note ? escapeHTML(note) + " " : "") + citations;
+          const id = count === 1
+            ? `cite-${key}`
+            : `cite-${key}-${count}`;
+
+          return `
+            <a
+              class="citation"
+              id="${escapeHTML(id)}"
+              href="${escapeHTML(fragmentURL("bib-" + key))}"
+            >${text}</a>
+          `.trim();
+        }).join(", ");
+
+        const annotation = note.trim()
+          ? ", " + renderInline(note, context, false)
+          : "";
+
+        return `
+          <span class="citation-group">[${citations}${annotation}]</span>
+        `.trim();
       }
 
       function renderInline(text, context, interactive = true) {
@@ -3262,7 +3486,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
                   ? (
                     `<a href="${escapeHTML(safeURL(url))}">` +
                     label +
-                    `</a>`
+                    "</a>"
                   )
                   : label;
               }
@@ -3286,6 +3510,25 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
                 interactive
               );
             }
+          } else if (command === "etalchar") {
+            const group = readGroup(text, end);
+
+            if (group) {
+              end = group.end;
+
+              replacement =
+                "<sup>" +
+                renderInline(group.value, context, false) +
+                "</sup>";
+            }
+          } else if (
+            ["protect", "relax", "ignorespaces"].includes(command)
+          ) {
+            replacement = "";
+          } else if (command === "newblock") {
+            replacement = " ";
+          } else if (command === "bysame") {
+            replacement = "——";
           } else if (/^[%&#_${}]$/.test(command)) {
             replacement = escapeHTML(command);
           } else if (command === "textbackslash") {
@@ -3315,7 +3558,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       }
 
       // ================================================================
-      // ブロック要素
+      // ブロック変換
       // ================================================================
 
       function renderParagraphs(text, context) {
@@ -3407,7 +3650,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         const items = groups.map(({ heading, children }) => {
           const nested = children.length
             ? `
-              <ol>
+              <ol role="list">
                 ${children.map((child) => {
                   return `<li>${headingLink(child)}</li>`;
                 }).join("\n")}
@@ -3426,7 +3669,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         return `
           <nav class="table-of-contents" aria-label="目次">
             <h2>目次</h2>
-            <ol>
+            <ol role="list">
               ${items}
             </ol>
           </nav>
@@ -3461,7 +3704,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       function renderBox(node, context) {
         const environment = ENVIRONMENTS[node.name];
 
-        // 引用IDは表示順に採番する。
         const note = node.headingNote
           ? `
             <span class="theorem-note">(${renderInline(
@@ -3582,21 +3824,21 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
       function renderBibliography(node, context) {
         const preamble = renderFlow(node.children, context);
+        let labelWidth = 5;
 
         const items = node.items.map((item) => {
-          const numericLabel = /^\d+$/.test(item.displayLabel);
+          const label = renderBibliographyLabel(
+            item.displayLabel,
+            context
+          );
 
-          const value = numericLabel
-            ? ` value="${escapeHTML(item.displayLabel)}"`
-            : ' style="list-style:none"';
+          const measuringElement = document.createElement("span");
+          measuringElement.innerHTML = label;
 
-          const label = numericLabel
-            ? ""
-            : `
-              <span class="custom-bib-label">
-                [${escapeHTML(item.displayLabel)}]
-              </span>
-            `;
+          labelWidth = Math.max(
+            labelWidth,
+            Array.from(measuringElement.textContent).length + 2
+          );
 
           const backref = context.citedKeys.has(item.key)
             ? `
@@ -3609,20 +3851,31 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
             : "";
 
           return `
-            <li id="${escapeHTML(item.bibId)}"${value}>
-              ${labelAnchors(item.labels)}
-              ${label}
-              ${renderFlow(item.children, context)}
-              ${backref}
+            <li
+              class="bibliography-entry"
+              id="${escapeHTML(item.bibId)}"
+            >
+              <span class="bib-label">[${label}]</span>
+              <div class="bib-content">
+                ${labelAnchors(item.labels)}
+                ${renderFlow(item.children, context)}
+                ${backref}
+              </div>
             </li>
           `;
         }).join("\n");
+
+        labelWidth = Math.min(labelWidth, 18);
 
         return `
           <section class="bibliography">
             <h2>参考文献</h2>
             ${preamble}
-            <ol>
+            <ol
+              class="bibliography-list"
+              role="list"
+              style="--bib-label-width:${labelWidth}ch"
+            >
               ${items}
             </ol>
           </section>
@@ -3789,22 +4042,18 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
         const html = renderFlow(root.children, context);
 
-        const titleSource =
-          context.declaredTitle ||
-          context.headings[0]?.title ||
-          "note";
+        // 最初のsectionを文書の表題に流用しない。
+        const titleHTML = context.declaredTitle.trim()
+          ? renderInline(context.declaredTitle, context, false)
+          : "";
 
         const titleContainer = document.createElement("div");
-
-        titleContainer.innerHTML = renderInline(
-          titleSource,
-          context,
-          false
-        );
+        titleContainer.innerHTML = titleHTML;
 
         return {
           html,
-          title: titleContainer.textContent.trim() || "note",
+          title: titleContainer.textContent.trim(),
+          titleHTML,
           toggles,
           issues: Array.from(new Set([
             ...inspectReferences(clean),
@@ -3833,7 +4082,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       }
 
       // ================================================================
-      // ワークスペースの定数・状態
+      // ワークスペースの状態
       // ================================================================
 
       const AUTOSAVE_DELAY = 500;
@@ -3849,6 +4098,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
       const ui = Object.freeze({
         filename: document.getElementById("sourceFilename"),
+        title: document.getElementById("documentTitle"),
         autoPreview: document.getElementById("autoPreview"),
         fileInput: document.getElementById("sourceFile"),
         openSource: document.getElementById("openSource"),
@@ -3868,9 +4118,9 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
       const initialSource = sourceElement.value;
       const initialFilename = normalizeFilename(ui.filename.value);
+      const initialTitle = ui.title.value;
       const tabId = createIdentifier("tab");
 
-      // 一覧には本文を保持せず、識別子・名前・日時だけを保持する。
       const draftCatalog = new Map();
 
       const draftState = {
@@ -3890,13 +4140,13 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         running: false,
         currentJob: null,
         lastRendered: null,
-        error: "",
-        manualAfterComposition: false
+        error: ""
       };
 
       let openedSnapshot = {
         source: initialSource,
-        name: initialFilename
+        name: initialFilename,
+        title: initialTitle
       };
 
       let composing = false;
@@ -3945,7 +4195,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       function currentSnapshot() {
         return {
           source: sourceElement.value,
-          name: normalizeFilename(ui.filename.value)
+          name: normalizeFilename(ui.filename.value),
+          title: ui.title.value
         };
       }
 
@@ -3953,7 +4204,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         return Boolean(
           record &&
           record.source === snapshot.source &&
-          record.name === snapshot.name
+          record.name === snapshot.name &&
+          (record.title || "") === (snapshot.title || "")
         );
       }
 
@@ -3996,7 +4248,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       }
 
       function beforeUnload(event) {
-        // 終了時の非同期処理だけには依存しない。
         void flushDraft();
 
         if (needsUnloadProtection()) {
@@ -4029,6 +4280,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
         sourceElement.readOnly = locked;
         ui.filename.disabled = locked;
+        ui.title.disabled = locked;
         ui.openSource.disabled = locked;
         ui.fileInput.disabled = locked;
         ui.draftSelect.disabled = locked;
@@ -4121,12 +4373,19 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
           typeof record.source !== "string" ||
           typeof record.revision !== "string" ||
           typeof record.writer !== "string" ||
-          !Number.isFinite(record.updatedAt)
+          !Number.isFinite(record.updatedAt) ||
+          (
+            record.title !== undefined &&
+            typeof record.title !== "string"
+          )
         ) {
           throw new Error(
             "下書きデータの形式を確認してください。"
           );
         }
+
+        // 旧版の下書きにはtitleがないため、空欄として読み込む。
+        record.title ??= "";
 
         return record;
       }
@@ -4147,6 +4406,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
           version: 1,
           id,
           name: snapshot.name,
+          title: snapshot.title || "",
           source: snapshot.source,
           updatedAt: Date.now(),
           revision: createIdentifier("revision"),
@@ -4322,7 +4582,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
           ui.recoveryMessage.textContent = record
             ? (
               `${record.name}（${formatSavedTime(record.updatedAt)}）は、` +
-              "HTML内の本文と異なります。" +
+              "HTML内の初期文書と異なります。" +
               "復元するか、HTML内の本文を別の文書として使用するかを選択してください。" +
               "どちらを選んでも、既存の下書きを無条件には上書きしません。"
             )
@@ -4341,11 +4601,11 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
               `${record.name}の別の保存内容` +
               `（${formatSavedTime(record.updatedAt)}）があります。` +
               "現在の入力はそのまま保持しています。" +
-              "別タブの下書きを開くか、現在の本文を別の下書きとして保存してください。"
+              "別タブの下書きを開くか、現在の文書を別の下書きとして保存してください。"
             )
             : (
               "この文書の下書きが別タブで削除されたか、保存状態が変わりました。" +
-              "現在の本文を別の下書きとして保存できます。"
+              "現在の文書を別の下書きとして保存できます。"
             );
 
           ui.restoreDraft.textContent = "別タブの下書きを開く";
@@ -4362,10 +4622,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         updateControls();
       }
 
-      /*
-        保存直前にrevisionを照合する。
-        Web Locksが利用できる場合は、照合と書き込みを排他区間で行う。
-      */
       function writeCurrentDraft(expectedId) {
         if (
           !draftState.ready ||
@@ -4401,10 +4657,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
           JSON.stringify(record)
         );
 
-        /*
-          Web Locksが使えない場合も再確認とstorageイベントで検出を補う。
-          ただし、それだけでは完全な排他制御にはならない。
-        */
         const verified = readDraft(expectedId);
 
         if (verified?.revision !== record.revision) {
@@ -4502,10 +4754,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         updateDraftStatus();
       }
 
-      /*
-        文書切り替え時の退避。
-        元の下書きとは別の識別子で保存し、一覧から復元できるようにする。
-      */
       function persistIndependentDraft(snapshot) {
         let id;
 
@@ -4579,7 +4827,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       }
 
       // ================================================================
-      // 最新一件だけを待機させるプレビュー更新
+      // 自動プレビュー
       // ================================================================
 
       function cancelPreviewTimer() {
@@ -4606,9 +4854,9 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         if (composing) {
           setStatus(
             ui.previewStatus,
-            ui.autoPreview.checked || previewState.manualAfterComposition
+            ui.autoPreview.checked
               ? "IME変換終了後にプレビューを更新します。"
-              : "IME変換中です。プレビューは手動更新です。"
+              : "自動プレビューは停止中です。"
           );
 
           return;
@@ -4640,11 +4888,17 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
           last.epoch === previewState.epoch &&
           last.source === sourceElement.value
         ) {
+          const suspended = ui.autoPreview.checked
+            ? ""
+            : " 自動プレビューは停止中です。";
+
           setStatus(
             ui.previewStatus,
-            last.available
-              ? `プレビュー更新済み（${last.elapsed} ms）。`
-              : "本文は反映済みですが、MathJaxを読み込めませんでした。",
+            (
+              last.available
+                ? `プレビュー更新済み（${last.elapsed} ms）。`
+                : "本文は反映済みですが、MathJaxを読み込めませんでした。"
+            ) + suspended,
             last.available ? "ok" : "warning"
           );
 
@@ -4655,30 +4909,22 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
           ui.previewStatus,
           ui.autoPreview.checked
             ? "本文に未反映の変更があります。"
-            : "手動更新です。変更の反映には「今すぐ更新」を押してください。"
+            : "自動プレビューは停止中です。オンにすると更新を再開します。"
         );
       }
 
-      function requestPreview({
-        immediate = false,
-        force = false
-      } = {}) {
+      function requestPreview({ initial = false } = {}) {
         cancelPreviewTimer();
 
-        // まだ開始していない古い版を破棄する。
         previewState.pending = null;
         previewState.error = "";
 
         if (composing) {
-          if (immediate) {
-            previewState.manualAfterComposition = true;
-          }
-
           updatePreviewStatus();
           return;
         }
 
-        if (!ui.autoPreview.checked && !immediate) {
+        if (!ui.autoPreview.checked && !initial) {
           updatePreviewStatus();
           return;
         }
@@ -4686,25 +4932,21 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         const enqueue = () => {
           previewState.timer = null;
 
-          if (composing) {
-            if (immediate) {
-              previewState.manualAfterComposition = true;
-            }
-
+          if (composing || (!ui.autoPreview.checked && !initial)) {
             updatePreviewStatus();
             return;
           }
 
           previewState.pending = {
             source: sourceElement.value,
-            epoch: previewState.epoch,
-            force
+            epoch: previewState.epoch
           };
 
           void runPendingPreview();
         };
 
-        if (immediate) {
+        if (initial) {
+          // 初回表示・文書切り替え時の初期描画。手動更新UIは設けない。
           enqueue();
         } else {
           previewState.timer = window.setTimeout(
@@ -4736,7 +4978,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         const last = previewState.lastRendered;
 
         if (
-          !job.force &&
           last &&
           last.epoch === job.epoch &&
           last.source === job.source
@@ -4807,7 +5048,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
           updatePreviewStatus();
 
           if (previewState.pending && !composing) {
-            // 入力・保存イベントへ実行機会を渡してから次を処理する。
             window.setTimeout(() => {
               void runPendingPreview();
             }, 0);
@@ -4822,13 +5062,11 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         previewState.pending = null;
         previewState.lastRendered = null;
         previewState.error = "";
-        previewState.manualAfterComposition = false;
 
         previousToggles = [];
 
         requestPreview({
-          immediate: true,
-          force: true
+          initial: true
         });
       }
 
@@ -4842,6 +5080,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         }
 
         ui.filename.value = normalizeFilename(snapshot.name);
+        ui.title.value = snapshot.title || "";
         openedSnapshot = currentSnapshot();
       }
 
@@ -4877,7 +5116,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
         setSourceValues({
           source: record.source,
-          name: record.name
+          name: record.name,
+          title: record.title || ""
         });
 
         markPersisted(record);
@@ -4907,7 +5147,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         updateControls();
 
         try {
-          // 旧文書の保存処理を、新文書の保存処理と混同させない。
           if (saveInFlight) {
             await saveInFlight;
           }
@@ -4945,9 +5184,10 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
           return true;
         }
 
-        const editedSinceOpen =
-          snapshot.source !== openedSnapshot.source ||
-          snapshot.name !== openedSnapshot.name;
+        const editedSinceOpen = !sameContents(
+          openedSnapshot,
+          snapshot
+        );
 
         if (
           editedSinceOpen &&
@@ -4967,10 +5207,10 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
           }
         }
 
-        // 競合中や通常保存の失敗時は、別の識別子へ退避する。
         try {
           persistIndependentDraft({
             source: snapshot.source,
+            title: snapshot.title,
             name: snapshot.name.replace(
               /(\.(?:tex|txt))$/i,
               "-切替前$1"
@@ -5008,10 +5248,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
             );
           }
 
-          /*
-            起動時の本文はHTML内に残り、復元選択前は読み取り専用。
-            競合時に置き換える場合は、現在の本文を保護する。
-          */
           if (
             pending.kind !== "startup" &&
             !(await protectBeforeReplacement(target))
@@ -5046,8 +5282,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
           setOperationStatus(
             saved
-              ? "現在の本文を、別の下書きとして保存しました。"
-              : "現在の本文は維持しています。下書きの保存状態を確認してください。",
+              ? "現在の文書を、別の下書きとして保存しました。"
+              : "現在の文書は維持しています。下書きの保存状態を確認してください。",
             saved ? "ok" : "warning"
           );
         });
@@ -5113,7 +5349,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
           const snapshot = {
             source: text.replace(/\r\n?/g, "\n"),
-            name: normalizeFilename(file.name)
+            name: normalizeFilename(file.name),
+            title: ""
           };
 
           if (!(await protectBeforeReplacement(snapshot))) {
@@ -5124,10 +5361,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
             return;
           }
 
-          /*
-            同名ファイルでも別の文書IDにする。
-            切り替え前の下書きは一覧に残す。
-          */
           activateNewDocument(snapshot);
 
           setOperationStatus(
@@ -5138,7 +5371,7 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       }
 
       // ================================================================
-      // ソースのダウンロード・コピー
+      // ソース保存・コピー
       // ================================================================
 
       function saveSourceFile() {
@@ -5180,7 +5413,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
             );
           }
 
-          // ユーザーのクリックから直接呼び出す。
           await navigator.clipboard.writeText(text);
 
           setOperationStatus(
@@ -5188,9 +5420,6 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
             "ok"
           );
         } catch {
-          /*
-            execCommandには依存せず、通常のコピー操作へ切り替える。
-          */
           sourceElement.focus({
             preventScroll: true
           });
@@ -5206,15 +5435,21 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       }
 
       // ================================================================
-      // 公開用HTML
+      // 公開HTML
       // ================================================================
 
       function makePublicHTML() {
-        // プレビュー更新前の入力も、そのまま書き出す。
         const result = compileDocument(sourceElement.value);
         const settings = readSiteSettings();
+        const overrideTitle = ui.title.value.trim();
 
-        const title = escapeHTML(result.title);
+        const titleText = overrideTitle || result.title || "無題";
+
+        const headingHTML = overrideTitle
+          ? escapeHTML(overrideTitle)
+          : result.titleHTML || "無題";
+
+        const title = escapeHTML(titleText);
         const siteName = escapeHTML(settings.siteName.trim());
 
         const pageTitle = siteName
@@ -5235,14 +5470,11 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
           urls[key] = escapeHTML(safeURL(settings[key]));
         }
 
-        const stylesheetHTML = settings.stylesheetUrl.trim()
-          ? `
-            <link rel="stylesheet" href="${urls.stylesheetUrl}">
-          `.trim()
-          : `
-            <style>
-${publicStylesheet}
-            </style>
+        const stylesheetHTML = `
+            <link
+              rel="stylesheet"
+              href="${urls.stylesheetUrl || "../style.css"}"
+            >
           `.trim();
 
         const metadata = [];
@@ -5309,7 +5541,7 @@ ${mathJaxConfigSource}
   >${SCRIPT_END}
 </head>
 
-<body id="top">
+<body class="public-page" id="top">
   <header class="site-header">
     <a class="site-brand" href="${urls.homeUrl}">
       ${brandHTML}
@@ -5324,22 +5556,24 @@ ${mathJaxConfigSource}
     </nav>
   </header>
 
-  <header class="document-heading">
-    <h1>${title}</h1>
-    ${metadataHTML}
-  </header>
+  <div class="public-document" id="public-document">
+    <header class="document-heading">
+      <h1>${headingHTML}</h1>
+      ${metadataHTML}
+    </header>
 
-  <main class="paper">
-    ${result.html}
+    <main class="paper">
+      ${result.html}
 
-    <p class="back-to-top">
-      <a href="#top">ページ先頭に戻る</a>
-    </p>
+      <p class="back-to-top">
+        <a href="#top">ページ先頭に戻る</a>
+      </p>
 
-    <p>
-      <a href="${urls.materialsUrl}">資料一覧に戻る</a>
-    </p>
-  </main>
+      <p>
+        <a href="${urls.materialsUrl}">資料一覧に戻る</a>
+      </p>
+    </main>
+  </div>
 
   <footer class="site-footer">
     © ${escapeHTML(settings.copyrightYear)} ${escapeHTML(settings.copyrightHolder)}
@@ -5351,7 +5585,7 @@ ${documentRuntimeSource}
 
   <script>
     MystyleRuntime
-      .typeset(document.querySelector(".paper"))
+      .typeset(document.getElementById("public-document"))
       .then(() => MystyleRuntime.revealHash())
       .catch((error) => {
         console.error(error);
@@ -5364,7 +5598,7 @@ ${documentRuntimeSource}
       }
 
       // ================================================================
-      // 初期化
+      // 初期化・イベント登録
       // ================================================================
 
       function initializeWorkspace() {
@@ -5389,141 +5623,78 @@ ${documentRuntimeSource}
           } catch {
             setOperationStatus(
               "前回の下書きを読み取れませんでした。" +
-              "元の保存データは上書きしていません。",
+              "保存データは削除せず、HTML内の本文を別の文書として開きます。",
               "warning"
             );
           }
         }
 
-        /*
-          空文字も有効な本文として扱う。
-          本文が異なる場合、復元の選択が終わるまで保存しない。
-        */
-        if (saved && saved.source !== initialSource) {
-          showRecovery("startup", saved.id, saved);
+        const initialSnapshot = {
+          source: initialSource,
+          name: initialFilename,
+          title: initialTitle
+        };
 
-          requestPreview({
-            immediate: true,
-            force: true
-          });
-
-          return;
-        }
-
-        if (saved) {
+        if (saved && sameContents(saved, initialSnapshot)) {
           activateStoredDocument(saved);
+        } else if (saved) {
+          draftState.ready = false;
+
+          showRecovery("startup", saved.id, saved);
+          resetPreviewForDocument();
         } else {
-          activateNewDocument({
-            source: initialSource,
-            name: initialFilename
-          });
+          activateNewDocument(initialSnapshot);
         }
+
+        updateControls();
+        updateDraftStatus();
+        updatePreviewStatus();
       }
 
-      // ================================================================
-      // 入力とIME
-      // ================================================================
+      sourceElement.addEventListener("input", () => {
+        scheduleDraftSave();
+        requestPreview();
+      });
 
       sourceElement.addEventListener("compositionstart", () => {
         composing = true;
-
-        if (previewState.pending?.force) {
-          previewState.manualAfterComposition = true;
-        }
-
         cancelPreviewTimer();
         previewState.pending = null;
-
         updatePreviewStatus();
       });
 
       sourceElement.addEventListener("compositionend", () => {
         composing = false;
         scheduleDraftSave();
-
-        const manual = previewState.manualAfterComposition;
-        previewState.manualAfterComposition = false;
-
-        /*
-          compositionendに続く最後のinputイベントも取り込んでから、
-          手動更新の要求を処理する。
-        */
-        if (manual) {
-          window.setTimeout(() => {
-            requestPreview({
-              immediate: true,
-              force: true
-            });
-          }, 0);
-        } else {
-          requestPreview();
-        }
-      });
-
-      sourceElement.addEventListener("input", (event) => {
-        // 保存はプレビュー変換・MathJaxから独立させる。
-        scheduleDraftSave();
-
-        if (event.isComposing || composing) {
-          cancelPreviewTimer();
-          previewState.pending = null;
-
-          updatePreviewStatus();
-          return;
-        }
-
         requestPreview();
       });
 
       ui.filename.addEventListener("input", scheduleDraftSave);
 
-      ui.filename.addEventListener("blur", () => {
+      ui.filename.addEventListener("change", () => {
         ui.filename.value = normalizeFilename(ui.filename.value);
         scheduleDraftSave();
       });
 
+      ui.title.addEventListener("input", scheduleDraftSave);
+
       ui.autoPreview.addEventListener("change", () => {
+        cancelPreviewTimer();
+        previewState.pending = null;
+
         if (ui.autoPreview.checked) {
           requestPreview();
         } else {
-          cancelPreviewTimer();
-          previewState.pending = null;
-          previewState.manualAfterComposition = false;
-
           updatePreviewStatus();
         }
       });
 
-      // ================================================================
-      // ボタン
-      // ================================================================
-
-      document
-        .getElementById("render")
-        .addEventListener("click", () => {
-          requestPreview({
-            immediate: true,
-            force: true
-          });
-        });
-
       ui.openSource.addEventListener("click", () => {
-        if (composing) {
-          setOperationStatus(
-            "IME変換を確定してからソースを開いてください。",
-            "warning"
-          );
-
-          return;
-        }
-
         ui.fileInput.click();
       });
 
       ui.fileInput.addEventListener("change", () => {
         const file = ui.fileInput.files?.[0];
-
-        // 同じファイルを再選択した場合もchangeを受け取れるようにする。
         ui.fileInput.value = "";
 
         if (file) {
@@ -5555,8 +5726,9 @@ ${documentRuntimeSource}
         .getElementById("publicDownload")
         .addEventListener("click", () => {
           try {
-            const filename = normalizeFilename(ui.filename.value)
-              .replace(/\.(?:tex|txt)$/i, ".html");
+            const filename = normalizeFilename(
+              ui.filename.value
+            ).replace(/\.(?:tex|txt)$/i, ".html");
 
             downloadText(
               filename,
@@ -5565,14 +5737,15 @@ ${documentRuntimeSource}
             );
 
             setOperationStatus(
-              "公開用HTMLのダウンロードを開始しました。",
+              `公開用HTML「${filename}」のダウンロードを開始しました。` +
+              "プレビューの更新状態にかかわらず、最新の入力を使用しています。",
               "ok"
             );
           } catch (error) {
             console.error(error);
 
             setOperationStatus(
-              "公開用HTMLの生成に失敗しました。入力内容を確認してください。",
+              "公開用HTMLを生成できませんでした。入力内容を確認してください。",
               "error"
             );
           }
@@ -5596,60 +5769,20 @@ ${documentRuntimeSource}
             console.error(error);
 
             setOperationStatus(
-              "共通CSSのダウンロードを開始できませんでした。",
+              "共通CSSを保存できませんでした。",
               "error"
             );
           }
         });
 
-      // ================================================================
-      // 外部更新・ページの表示状態
-      // ================================================================
-
-      window.addEventListener("storage", (event) => {
-        try {
-          if (event.storageArea !== localStorage) {
-            return;
-          }
-
-          if (event.key === null) {
-            scanDraftCatalog();
-            synchronizeCurrentDraft();
-            return;
-          }
-
-          if (!event.key.startsWith(DRAFT_PREFIX)) {
-            return;
-          }
-
-          const id = event.key.slice(DRAFT_PREFIX.length);
-          let record = null;
-
-          try {
-            // イベントが古い可能性があるので現在の値を読み直す。
-            record = readDraft(id);
-          } catch {
-            // 読めないレコードのデータ自体は削除しない。
-          }
-
-          if (record) {
-            indexDraft(record);
-          } else {
-            draftCatalog.delete(id);
-            refreshDraftSelect();
-          }
-
-          if (
-            id === draftState.id ||
-            id === draftState.recovery?.id
-          ) {
-            synchronizeCurrentDraft();
-          }
-        } catch {
-          draftState.error =
-            "別タブの保存状態を確認できませんでした。";
-
-          updateDraftStatus();
+      document.addEventListener("keydown", (event) => {
+        if (
+          (event.ctrlKey || event.metaKey) &&
+          !event.altKey &&
+          event.key.toLowerCase() === "s"
+        ) {
+          event.preventDefault();
+          saveSourceFile();
         }
       });
 
@@ -5661,10 +5794,54 @@ ${documentRuntimeSource}
         }
       });
 
-      window.addEventListener("focus", synchronizeCurrentDraft);
-
       window.addEventListener("pagehide", () => {
         void flushDraft();
+      });
+
+      window.addEventListener("focus", () => {
+        synchronizeCurrentDraft();
+      });
+
+      window.addEventListener("pageshow", (event) => {
+        if (event.persisted) {
+          synchronizeCurrentDraft();
+          requestPreview();
+        }
+      });
+
+      window.addEventListener("storage", (event) => {
+        if (
+          event.key !== null &&
+          !event.key.startsWith(DRAFT_PREFIX)
+        ) {
+          return;
+        }
+
+        try {
+          if (event.key === null) {
+            scanDraftCatalog();
+          } else {
+            const id = event.key.slice(DRAFT_PREFIX.length);
+            const record = readDraft(id);
+
+            if (record) {
+              indexDraft(record);
+            } else {
+              draftCatalog.delete(id);
+              refreshDraftSelect();
+            }
+          }
+
+          synchronizeCurrentDraft();
+        } catch {
+          setOperationStatus(
+            "別タブの下書き変更を読み取れませんでした。" +
+            "現在の入力内容は保持しています。",
+            "warning"
+          );
+
+          synchronizeCurrentDraft();
+        }
       });
 
       initializeWorkspace();
