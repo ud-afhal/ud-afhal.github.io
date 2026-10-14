@@ -1,0 +1,1554 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>準備 — Chicken-generic over Rice</title>
+  <link rel="stylesheet" href="../style.css">
+
+  <script id="mathjax-config">
+window.MathJax = {
+      startup: {
+        typeset: false
+      },
+      tex: {
+        inlineMath: [
+          ["\\(", "\\)"],
+          ["$", "$"]
+        ],
+        displayMath: [
+          ["\\[", "\\]"],
+          ["$$", "$$"]
+        ],
+        tags: "ams",
+        useLabelIds: true,
+        processEscapes: true,
+        macros: {
+          be: ["#1:\\text{#2}", 2],
+          proves: "\\vdash",
+          forces: "\\Vdash",
+          PA: "\\mathrm{PA}",
+          BST: "\\mathrm{BST}",
+          ZF: "\\mathrm{ZF}",
+          ZFC: "\\mathrm{ZFC}",
+          Con: "\\mathrm{Con}",
+          MA: "\\mathrm{MA}",
+          HF: "\\mathrm{HF}",
+          bval: ["\\left[\\!\\left[ #1 \\right]\\!\\right]", 1],
+          set: ["\\{{}#1{}\\}", 1],
+          power: "\\mathcal{P}",
+          Def: "\\mathrm{def}",
+          val: "\\mathrm{val}",
+          prm: "\\mathrm{prm}",
+          img: "\\text{``}",
+          dom: "\\mathrm{dom}",
+          ran: "\\mathrm{ran}",
+          inj: "\\overset{1-1}{\\longrightarrow}",
+          surj: "\\overset{onto}{\\longrightarrow}",
+          bij: "\\xrightarrow[onto]{1-1}",
+          iso: "\\overset{\\sim}{\\longrightarrow}",
+          ee: "\\overset{\\prec}{\\rightarrow}",
+          ON: "\\mathrm{ON}",
+          ot: "\\mathrm{ot}",
+          cf: "\\mathrm{cf}",
+          len: "\\mathrm{len}",
+          club: "\\mathrm{club}",
+          nonstat: "\\mathrm{nonstat}",
+          inn: "\\varepsilon",
+          obj: ["\\ulcorner #1\\urcorner", 1],
+          bbepsilon: "\\mathord{\\unicode{x03F5}}",
+          mathbbl: ["\\mathbb{#1}", 1]
+        }
+      },
+      chtml: {
+        displayAlign: "left",
+        displayIndent: "1.5em"
+      },
+      options: {
+        skipHtmlTags: [
+          "script",
+          "noscript",
+          "style",
+          "textarea",
+          "pre",
+          "code"
+        ]
+      }
+    };
+  </script>
+
+  <script
+    id="mathjax-loader"
+    defer
+    src="../MathJax-4.1.3/tex-chtml.js"
+  ></script>
+</head>
+
+<body id="top">
+  <header class="site-header">
+    <a class="site-brand" href="../index.html">
+      
+            <img
+              src="../images/header.png"
+              alt="Chicken-generic over Rice"
+            >
+          
+    </a>
+
+    <nav class="site-nav" aria-label="メインナビゲーション">
+      <a href="../index.html">ホーム</a>
+      <a href="../materials.html">資料</a>
+      <a href="../updates.html">更新履歴</a>
+      <a href="../about.html">このサイトについて</a>
+      <a href="../links.html">リンク</a>
+    </nav>
+  </header>
+
+  <header class="document-heading">
+    <h1>準備</h1>
+    
+            <div class="document-meta">
+              <span>著者：Ud.afhal</span>
+<span class="meta-separator">·</span>
+<span>
+              更新日：<time datetime="2026-10-14">2026-10-14</time>
+            </span>
+            </div>
+          
+  </header>
+
+  <main class="paper">
+    
+          <nav class="table-of-contents" aria-label="目次">
+            <h2>目次</h2>
+            <ol>
+              
+            <li>
+              <a href="#section-1">
+              1
+              準備
+            </a>
+              
+              <ol>
+                <li><a href="#subsection-1-1">
+              1.1
+              groundとその強制拡大の間のモデル
+            </a></li>
+<li><a href="#subsection-1-2">
+              1.2
+              stationarityの絶対性
+            </a></li>
+<li><a href="#subsection-1-3">
+              1.3
+              $j\img\lambda$の表現
+            </a></li>
+              </ol>
+            
+            </li>
+          
+
+            <li>
+              <a href="#section-2">
+              2
+              主定理
+            </a>
+              
+            </li>
+          
+            </ol>
+          </nav>
+        
+
+          <h1 id="section-1">
+            
+            <span class="section-number">1.</span>
+            準備
+          </h1>
+        
+
+          <h2 id="subsection-1-1">
+            
+            <span class="section-number">1.1</span>
+            groundとその強制拡大の間のモデル
+          </h2>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">1.1</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$M$を$\ZFC$の内部モデル，$A$を集合とする．</p>
+<p>$M\cup\set{A}$を含む最小の$\ZFC$の内部モデルが存在するとき，これを$M[A]$と書く．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">1.2</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\mathbb{B}$を完備ブール代数とする．$X\subseteq \mathbb{B}$が$\mathbb{B}$を生成するとは，$X$を含む最小の$\mathbb{B}$の完備部分ブール代数が$\mathbb{B}$に一致することをいう．このとき$|X|\leq\kappa$ならば，$\mathbb{B}$は$\kappa$-生成であるという．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box" id="label-th:restriction"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              命題
+              <span class="number">1.3</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$M$を$\ZFC$の内部モデル，$M\models\be{\mathbb{B}}{cBa}$，$\be{G}{$\mathbb{B}$-generic over $M$}$とする．$M\models \text{``$X\subseteq \mathbb{B}$ genarates $\mathbb{B}$&#39;&#39;}$ならば，$M[G]=M[G\cap X]$．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-65"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$G\cap X\in M[G\cap X]$は明らか． $\ZFC$の内部モデル$N$に対して，$M\cup\set{G\cap X}\subseteq N \to G\in N$を示せば良い．</p>
+<p>$X\in M$を含む最小の$\mathbb{B}$の$M$-完備部分ブール代数は，以下で再帰的に構成される：</p>
+
+          
+          <ol>
+            <li><p>$X_0=X$</p></li>
+<li><p>$X_{\alpha+1}=\set{\sum Y:Y\in \power^M(X_\alpha)}\cup\set{-a:a\in X_\alpha}$</p></li>
+<li><p>$X_{\gamma}=\bigcup_{\alpha&lt;\gamma}X_\alpha$ for $\be{\gamma}{limit}$</p></li>
+          </ol>
+        
+<p>$X_{|\mathbb{B}|^+{}^M}$が$X$を含む最小の$\mathbb{B}$の$M$-完備部分ブール代数である．</p>
+<p>故に，帰納的に以下が成り立つ：</p>
+
+          
+          <ol>
+            <li><p>$G\cap X_0= G\cap X$</p></li>
+<li><p>$G\cap X_{\alpha+1}=\set{\sum Y:Y\in \power^M(G\cap X_\alpha)}\cup\set{-a:a\in X_\alpha\setminus (G\cap X_\alpha)}$</p></li>
+<li><p>$G\cap X_{\gamma}=\bigcup_{\alpha&lt;\gamma}G\cap X_\alpha$ for $\be{\gamma}{limit}$</p></li>
+          </ol>
+        
+<p>したがって，$M\cup\set{G\cap X}\subseteq N$ならば$\forall \alpha\in \ON(G\cap X_\alpha\in N)$．</p>
+<p>仮定より$\mathbb{B}=X_{|\mathbb{B}|^+{}^M}$であるから，特に$G=G\cap  X_{|\mathbb{B}|^+{}^M}\in N$．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              系
+              <span class="number">1.4</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$M$を$\ZFC$の内部モデル，$M\models\be{\mathbb{B}}{$\kappa$-generated cBa}$，$\be{G}{$\mathbb{B}$-generic over $M$}$とする．このとき，$A\subseteq \kappa$で$M[G]=M[A]$となるものが取れる．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-66"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$M$の中で$\mathbb{B}$を同型に写すことで，$\mathbb{B}$はある$X\subseteq \kappa$によって生成されているとして一般性は崩れない．よって，命題<a class="reference" href="#label-th%3Arestriction">1.3</a>より明らか．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box" id="label-th:closure_of_subset_of_ordinals"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              系
+              <span class="number">1.5</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$M$を$\ZFC$の内部モデル，$M\models\be{\mathbb{B}}{cBa}$，$\be{G}{$\mathbb{B}$-generic over $M$}$とする．$\kappa\supseteq A\in M[G]$に対して$M\models \be{\mathbb{C}}{$\kappa$-generated complete sub Ba of $\mathbb{B}$}$で$M[A]=M[G\cap\mathbb{C}]$なるものが取れる．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-67"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$\dot{A}_G=A$なる$\dot{A}\in M^{\mathbb{B}}$を取って固定する．$\mathbb{C}$を以下で定める：</p>
+
+              <div class="math-display">
+                
+                \[M\models \be{\mathbb{C}}{complete sub Ba of $\mathbb{B}$ generated by $\set{\bval{\alpha\in\dot{A}}:\alpha&lt;\kappa}$}
+\]
+              </div>
+            
+<p>このとき，$\alpha&lt;\kappa$に対して$\alpha\in A\iff \bval{\alpha\in \dot{A}}\in G$ に注意すれば，命題<a class="reference" href="#label-th%3Arestriction">1.3</a>より</p>
+
+              <div class="math-display">
+                
+                \[
+M[G\cap \mathbb{C}]=M[G\cap\set{\bval{\alpha\in\dot{A}}:\alpha&lt;\kappa}]=M[A]
+\]
+              </div>
+            
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box" id="label-th:intermediate"
+            style="--bar:#238636"
+          >
+            <div class="box-title">
+              補題
+              <span class="number">1.6</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$M,N$を$\ZFC$の内部モデル，$M\models\be{\mathbb{B}}{cBa}$，$\be{G}{$\mathbb{B}$-generic over $M$}$とする．</p>
+<p>$M\subseteq N\subseteq M[G]$ならば，$M\models\be{\mathbb{C}}{complete sub Ba of $\mathbb{B}$}$で$N=M[G\cap\mathbb{C}]$となるものが取れる．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-68"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$X\in N$に対して，$N\models \mathrm{AC}$に注意して$N$の中で$\mathrm{trcl}(\set{X})$の$\ON$の部分集合によるコーディングを考えることで，系<a class="reference" href="#label-th%3Aclosure_of_subset_of_ordinals">1.5</a>より$\ON\supseteq A_X\in N\subseteq M[G]$と$M\models\be{\mathbb{C}_X}{complete sub Ba of $\mathbb{B}$}$で，$X\in M[A_X]=M[G\cap\mathbb{C}_X]\subseteq N$なるものが取れる．</p>
+<p>よって$Z:=\power^N(\mathbb{B})\in N$とおけば，任意の$X\in N$に対して，$G\cap \mathbb{C}_X\in Z$より，$X\in M[G\cap \mathbb{C}_Z]$となる． 故に$N=M[G\cap \mathbb{C}_Z]$．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <h2 id="subsection-1-2">
+            
+            <span class="section-number">1.2</span>
+            stationarityの絶対性
+          </h2>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              命題
+              <span class="number">1.7</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$M$は$\ZFC$の内部モデルで$\kappa$-uniformly covering propertyを満たすとする．このとき$\be{\lambda\geq\kappa}{regular}$に対して，$\lambda$のstationary subsetであることは$V,M$で絶対的．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-69"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>下方絶対性は明らか．上方絶対性を示す．</p>
+<p>$f:\lambda\to\lambda$を任意に取る．仮定より，$F\in M:\lambda\to[\lambda]^{&lt;\kappa}$で$\forall\alpha&lt;\lambda(f(\alpha)\in F(\alpha))$なるものが取れる．このとき$\tilde{F}\in M:\lambda\to \lambda;\alpha\mapsto \sup F(\alpha)$は$\forall\alpha&lt;\lambda(f(\alpha)\leq\tilde{F}(\alpha))$を満たすから，$M\ni C[\tilde{F}]\subseteq C[f]$．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box" id="label-th:absoluteness_of_stationarity"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              系
+              <span class="number">1.8</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$M$は$\ZFC$の内部モデルで$\kappa$-uniformly covering propertyを満たすとする．このとき$\mathrm{cf}(\lambda)\geq\kappa$に対して，$\lambda$のstationary subsetであることは$V,M$で絶対的．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-70"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>仮定より，$\mathrm{cf}(\lambda)^M=\mathrm{cf}(\lambda)\geq\kappa$．$\be{g\in M:\mathrm{cf}(\lambda)\to\lambda}{increasing continuous cofinal map}$を固定する．このとき，$\lambda\supseteq S\in M$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+M\models \be{S}{stationary subset of $\lambda$}\iff M\models \be{g^{-1}\img S}{stationary subset of $\mathrm{cf}(\lambda)$}\iff \be{g^{-1}\img S}{stationary subset of $\mathrm{cf}(\lambda)$}\iff\be{S}{stationary subset of $\lambda$}
+\]
+              </div>
+            
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <h2 id="subsection-1-3">
+            
+            <span class="section-number">1.3</span>
+            $j\img\lambda$の表現
+          </h2>
+        
+
+          <div
+            class="theorem-box" id="label-th:representation"
+            style="--bar:#238636"
+          >
+            <div class="box-title">
+              補題
+              <span class="number">1.9</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\mathrm{cf}(\lambda)&gt;\omega$，$S^\omega_\lambda:=\set{\alpha&lt;\lambda:\mathrm{cf}(\alpha)=\omega}$とする．pairwise disjointな$S^\omega_\lambda$ のstationary subsetsからなる$\lambda$-列$S=\langle S_\alpha:\alpha&lt;\lambda\rangle$に対して，次が成り立つ：$\be{j:V\ee_\kappa M}{$\lambda$-supercompact embedding}$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+M\models j\img\lambda = \set{\alpha&lt;j(\lambda):\be{j(S)_\alpha \cap \sup(j\img \lambda)}{stationary subset of $\sup(j\img \lambda)$}}
+\]
+              </div>
+            
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-71"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$\gamma:=\sup(j\img\lambda)$とおく．</p>
+<p>$\checkmark$ $j\img \lambda$は$\gamma$の$\omega$-club subset．すなわち，$\gamma$でunboundedであり，さらにincreasing $\omega$-列の極限に閉じている．</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-72"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-72-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-72-content"
+                >
+                  <p>unboundedであるのは明らか．$\omega$-clubであるのを示す．</p>
+<p>$j\img\lambda$のincreasing $\omega$-列は，$\lambda$のincreaing $\omega$-列$a=\langle a_n:n&lt;\omega\rangle$に対して，$j(\alpha)=\langle j(\alpha_n):n&lt;\omega\rangle$の形で表せる．このとき，</p>
+
+              <div class="math-display">
+                
+                \[
+\sup \ran (a)= \sup \ran (a)&lt;\lambda\implies \sup \ran (j(a))= j(\sup \ran (a))\in j\img\lambda
+\]
+              </div>
+            
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          
+
+          
+          <ol class="phase">
+            <li><p>$\alpha&lt;j(\lambda)$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+M\models\be{j(S)_\alpha\cap \gamma}{stationary subset of $\gamma$}
+\]
+              </div>
+            
+<p>を仮定する．このとき$j\img\lambda\in M$より$j(S)_\alpha\cap \gamma\cap \mathrm{cl}(j\img \lambda)\neq \varnothing$．</p>
+<p>$j(S)_\alpha\subseteq S^\omega_{j(\lambda)}$かつ$\be{j\img \lambda}{$\omega$-club subset of $\gamma$}$に注意して，$j(S)_\alpha\cap j\img \lambda\neq \varnothing$ となる．</p>
+<p>よって$\beta&lt;\lambda$に対して$j(\beta)\in j(S)_\alpha$となるが，このとき</p>
+
+              <div class="math-display">
+                
+                \[
+ M\models\exists \xi&lt;j(\lambda)(j(\beta)\in j(S)_\xi)\implies\exists \xi&lt;\lambda(\beta\in S_\xi)\implies \exists \xi&lt;\lambda(j(\beta)\in j(S)_{j(\xi)})
+\]
+              </div>
+            
+<p>よって$j(S)$はpairwise disjointであることに注意して，$\alpha\in j\img \lambda$．</p></li>
+<li><p>$\xi&lt;\lambda$，$\be{C\in M}{club subset of $\gamma$}$を任意に取る． このとき$\be{j^{-1}\img C}{$\omega$-club subset of $\lambda$}$より$S_\xi\cap \mathrm{cl}(j^{-1}\img C)\neq \varnothing$．</p>
+<p>$S_\xi\subseteq S^\omega_{\lambda}$と$\be{j^{-1}\img C}{$\omega$-club subset of $\lambda$}$に注意して，$S_\xi\cap j^{-1}\img C\neq \varnothing$．よって$j(S)_{j(\xi)}\cap C\neq \varnothing$．</p></li>
+          </ol>
+        
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <h1 id="section-2">
+            
+            <span class="section-number">2.</span>
+            主定理
+          </h1>
+        
+
+          <div
+            class="theorem-box" id="label-th:main"
+            style="--bar:#238636"
+          >
+            <div class="box-title">
+              補題
+              <span class="number">2.1</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$M$を$\ZFC$の内部モデルとし，ある$\be{\mathbb{P}\in M}{forcing poset}$と$\be{G}{$\mathbb{P}$-generic over $M$}$とに対して$V=M[G]$であるとする．</p>
+
+              <div class="math-display">
+                
+                \[
+\be{\kappa}{hyper-huge cardinal}\implies \exists \be{\mathbb{Q}\in M}{forcing poset with size $&lt;\kappa$}\exists \be{H}{$\mathbb{Q}$-generic over $M$}(V=M[H])
+\]
+              </div>
+            
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-73"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>十分大きい任意の$\be{\lambda}{inaccessible}$に対して</p>
+
+              <div class="math-display">
+                
+                \[\exists\mathbb{Q}\in M_\kappa\exists \be{H}{$\mathbb{Q}$-generic over $M_\lambda$}(V_\lambda=M_\lambda[H])
+\]
+              </div>
+            
+<p>が成り立つのを示せば十分：実際，仮定の下でinaccessible cardinalsはproper class manyにあるのに注意して，このときある$\mathbb{Q}\in M_\kappa$と$H\subseteq \mathbb{Q}$で</p>
+
+              <div class="math-display">
+                
+                \[
+\set{\be{\lambda}{inaccessible}: \be{H}{$\mathbb{Q}$-generic over $M_\lambda$}\land V_\lambda=M_\lambda[H]}
+\]
+              </div>
+            
+<p>をproper classにするものが取れるが，これは$\mathbb{Q},H$が望むものであることを意味する．</p>
+<p>$\mathbb{P}\in V_\lambda$なる$\be{\lambda\geq\kappa}{inaccessible}$を任意に取って固定する． $\be{\kappa}{hyper-huge}$より，$j:V\ee_\kappa N$で$\lambda&lt;j(\kappa)$かつ$N^{j(\lambda)}\subseteq N$となるものが取れる．特に$\be{j(\lambda)}{inaccessible}$．</p>
+<p>$\checkmark$ $j(M):=\bigcup_{\alpha\in \ON} j(M_\alpha)$は$\ZFC$の内部モデル，$\be{j(G)}{$j(\mathbb{P})$-generic over $N$}$，$N=j(M)[j(G)]$．特に，$j(M)$は$N$に関して$j(\lambda)$-uniformly covering propertyを満たす．</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-74"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-74-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-74-content"
+                >
+                  <p>ここもうちょっとしっかり考える</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          
+
+          <div
+            class="theorem-box"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              主張
+              <span class="number">2.2</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$j\img j(\lambda)\in j(M)$</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-75"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$S$を次を満たすものとして取る：</p>
+
+              <div class="math-display">
+                
+                \[M\models \be{S=\langle S_\alpha:\alpha&lt;j(\lambda)\rangle}{$j(\lambda)$-sequence of pairwise disjoint stationary subsets of $S^\omega_{j(\lambda)}$}
+\]
+              </div>
+            
+<p>仮定より$M$は$\lambda$-uniformly covering propertyを満たし，$\mathrm{cf}(j(\lambda))=j(\lambda)&gt;\lambda$であることから，系<a class="reference" href="#label-th%3Aabsoluteness_of_stationarity">1.8</a>より</p>
+
+              <div class="math-display">
+                
+                \[
+\be{S=\langle S_\alpha:\alpha&lt;j(\lambda)\rangle}{$j(\lambda)$-sequence of pairwise disjoint stationary subsets of $S^\omega_{j(\lambda)}$}
+\]
+              </div>
+            
+<p>よって補題<a class="reference" href="#label-th%3Arepresentation">1.9</a>より</p>
+
+              <div class="math-display">
+                
+                \[N\models j\img j(\lambda) = \set{\alpha&lt;j(j(\lambda)):\be{j(S)_\alpha \cap \sup(j\img j(\lambda))}{stationary subset of $\sup(j\img j(\lambda))$}}
+\]
+              </div>
+            
+<p>ここで$S\in M$より$j(S)\in j(M)$であるのに注意する．</p>
+<p>このとき$\mathrm{cf}^N(\sup(j\img j(\lambda)))=j(\lambda)$であり，$j(M)$は$N$に対する$j(\lambda)$-uniformly covering propertyを満たすことから，系<a class="reference" href="#label-th%3Aabsoluteness_of_stationarity">1.8</a>を$N$に適用することで</p>
+
+              <div class="math-display">
+                
+                \[
+\set{\alpha&lt;j(j(\lambda)):\be{j(S)_\alpha \cap \sup(j\img j(\lambda))}{stationary subset of $\sup(j\img j(\lambda))$}}^{N}= \set{\alpha&lt;j(j(\lambda)):\be{j(S)_\alpha \cap \sup(j\img j(\lambda))}{stationary subset of $\sup(j\img j(\lambda))$}}^{j(M)}\in j(M)
+\]
+              </div>
+            
+<p>故に，$j\img j(\lambda)\in j(M)$となる．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+<p>$\checkmark$ $M_{j(\lambda)}\subseteq j(M_\lambda)$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-76"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-76-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-76-content"
+                >
+                  <p>$j\img j(\lambda)\in j(M)$より$j|j(\lambda)\in j(M)$． よって$x\in M_{j(\lambda)}$で$x\subseteq j(\lambda)$なるものに対して，</p>
+
+              <div class="math-display">
+                
+                \[
+x=(j|j(\lambda))^{-1}\img j(x)\in j(M)
+\]
+              </div>
+            
+<p>よって$x\in j(M)_{j(\lambda)}=j(M_\lambda)$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          
+<p>$\checkmark$ $M_{j(\lambda)}\subseteq j(M_\lambda)\subseteq N_{j(\lambda)}=V_{j(\lambda)}$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-77"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-77-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-77-content"
+                >
+                  <p>$j(M)_{j(\lambda)}\subseteq N_{j(\lambda)}$より$j(M_\lambda)\subseteq N_{j(\lambda)}$．$N^{j(\lambda)}\subseteq N$より$N_{j(\lambda)}=V_{j(\lambda)}$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          
+<p>$\checkmark$ $\exists\mathbb{Q}\in j(M_\kappa)\exists \be{H}{$\mathbb{Q}$-generic over $j(M_\lambda)$}(j(V_\lambda)=j(M_\lambda)[H])$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-78"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-78-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-78-content"
+                >
+                  <p>$V=M[G]$より$V_{j(\lambda)}=M_{j(\lambda)}[G]$であるから，$M_{j(\lambda)}\subseteq j(M_\lambda)\subseteq M_{j(\lambda)}[G]$．</p>
+<p>故に，補題<a class="reference" href="#label-th%3Aclosure_of_subset_of_ordinals">1.5</a>より，$\mathbb{P}$の$M_{j(\lambda)}(\lambda)$におけるBoole完備化$\mathbb{B}:=B^{M_{j(\lambda)}}(\mathbb{P})$の$M_{j(\lambda)}$-完備部分Boole代数 $\mathbb{C}\in M_{j(\lambda)}$で$j(M_\lambda)=M_{j(\lambda)}[G\uparrow \cap \mathbb{C}]$なるものが取れる．</p>
+<p>分解定理より，商Boole代数$\mathbb{B}/(G\uparrow\cap\mathbb{C})\in M_{j(\lambda)}[G\uparrow \cap \mathbb{C}]=j(M_\lambda)$に対して，$M_{j(\lambda)}[G]=j(M_\lambda)[G\uparrow/(G\uparrow\cap\mathbb{C})]$となる．</p>
+<p>故に，$\mathbb{Q}:=(\mathbb{B}/(G\uparrow\cap\mathbb{C}))\setminus \set{\mathbb{0}}$，$H:= G\uparrow/(G\uparrow\cap\mathbb{C})$とおけば，$\mathbb{Q}\in j(M_\lambda)$かつ$\be{H}{$\mathbb{Q}$-generic over $j(M_\lambda)$}$であって，$j(M_\lambda)[H]=M_{j(\lambda)}[G]=N_{j(\lambda)}$が成り立つ．</p>
+<p>最後に，$\mathbb{Q}\in j(M_\kappa)$を示すには$\mathbb{Q}\in V_{j(\kappa)}$を見れば良いが，$\mathbb{P}\in V_\lambda$より$\mathbb{B}\in V_\lambda$と出来るから，$\mathbb{Q}\in V_\lambda\subseteq V_{j(\kappa)}$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          
+<p>したがって，</p>
+
+              <div class="math-display">
+                
+                \[N\models \exists\mathbb{Q}\in j(M_\kappa)\exists \be{H}{$\mathbb{Q}$-generic over $j(M_\lambda)$}(j(V_\lambda)=j(M_\lambda)[H])
+\]
+              </div>
+            
+<p>より</p>
+
+              <div class="math-display">
+                
+                \[\exists\mathbb{Q}\in M_\kappa\exists \be{H}{$\mathbb{Q}$-generic over $M_\lambda$}(V_\lambda=M_\lambda[H])
+\]
+              </div>
+            
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box" id="label-th:only-set-many"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              系
+              <span class="number">2.3</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>hyper-huge cardinalが存在すれば，$V$のgroundsは高々set many個しかない．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-79"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                
+          <div
+            class="theorem-box" id="label-fact1"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              事実
+              <span class="number">2.4</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\ZFC$の内部モデル$M,N$は以下を満たすとする：</p>
+
+          
+          <ol>
+            <li><p>$M,N$は$V$に対する$\lambda$-covering propertyと$\lambda$-approximation propertyを持つ</p></li>
+<li><p>$\power^M(\lambda)=\power^N(\lambda)$</p></li>
+<li><p>$(\lambda^+){}^M=(\lambda^+){}^N=\lambda^+$</p></li>
+          </ol>
+        
+<p>このとき，$M=N$となる．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box" id="label-fact2"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              事実
+              <span class="number">2.5</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$M$を$\ZFC$の内部モデルとし，ある$\be{\mathbb{P}\in M}{forcing poset}$と$\be{G}{$\mathbb{P}$-generic over $M$}$とに対して$V=M[G]$であるとする．</p>
+<p>このとき，以下が成り立つ：$\lambda:=|\mathbb{P}|^+$に対して</p>
+
+          
+          <ol>
+            <li><p>$M$は$V$に対する$\lambda$-covering property と$\lambda$-approximation propertyを持つ</p></li>
+<li><p>$(\lambda^+)^M=\lambda^+$</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+<p>事実<a class="reference" href="#label-fact1">2.4</a>,<a class="reference" href="#label-fact2">2.5</a>に注意して，補題<a class="reference" href="#label-th%3Amain">2.1</a>から特に，</p>
+
+              <div class="math-display">
+                
+                \[\set{\text{grounds of $V$}}\to\power([\kappa]^{&lt;\kappa});M\mapsto [\kappa]^{&lt;\kappa}\cap M
+\]
+              </div>
+            
+<p>は単射である．したがって，$V$のgroundsは高々集合個である．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              系
+              <span class="number">2.6</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\be{\kappa}{hyper-huge}$とする．このとき以下が成立：</p>
+
+          
+          <ol>
+            <li><p>マントル（すべての$V$のgroundsの共通部分）$\mathbb{M}$は，任意の$V$の強制拡大に対して，硬い岩盤（最小のground）である</p></li>
+<li><p>ある$\mathbb{P}\in \mathbb{M}_\kappa$に対して，$V$は$\mathbb{P}$に対する$\mathbb{M}$の強制拡大である</p></li>
+<li><p>$V$のgroundsは$&lt;\kappa$個しかない</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-80"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$1$は系<a class="reference" href="#label-th%3Aonly-set-many">2.3</a>とsDDGより明らか．$2$は補題<a class="reference" href="#label-th%3Amain">2.1</a>より明らか．$3$を示す．</p>
+<p>$2$より，$\mathbb{P}\in \mathbb{M}_\kappa$と$\be{G}{$\mathbb{P}$-generic over $\mathbb{M}$}$で$V=\mathbb{M}[G]$なるものが取れる．</p>
+<p>このとき，任意の$\ZFC$の内部モデル$N\supseteq\mathbb{M}$に対して，$\mathbb{M}\subseteq N\subseteq \mathbb{M}[G]$より補題<a class="reference" href="#label-th%3Aintermediate">1.6</a>から，$\mathbb{Q}\subseteq B^{\mathbb{M}}(\mathbb{P})$で$N=\mathbb{M}[G\cap\mathbb{Q}]$となるものが取れる．</p>
+<p>よって$V$のgroundsは高々$2^{|B^{\mathbb{M}}(\mathbb{P})|}&lt;\kappa$個である．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <section class="bibliography">
+            <h2>参考文献</h2>
+            
+            <ol>
+              
+            <li id="bib-Usuba" value="1">
+              
+              
+              <p>T. Usuba, The downward directed grounds hypothesis and very large cardinals, J. Math. Log. <strong>17</strong> (2017), no.&nbsp;2, 1750009, 24 pp.; MR3730565</p>
+              
+            </li>
+          
+
+            <li id="bib-Jech" value="2">
+              
+              
+              <p>T.&nbsp;J. Jech, <em>Set theory</em>, the third millennium edition, revised and expanded, Springer Monographs in Mathematics, Springer, Berlin, 2003; MR1940513</p>
+              
+            </li>
+          
+            </ol>
+          </section>
+        
+
+    <p class="back-to-top">
+      <a href="#top">ページ先頭に戻る</a>
+    </p>
+
+    <p>
+      <a href="../materials.html">資料一覧に戻る</a>
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 Ud.afhal
+  </footer>
+
+  <script id="document-runtime">
+const MystyleRuntime = (() => {
+      "use strict";
+
+      const TOGGLE_SELECTOR =
+        "details.proof-box[data-toggle-key], .reason-box[data-toggle-key]";
+
+      const revisions = new WeakMap();
+      const lockedStates = new WeakMap();
+
+      let queue = Promise.resolve();
+      let printState = null;
+
+      const mathReady = new Promise((resolve) => {
+        const loader = document.getElementById("mathjax-loader");
+        let settled = false;
+
+        const timer = window.setTimeout(() => finish(null), 20000);
+
+        function finish(value) {
+          if (settled) {
+            return;
+          }
+
+          settled = true;
+          window.clearTimeout(timer);
+          resolve(value);
+        }
+
+        async function loaded() {
+          try {
+            const mathJax = window.MathJax;
+
+            if (mathJax?.startup?.promise) {
+              await mathJax.startup.promise;
+            }
+
+            finish(mathJax?.typesetPromise ? mathJax : null);
+          } catch {
+            finish(null);
+          }
+        }
+
+        if (window.MathJax?.startup?.promise) {
+          loaded();
+        } else if (loader) {
+          loader.addEventListener("load", loaded, { once: true });
+          loader.addEventListener("error", () => finish(null), {
+            once: true
+          });
+        } else {
+          finish(null);
+        }
+      });
+
+      function schedule(task) {
+        const pending = queue
+          .catch(() => undefined)
+          .then(() => mathReady)
+          .then(async (initialMathJax) => {
+            const mathJax = window.MathJax?.typesetPromise
+              ? window.MathJax
+              : initialMathJax;
+
+            if (mathJax?.startup?.promise) {
+              await mathJax.startup.promise;
+            }
+
+            return task(mathJax);
+          });
+
+        queue = pending;
+        return pending;
+      }
+
+      function toggleElements(root) {
+        return Array.from(root.querySelectorAll(TOGGLE_SELECTOR));
+      }
+
+      function isExpanded(element) {
+        return element.matches("details.proof-box")
+          ? element.open
+          : !element.classList.contains("is-collapsed");
+      }
+
+      function setReasonExpanded(box, expanded) {
+        const button = box.querySelector(
+          ":scope > .reason-inner > .reason-prefix > .reason-toggle"
+        );
+
+        const content = box.querySelector(
+          ":scope > .reason-inner > .reason-text"
+        );
+
+        box.classList.toggle("is-collapsed", !expanded);
+
+        if (content) {
+          content.hidden = !expanded;
+        }
+
+        if (button) {
+          button.setAttribute("aria-expanded", String(expanded));
+          button.setAttribute(
+            "aria-label",
+            expanded ? "理由を折り畳む" : "理由を展開"
+          );
+        }
+      }
+
+      function setExpanded(element, expanded) {
+        if (element.matches("details.proof-box")) {
+          element.open = expanded;
+        } else {
+          setReasonExpanded(element, expanded);
+        }
+      }
+
+      function snapshot(root) {
+        if (lockedStates.has(root)) {
+          return new Map(lockedStates.get(root));
+        }
+
+        return new Map(
+          toggleElements(root).map((element) => [
+            element.dataset.toggleKey,
+            isExpanded(element)
+          ])
+        );
+      }
+
+      function restore(root, states) {
+        for (const element of toggleElements(root)) {
+          const key = element.dataset.toggleKey;
+
+          setExpanded(
+            element,
+            states.has(key) ? states.get(key) : true
+          );
+        }
+      }
+
+      function expandAll(root) {
+        for (const element of toggleElements(root)) {
+          setExpanded(element, true);
+        }
+      }
+
+      async function typesetOpen(root, mathJax, previousStates) {
+        const desiredStates = new Map(
+          toggleElements(root).map((element) => {
+            const key = element.dataset.toggleKey;
+
+            return [
+              key,
+              previousStates.has(key) ? previousStates.get(key) : true
+            ];
+          })
+        );
+
+        const oldVisibility = root.style.visibility;
+        const oldBusy = root.getAttribute("aria-busy");
+        const wasInert = root.hasAttribute("inert");
+
+        lockedStates.set(root, desiredStates);
+
+        /*
+          閉じた環境内で数式を計測しないよう、
+          一時的に全環境を開き、不可視・操作不可にして組版する。
+          入力欄自体は変更しない。
+        */
+        root.style.visibility = "hidden";
+        root.setAttribute("aria-busy", "true");
+        root.setAttribute("inert", "");
+
+        expandAll(root);
+
+        try {
+          mathJax.texReset();
+          await mathJax.typesetPromise([root]);
+        } finally {
+          restore(root, desiredStates);
+          lockedStates.delete(root);
+
+          root.style.visibility = oldVisibility;
+
+          if (oldBusy === null) {
+            root.removeAttribute("aria-busy");
+          } else {
+            root.setAttribute("aria-busy", oldBusy);
+          }
+
+          if (!wasInert) {
+            root.removeAttribute("inert");
+          }
+        }
+      }
+
+      function render(root, html) {
+        const revision = (revisions.get(root) || 0) + 1;
+        revisions.set(root, revision);
+
+        // MathJax待機中も本文のHTMLは先に表示する。
+        if (!window.MathJax?.typesetPromise) {
+          const states = snapshot(root);
+          root.innerHTML = html;
+          restore(root, states);
+        }
+
+        return schedule(async (mathJax) => {
+          if (revisions.get(root) !== revision) {
+            return Boolean(mathJax);
+          }
+
+          // 待機中のユーザー操作も、この時点で取り込む。
+          const states = snapshot(root);
+
+          if (mathJax) {
+            mathJax.typesetClear([root]);
+          }
+
+          root.innerHTML = html;
+
+          if (!mathJax) {
+            restore(root, states);
+            return false;
+          }
+
+          await typesetOpen(root, mathJax, states);
+          return true;
+        });
+      }
+
+      function typeset(root) {
+        return schedule(async (mathJax) => {
+          if (!root || !mathJax) {
+            return false;
+          }
+
+          await typesetOpen(root, mathJax, snapshot(root));
+          return true;
+        });
+      }
+
+      function revealTarget(target) {
+        for (
+          let element = target;
+          element;
+          element = element.parentElement
+        ) {
+          if (element.matches("details")) {
+            element.open = true;
+          }
+
+          if (element.matches(".reason-box")) {
+            setReasonExpanded(element, true);
+          }
+        }
+      }
+
+      function targetFromHash(hash) {
+        try {
+          const id = decodeURIComponent(hash.replace(/^#/, ""));
+          return id ? document.getElementById(id) : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function revealHash() {
+        const target = targetFromHash(window.location.hash);
+
+        if (target) {
+          revealTarget(target);
+          requestAnimationFrame(() => target.scrollIntoView());
+        }
+      }
+
+      document.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element)) {
+          return;
+        }
+
+        const button = event.target.closest(".reason-toggle");
+
+        if (button) {
+          const box = button.closest(".reason-box");
+
+          if (box) {
+            setReasonExpanded(box, !isExpanded(box));
+          }
+
+          return;
+        }
+
+        const link = event.target.closest('a[href^="#"]');
+
+        if (!link) {
+          return;
+        }
+
+        const hash = link.getAttribute("href");
+        const target = targetFromHash(hash);
+
+        if (!target) {
+          return;
+        }
+
+        event.preventDefault();
+        revealTarget(target);
+
+        try {
+          history.replaceState(null, "", hash);
+        } catch {
+          // file:で履歴操作が制限されても移動は続行する。
+        }
+
+        requestAnimationFrame(() => target.scrollIntoView());
+      });
+
+      window.addEventListener("hashchange", revealHash);
+
+      window.addEventListener("beforeprint", () => {
+        if (printState) {
+          return;
+        }
+
+        printState = Array.from(
+          document.querySelectorAll(".paper"),
+          (root) => ({
+            root,
+            states: snapshot(root)
+          })
+        );
+
+        for (const { root } of printState) {
+          expandAll(root);
+        }
+      });
+
+      window.addEventListener("afterprint", () => {
+        if (!printState) {
+          return;
+        }
+
+        for (const { root, states } of printState) {
+          if (root.isConnected) {
+            restore(root, states);
+          }
+        }
+
+        printState = null;
+      });
+
+      return {
+        render,
+        typeset,
+        snapshot,
+        restore,
+        revealHash
+      };
+    })();
+  </script>
+
+  <script>
+    MystyleRuntime
+      .typeset(document.querySelector(".paper"))
+      .then(() => MystyleRuntime.revealHash())
+      .catch((error) => {
+        console.error(error);
+        MystyleRuntime.revealHash();
+      });
+  </script>
+</body>
+</html>
