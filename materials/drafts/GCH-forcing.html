@@ -1,0 +1,1354 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GCHを強制するクラス強制法 — Chicken-generic over Rice</title>
+  <link
+              rel="stylesheet"
+              href="/style.css"
+            >
+
+  <script id="mathjax-config">
+window.MathJax = {
+      startup: {
+        typeset: false
+      },
+      tex: {
+        inlineMath: [
+          ["\\(", "\\)"],
+          ["$", "$"]
+        ],
+        displayMath: [
+          ["\\[", "\\]"],
+          ["$$", "$$"]
+        ],
+        tags: "ams",
+        useLabelIds: true,
+        processEscapes: true,
+        macros: {
+          be: ["#1:\\text{#2}", 2],
+          proves: "\\vdash",
+          forces: "\\Vdash",
+          PA: "\\mathrm{PA}",
+          BST: "\\mathrm{BST}",
+          ZF: "\\mathrm{ZF}",
+          ZFC: "\\mathrm{ZFC}",
+          Con: "\\mathrm{Con}",
+          MA: "\\mathrm{MA}",
+          HF: "\\mathrm{HF}",
+          bval: ["\\left[\\!\\left[ #1 \\right]\\!\\right]", 1],
+          set: ["\\{{}#1{}\\}", 1],
+          power: "\\mathcal{P}",
+          Def: "\\mathrm{def}",
+          val: "\\mathrm{val}",
+          prm: "\\mathrm{prm}",
+          img: "\\text{``}",
+          dom: "\\mathrm{dom}",
+          ran: "\\mathrm{ran}",
+          inj: "\\overset{1-1}{\\longrightarrow}",
+          surj: "\\overset{onto}{\\longrightarrow}",
+          bij: "\\xrightarrow[onto]{1-1}",
+          iso: "\\overset{\\sim}{\\longrightarrow}",
+          ee: "\\overset{\\prec}{\\rightarrow}",
+          ON: "\\mathrm{ON}",
+          ot: "\\mathrm{ot}",
+          cf: "\\mathrm{cf}",
+          len: "\\mathrm{len}",
+          club: "\\mathrm{club}",
+          nonstat: "\\mathrm{nonstat}",
+          inn: "\\varepsilon",
+          obj: ["\\ulcorner #1\\urcorner", 1],
+          bbepsilon: "\\mathord{\\unicode{x03F5}}",
+          mathbbl: ["\\mathbb{#1}", 1]
+        }
+      },
+      chtml: {
+        displayAlign: "left",
+        displayIndent: "1.5em"
+      },
+      options: {
+        skipHtmlTags: [
+          "script",
+          "noscript",
+          "style",
+          "textarea",
+          "pre",
+          "code"
+        ]
+      }
+    };
+  </script>
+
+  <script
+    id="mathjax-loader"
+    defer
+    src="/MathJax-4.1.3/tex-chtml.js"
+  ></script>
+</head>
+
+<body class="public-page" id="top">
+  <header class="site-header">
+    <a class="site-brand" href="/index.html">
+      
+            <img
+              src="/images/header.png"
+              alt="Chicken-generic over Rice"
+            >
+          
+    </a>
+
+    <nav class="site-nav" aria-label="メインナビゲーション">
+      <a href="/index.html">ホーム</a>
+      <a href="/materials.html">資料</a>
+      <a href="/updates.html">更新履歴</a>
+      <a href="/about.html">このサイトについて</a>
+      <a href="/links.html">リンク</a>
+    </nav>
+  </header>
+
+  <div class="public-document" id="public-document">
+    <header class="document-heading">
+      <h1>GCHを強制するクラス強制法</h1>
+      
+            <div class="document-meta">
+              <span>著者：Ud.afhal</span>
+<span class="meta-separator">·</span>
+<span>
+              更新日：<time>2026–10-30</time>
+            </span>
+            </div>
+          
+    </header>
+
+    <main class="paper">
+      <p>本ノートの内容はfolkloreと推測されますが，適切な参考文献（該当の証明の書かれた文献）を記載できておりません． 執筆に際しては，<span class="citation-group">[<a
+              class="citation"
+              id="cite-GCH13"
+              href="#bib-GCH13"
+            >GCH13</a>]</span>において提示された定義を参考に証明を与えています．</p>
+
+          <h1 id="section-1">
+            
+            <span class="section-number">1.</span>
+            復習
+          </h1>
+        
+<p>$\be{\kappa}{regular}$とする．</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">1.1</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\kappa$のCohen realを一つ付け加える強制半順序$\mathrm{add}(\kappa,1)$は以下で定義される：</p>
+
+              <div class="math-display">
+                
+                \[
+\mathrm{add}(\kappa,1)=\langle 2^{&lt;\kappa},\supseteq,\varnothing\rangle
+\]
+              </div>
+            
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">1.2</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>よく知られるように，以下が成り立つ：</p>
+
+              <div class="math-display">
+                
+                \[
+\mathrm{add}(\kappa,1)\forces\text{``$\bigcup\dot{G}:\kappa\to 2$&#39;&#39;}
+\]
+              </div>
+            
+<p>$\bigcup G$を指して$\kappa$のCohen realという．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box" id="label-th:property"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              命題
+              <span class="number">1.3</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\mathrm{add}(\kappa,1)$は次の性質を持つ：</p>
+
+          
+          <ol>
+            <li><p>$&lt;\kappa$-closed</p></li>
+<li><p>$(2^{&lt;\kappa})^+$-c.c.</p></li>
+<li><p>$|\mathrm{add}(\kappa,1)|=2^{&lt;\kappa}$</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-19"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>いずれも定義から簡単に従う．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              命題
+              <span class="number">1.4</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\mathrm{add}(\kappa,1)\forces\text{``$2^{&lt;\kappa}=\kappa$&#39;&#39;}$．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-20"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$\alpha&lt;\kappa$を任意に取って固定する．</p>
+
+          
+          <ol class="phase">
+            <li><p>命題<a class="reference" href="#label-th%3Aproperty">1.3</a>の1より</p>
+
+              <div class="math-display">
+                
+                \[
+\mathrm{add}(\kappa,1)\forces\text{``$\check{V}^{&lt;\kappa}\subseteq \check{V}$&#39;&#39;}
+\]
+              </div>
+            
+<p>であるから，$\mathrm{add}(\kappa,1)\forces\text{``${}^\alpha2=({}^\alpha 2)^{\check{V}}$&#39;&#39;}$となる．</p></li>
+<li><p>$2\cdot\kappa=\kappa$に注意して，以降では$\bigcup G:\kappa\to 2$を，$\langle \bigcup G(2\cdot\xi) \bigcup G(2\cdot\xi+1):\xi&lt;\kappa\rangle$によって$\set{\texttt{00},\texttt{01},\texttt{10},\texttt{11}}$に値を取る長さ$\kappa$の列と自然に同一視する． $p\in\mathrm{add}(\kappa,1)$についても，終端を適当に処理して同様に同一視する．</p>
+<p>$x\subseteq\alpha$を$\lceil x\rceil=\langle \chi_x(\xi)\chi_x(\xi):\xi&lt;\alpha\rangle$によってコーディングする．$\lceil x\rceil$は$\texttt{00},\texttt{11}$のいずれかに値を取るのに注意する．</p>
+<p>列の中に出現した際に終端を判別するため，$\lceil x\rceil$の前後に$\texttt{01}$を付け加えた列$\texttt{01}^\frown\lceil x\rceil^\frown\texttt{01}$を考える．</p>
+
+          
+          <ol>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$x\in{}^\alpha 2$に対して，次で定まる$D_x$は$\mathrm{add}(\kappa,1)$の稠密部分集合：</p>
+
+              <div class="math-display">
+                
+                \[
+D_x=\set{p\in \mathrm{add}(\kappa,1):\text{The pattern $\texttt{01}^\frown\lceil x\rceil^\frown\texttt{01}$ appears in $p$}}
+\]
+              </div>
+            
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-21"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-21-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-21-content"
+                >
+                  <p>任意の$p\in \mathrm{add}(\kappa,1)$に対して，必要なら$0$を付け加えて列の長さが偶数になるよう延長したのち，$\texttt{01}^\frown\lceil x\rceil^\frown\texttt{01}$ を後ろに付け加えて列$q$を作れば，$p\geq q\in D_x$．ここで，$q\in \mathrm{add}(\kappa,1)$は，任意の$\beta&lt;\kappa$に対して$\beta+1+2+\alpha+2&lt;\kappa$が成り立つことから従う．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ol>
+        
+<p>故に，</p>
+
+              <div class="math-display">
+                
+                \[
+\mathrm{add}(\kappa,1)\forces\text{``$D_x\cap\dot{G}\neq\varnothing$&#39;&#39;}
+\]
+              </div>
+            
+<p>より</p>
+
+              <div class="math-display">
+                
+                \[
+\mathrm{add}(\kappa,1)\forces \text{``The pattern $\texttt{01}^\frown\lceil x\rceil^\frown\texttt{01}$ appears in $\bigcup\dot{G}:\kappa\to\set{\texttt{00},\texttt{01},\texttt{10},\texttt{11}}$&#39;&#39;}
+\]
+              </div>
+            
+<p>以上より，$1^\circ$に注意して</p>
+
+              <div class="math-display">
+                
+                \[
+\mathrm{add}(\kappa,1)\forces \text{``$\forall x\in {}^\alpha 2($ The pattern $\texttt{01}^\frown\lceil x\rceil^\frown\texttt{01}$ appears in $\bigcup\dot{G}:\kappa\to \set{\texttt{00},\texttt{01},\texttt{10},\texttt{11}})$&#39;&#39;}
+\]
+              </div>
+            
+<p>特に$\mathrm{add}(\kappa,1)\forces \text{``$2^\alpha\leq\kappa$&#39;&#39;}$より，主張が従う．</p></li>
+          </ol>
+        
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+<p>したがって，$\mathrm{add}(\kappa,1)$は，$\kappa$以上$(2^{&lt;\kappa})^+$未満のところを$\kappa$に潰し，その外の共終数や基数，冪演算を保つ強制半順序である．</p>
+<p>特に，$\mathrm{add}(\lambda^+,1)$は，$\lambda^+$以上$(2^{\lambda})^+$未満のところを$\lambda^+$に潰し，その外の共終数や基数，冪演算を保つ強制半順序である．</p>
+
+          <h1 id="section-2">
+            
+            <span class="section-number">2.</span>
+            途中までの$\mathrm{GCH}$の強制
+          </h1>
+        
+
+          <div
+            class="theorem-box" id="label-def:GCH-iteration"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">2.1</span>
+              <span class="theorem-note">(The canonical forcing of the GCH)</span>
+            </div>
+            <div class="theorem-content">
+              <p>Easton support iteration $\langle\mathbb{P}_\alpha:\alpha\in\mathrm{Ord}\rangle$を次で定める： $\mathbb{P}_\alpha\forces\text{``$\be{\alpha}{cardinal}$&#39;&#39;}$のとき，$\mathbb{P}_\alpha\forces\text{``$\dot{\mathbb{Q}}_\alpha=\mathrm{add}(\alpha^+,1)$&#39;&#39;}$について$\mathbb{P}_{\alpha+1}=\mathbb{P}_{\alpha}*\dot{\mathbb{Q}}_\alpha$．それ以外のときtrival forcingを合成する．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">2.2</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>ここでEaston support iterationとは，regular cardinalのlimit stagesでdirect limit，それ以外のlimit stagesでinverse limitを取ることをいう．</p>
+            </div>
+          </div>
+        
+<p>以降の主張は，Easton supportの代わりにfull supportを用いても成り立ち，証明はより簡潔となる．</p>
+
+          <div
+            class="theorem-box" id="label-th:set"
+            style="--bar:#238636"
+          >
+            <div class="box-title">
+              補題
+              <span class="number">2.3</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\langle\mathbb{P}_\alpha:\alpha\in\mathrm{Ord}\rangle$を定義<a class="reference" href="#label-def%3AGCH-iteration">2.1</a>のものとする． $\langle\lambda_\alpha:\alpha\in\mathrm{Ord}\rangle$を再帰的に以下で定義されるものとする：</p>
+
+              <div class="math-display">
+                
+                \[
+\lambda_0=\omega,\quad\lambda_{\alpha+1}=(\lambda_\alpha^+)^{V^{\mathbb{P}_{\lambda_\alpha}}},\quad
+\lambda_\gamma=\sup_{\alpha&lt;\gamma}\lambda_\alpha\quad\text{for $\be{\gamma}{limit}$}
+\]
+              </div>
+            
+<p>このとき，任意の$\alpha$に対して以下が成立：</p>
+
+          
+          <ol>
+            <li><p>$\forall\xi&lt;\alpha(\mathbb{P}_{\lambda_\alpha}\forces\text{``$2^{\lambda_\xi}=\lambda_\xi^+=\lambda_{\xi+1}$&#39;&#39;})$</p></li>
+<li><p>$\mathbb{P}_{\lambda_\alpha}\forces\text{``$\be{\lambda_\alpha}{cardinal}$&#39;&#39;}$</p></li>
+<li><p>$\mathbb{P}_{\lambda_{\alpha+1}}\forces\text{``$\check{V}[\dot{G}_{\lambda_\alpha}]^{\lambda_\alpha}\subseteq \check{V}[\dot{G}_{\lambda_\alpha}]\land 2^{\lambda_\alpha}=\lambda_{\alpha+1}=\lambda_\alpha^+$&#39;&#39;}$</p></li>
+<li><p>$\lambda_{\alpha+2}=((2^{\lambda_\alpha})^+)^{V^{\mathbb{P}_{\lambda_\alpha}}}&gt;2^{\lambda_\alpha}$</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">2.4</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\langle\lambda_\alpha:\alpha\in\mathrm{Ord}\rangle$がwell-definedであるのは，各$\mathbb{P}_{\lambda_\alpha}$がweakly homogeneousより，zero-one法則が成り立つことによる．（詳しくは<span class="citation-group">[<a
+              class="citation"
+              id="cite-Kun11"
+              href="#bib-Kun11"
+            >Kun11</a>, Theorem IV.4.15.]</span>を参照．）</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-22"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\mathbb{P}_{\lambda_{\alpha+1}}\equiv \mathbb{P}_{\lambda_\alpha+1}$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-23"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-23-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-23-content"
+                >
+                  <p>$\lambda_{\alpha+1}$の定義より，$\forall\xi\in[\lambda_\alpha+1,\lambda_{\alpha+1})(\mathbb{P}_{\xi}\forces\text{``$\neg(\be{\xi}{cardinal})$&#39;&#39;})$より$\forall\xi\in[\lambda_\alpha+1,\lambda_{\alpha+1})(\mathbb{P}_{\xi}\forces\text{``$\be{\dot{\mathbb{Q}}_\xi}{trivial}$&#39;&#39;})$であるから，$\mathbb{P}_{\lambda_{\alpha+1}}\equiv \mathbb{P}_{\lambda_\alpha+1}$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\alpha$ごとに，1$\implies$2,3,4が成り立つ</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-24"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-24-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-24-content"
+                >
+                  <p>1を仮定する．2は明らか．2より，定義から$\mathbb{P}_{\lambda_\alpha}\forces\text{``$\be{\dot{\mathbb{Q}}_{\lambda_\alpha}=\mathrm{add}(\lambda_\alpha^+,2)}{$&lt;\lambda_{\alpha}^+$-closed}$&#39;&#39;}$より</p>
+
+              <div class="math-display">
+                
+                \[
+\mathbb{P}_{\lambda_\alpha+1}\forces\text{``$\check{V}[\dot{G}_{\lambda_\alpha}]^{\lambda_\alpha}\subseteq \check{V}[\dot{G}_{\lambda_\alpha}]\land2^{\lambda_\alpha}=\lambda_{\alpha+1}=\lambda_\alpha^+$&#39;&#39;}
+\]
+              </div>
+            
+<p>故に，1${}^{\circ}$より3が従う．再び2より，$\mathbb{P}_{\lambda_\alpha}\forces\text{``$\be{\dot{\mathbb{Q}}_{\lambda_\alpha}=\mathrm{add}(\lambda_\alpha^+,2)}{$(2^{\lambda_\alpha})^+$-c.c.}$&#39;&#39;}$より</p>
+
+              <div class="math-display">
+                
+                \[
+\mathbb{P}_{\lambda_\alpha+1}\forces\text{``$|(2^{\lambda_\alpha})^{\check{V}[\dot{G}_{\lambda_\alpha}]}|=\lambda_{\alpha+1}=\lambda_{\alpha}^+\land ((2^{\lambda_\alpha})^+)^{\check{V}[\dot{G}_{\lambda_\alpha}]} =\lambda_{\alpha}^{++}=\lambda_{\alpha+1}^+$&#39;&#39;}
+\]
+              </div>
+            
+<p>故に，1${}^{\circ}$より$\lambda_{\alpha+2}=((2^{\lambda_\alpha})^+)^{V^{\mathbb{P}_{\lambda_\alpha}}}$．最後に，$((2^{\lambda_\alpha})^+)^{V^{\mathbb{P}_{\lambda_\alpha}}}&gt;2^{\lambda_\alpha}$であるのは，そうでないとすると</p>
+
+              <div class="math-display">
+                
+                \[
+\mathbb{P}_{\lambda_\alpha}\forces\text{``$\exists f:\power(\lambda_\alpha)\supseteq\power^{\check{V}}(\lambda_\alpha)\surj (2^{\lambda_\alpha})^+$&#39;&#39;}
+\]
+              </div>
+            
+<p>となって矛盾する：</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        
+<p>帰納法によって任意の$\alpha$で1が成り立つのを示す．$\alpha=0$で成り立つのは明らか．$\alpha$で1,2,3,4が成り立つなら，明らかに$\alpha+1$で1が成り立つ．$\be{\alpha}{limit}$未満での1,2,3,4の成立を仮定して，$\alpha$での1の成立を示す：</p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$K:=\set{\xi\leq\lambda_\alpha:\be{\mathbb{P}_\xi}{(proper) direct limit of $\langle\mathbb{P}_\zeta:\zeta&lt;\xi\rangle$}}$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+K\subseteq\set{\xi\leq\lambda_\alpha:\be{\xi}{inaccessible}}
+\]
+              </div>
+            
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-25"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-25-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-25-content"
+                >
+                  <p>$\langle\mathbb{P}_\zeta:\zeta\leq\xi\rangle$はEaston support iterationより，$\xi\in K$ならば$\be{\xi}{regular}$．このときさらに，$\forall\alpha\in\mathrm{Ord}(\mathbb{P}_{\lambda_{\alpha+1}}\equiv\mathbb{P}_{\lambda_\alpha+1})$に注意して，ある$\be{\beta\leq\xi}{limit}$に対して$\xi=\lambda_\beta$と書ける．このとき，帰納法の仮定より$\gamma&lt;\beta(\leq\xi\leq\alpha)$に対して$2^{\lambda_\gamma}&lt;\lambda_{\gamma+2}&lt;\lambda_{\beta}$であるから，$\be{\xi=\lambda_\beta}{strong limit}$．以上よりこのとき$\be{\xi}{inaccessible}$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\be{\xi\leq\lambda_\alpha}{inaccessible}$に対して$\forall \eta&lt;\xi(\lambda_\eta,|\mathbb{P}_{\lambda_\eta}|&lt;\xi)$．特に$\lambda_\xi=\xi$．</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-26"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-26-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-26-content"
+                >
+                  <p>$\eta$に関する帰納法によって示す．$\eta=0$の時明らか．また，$\eta$で成り立つとすると，</p>
+
+              <div class="math-display">
+                
+                \[
+\mathbb{P}_{\lambda_\eta}\forces\text{``$|\dot{\mathbb{Q}}_{\lambda_\eta}|=|\mathrm{add}(\lambda_\eta^+,2)|\leq 2^{\lambda_\eta}$&#39;&#39;}
+\]
+              </div>
+            
+<p>であるから，帰納法の仮定から$|\mathbb{P}_{\lambda_\eta}|&lt;\xi$かつ$\lambda_{\eta+1}\leq(2^{\lambda_\eta})^{V^{\mathbb{P}_{\lambda_\eta}}}\leq (|\mathbb{P}_{\lambda_\eta}|^{|\mathbb{P}_{\lambda_\eta}|})^{\lambda_\eta}&lt;\xi$であり，しがって$|\mathbb{P}_{\lambda_{\eta+1}}|= |\mathbb{P}_{\lambda_\eta+1}|&lt;\xi$．故にこのとき$\eta+1$でも成り立つ．</p>
+<p>$\be{\eta&lt;\lambda}{limit}$未満で成り立つとすると，$|\mathbb{P}_{\lambda_\eta}|\leq (\sup_{\zeta&lt;\eta}|\mathbb{P}_{\zeta}|)^{\eta}$より，帰納法の仮定から$|\mathbb{P}_{\lambda_\eta}|&lt;\xi$．同じく帰納法の仮定より，$\lambda_\eta$の定義から$\lambda_\eta&lt;\xi$．故にこのとき$\eta$でも成り立つ．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        
+<p>$\eta&lt;\alpha$を任意に取る．$K_{\lambda_{\eta}}:=K\cap(\lambda_{\eta},\lambda_\alpha]$とおく．</p>
+
+              <div class="math-display">
+                
+                \[
+\be{X}{$K_{\lambda_\eta}$-thin}:\iff X\subseteq [\lambda_{\eta},\lambda_\alpha)\land\forall \xi\in K_{\lambda_\eta}(\sup K_{\lambda_\eta}\cap\xi&lt;\xi)
+\]
+              </div>
+            
+<p>とすると，このとき$K_{\lambda_\eta}=\varnothing\lor|\mathbb{P}_{\lambda_{\eta}}|&lt;\min K_{\lambda_{\eta}}$に注意して</p>
+
+              <div class="math-display">
+                
+                \[
+\mathbb{P}_{\lambda_\eta}\forces\text{``$\forall \be{X}{$K_{\lambda_{\eta}}$-thin}\exists\be{Y\in\check{V}}{$K_{\lambda_{\eta}}$-thin}(X\subseteq Y)$&#39;&#39;}
+\]
+              </div>
+            
+<p>さらに，$\forall \zeta\in[\eta,\alpha)(\mathbb{P}_{\lambda_\zeta}\forces\text{``$\be{\dot{\mathbb{Q}}_{\lambda_\zeta}}{$&lt;\lambda_{\eta+1}$-closed}$&#39;&#39;})$．したがって，<span class="citation-group">[<a
+              class="citation"
+              id="cite-Bau83"
+              href="#bib-Bau83"
+            >Bau83</a>, Theorem 5.4.]</span>によって，$\mathbb{P}_{\lambda_\alpha}=\mathbb{P}_{\lambda_\eta}*\dot{\mathbb{P}}_{\lambda_\eta,\lambda_\alpha}$について$\mathbb{P}_{\lambda_\eta}\forces\text{``$\be{\dot{\mathbb{P}}_{\lambda_\eta,\lambda_\alpha}}{$&lt;\lambda_{\eta+1}$-closed}$&#39;&#39;}$となる．故に，$
+\mathbb{P}_{\lambda_\alpha}\forces\text{``$\check{V}[\dot{G}_{\lambda_\eta}]^{&lt;\lambda_{\eta+1}}\subseteq \check{V}[\dot{G}_{\lambda_\eta}]$&#39;&#39;}$であるから，帰納法の仮定より$
+\forall\xi&lt;\eta(\mathbb{P}_{\lambda_\alpha}\forces\text{``$2^{\lambda_\xi}=\lambda_\xi^+=\lambda_{\xi+1}$&#39;&#39;})$．</p>
+<p>以上より，$\forall\xi&lt;\alpha(\mathbb{P}_{\lambda_\alpha}\forces\text{``$2^{\lambda_\xi}=\lambda_\xi^+=\lambda_{\xi+1}$&#39;&#39;})$となって，$\alpha$でも1が成り立つ．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              系
+              <span class="number">2.5</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\langle\mathbb{P}_\alpha:\alpha\in\mathrm{Ord}\rangle$を定義<a class="reference" href="#label-def%3AGCH-iteration">2.1</a>のものとする．任意の$\alpha$に対して， $\mathbb{P}_{\lambda_\alpha}$は$\lambda_\alpha$未満の基数に対する$\mathrm{GCH}$を強制する．</p>
+            </div>
+          </div>
+        
+
+          <h1 id="section-3">
+            
+            <span class="section-number">3.</span>
+            $\mathrm{GCH}$の強制
+          </h1>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#2563eb"
+          >
+            <div class="box-title">
+              定理
+              <span class="number">3.1</span>
+              <span class="theorem-note">(folklore?)</span>
+            </div>
+            <div class="theorem-content">
+              <p>$\langle\mathbb{P}_\alpha:\alpha\in\mathrm{Ord}\rangle$を定義<a class="reference" href="#label-def%3AGCH-iteration">2.1</a>のものとする． class forcing poset $\mathbb{P}=\bigcup_{\alpha\in \mathrm{Ord}}\mathbb{P}_\alpha$は$\ZFC+\mathrm{GCH}$を強制する．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-27"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>クラス強制法であることに由来する幾つかの確認を除いて，本質的に補題<a class="reference" href="#label-th%3Aset">2.3</a>と同様の証明で示せる．クラス強制法の取り扱いについては，資料を別途作成予定．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <section class="bibliography">
+            <h2>参考文献</h2>
+            
+            <ol
+              class="bibliography-list"
+              role="list"
+              style="--bib-label-width:7ch"
+            >
+              
+            <li
+              class="bibliography-entry"
+              id="bib-Bau83"
+            >
+              <span class="bib-label">[Bau83]</span>
+              <div class="bib-content">
+                
+                <p>J.&nbsp;E. Baumgartner, Iterated forcing, in <em>Surveys in set theory</em>, 1--59, London Math. Soc. Lecture Note Ser., 87, Cambridge Univ. Press, Cambridge, ; MR0823775</p>
+                
+              <a
+                class="backref"
+                href="#cite-Bau83"
+                aria-label="本文の引用へ戻る"
+              >↩</a>
+            
+              </div>
+            </li>
+          
+
+            <li
+              class="bibliography-entry"
+              id="bib-GCH13"
+            >
+              <span class="bib-label">[GCH13]</span>
+              <div class="bib-content">
+                
+                <p>The canonical forcing of the GCH and direct limits, <em>MathOverflow</em> (2013), <a href="https://mathoverflow.net/questions/118913/the-canonical-forcing-of-the-gch-and-direct-limits">https://mathoverflow.net/questions/118913/the-canonical-forcing-of-the-gch-and-direct-limits</a>.</p>
+                
+              <a
+                class="backref"
+                href="#cite-GCH13"
+                aria-label="本文の引用へ戻る"
+              >↩</a>
+            
+              </div>
+            </li>
+          
+
+            <li
+              class="bibliography-entry"
+              id="bib-Kun11"
+            >
+              <span class="bib-label">[Kun11]</span>
+              <div class="bib-content">
+                
+                <p>K. Kunen, <em>Set theory</em>, Studies in Logic (London), 34, Coll. Publ., London, 2011; MR2905394</p>
+                
+              <a
+                class="backref"
+                href="#cite-Kun11"
+                aria-label="本文の引用へ戻る"
+              >↩</a>
+            
+              </div>
+            </li>
+          
+            </ol>
+          </section>
+        
+
+      <p class="back-to-top">
+        <a href="#top">ページ先頭に戻る</a>
+      </p>
+
+      <p>
+        <a href="/materials.html">資料一覧に戻る</a>
+      </p>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    © 2026 Ud.afhal
+  </footer>
+
+  <script id="document-runtime">
+const MystyleRuntime = (() => {
+      "use strict";
+
+      const TOGGLE_SELECTOR =
+        "details.proof-box[data-toggle-key], .reason-box[data-toggle-key]";
+
+      const revisions = new WeakMap();
+      const lockedStates = new WeakMap();
+
+      let queue = Promise.resolve();
+      let printState = null;
+
+      const mathReady = new Promise((resolve) => {
+        const loader = document.getElementById("mathjax-loader");
+        let settled = false;
+
+        const timer = window.setTimeout(() => finish(null), 20000);
+
+        function finish(value) {
+          if (settled) {
+            return;
+          }
+
+          settled = true;
+          window.clearTimeout(timer);
+          resolve(value);
+        }
+
+        async function loaded() {
+          try {
+            const mathJax = window.MathJax;
+
+            if (mathJax?.startup?.promise) {
+              await mathJax.startup.promise;
+            }
+
+            finish(mathJax?.typesetPromise ? mathJax : null);
+          } catch {
+            finish(null);
+          }
+        }
+
+        if (window.MathJax?.startup?.promise) {
+          loaded();
+        } else if (loader) {
+          loader.addEventListener("load", loaded, {
+            once: true
+          });
+
+          loader.addEventListener("error", () => finish(null), {
+            once: true
+          });
+        } else {
+          finish(null);
+        }
+      });
+
+      function schedule(task) {
+        const pending = queue
+          .catch(() => undefined)
+          .then(() => mathReady)
+          .then(async (initialMathJax) => {
+            const mathJax = window.MathJax?.typesetPromise
+              ? window.MathJax
+              : initialMathJax;
+
+            if (mathJax?.startup?.promise) {
+              await mathJax.startup.promise;
+            }
+
+            return task(mathJax);
+          });
+
+        queue = pending;
+        return pending;
+      }
+
+      function toggleElements(root) {
+        return Array.from(root.querySelectorAll(TOGGLE_SELECTOR));
+      }
+
+      function isExpanded(element) {
+        return element.matches("details.proof-box")
+          ? element.open
+          : !element.classList.contains("is-collapsed");
+      }
+
+      function setReasonExpanded(box, expanded) {
+        const button = box.querySelector(
+          ":scope > .reason-inner > .reason-prefix > .reason-toggle"
+        );
+
+        const content = box.querySelector(
+          ":scope > .reason-inner > .reason-text"
+        );
+
+        box.classList.toggle("is-collapsed", !expanded);
+
+        if (content) {
+          content.hidden = !expanded;
+        }
+
+        if (button) {
+          button.setAttribute("aria-expanded", String(expanded));
+          button.setAttribute(
+            "aria-label",
+            expanded ? "理由を折り畳む" : "理由を展開"
+          );
+        }
+      }
+
+      function setExpanded(element, expanded) {
+        if (element.matches("details.proof-box")) {
+          element.open = expanded;
+        } else {
+          setReasonExpanded(element, expanded);
+        }
+      }
+
+      function snapshot(root) {
+        if (lockedStates.has(root)) {
+          return new Map(lockedStates.get(root));
+        }
+
+        return new Map(
+          toggleElements(root).map((element) => [
+            element.dataset.toggleKey,
+            isExpanded(element)
+          ])
+        );
+      }
+
+      function restore(root, states) {
+        for (const element of toggleElements(root)) {
+          const key = element.dataset.toggleKey;
+
+          setExpanded(
+            element,
+            states.has(key) ? states.get(key) : true
+          );
+        }
+      }
+
+      function expandAll(root) {
+        for (const element of toggleElements(root)) {
+          setExpanded(element, true);
+        }
+      }
+
+      async function typesetOpen(root, mathJax, previousStates) {
+        const desiredStates = new Map(
+          toggleElements(root).map((element) => {
+            const key = element.dataset.toggleKey;
+
+            return [
+              key,
+              previousStates.has(key) ? previousStates.get(key) : true
+            ];
+          })
+        );
+
+        const oldVisibility = root.style.visibility;
+        const oldBusy = root.getAttribute("aria-busy");
+        const wasInert = root.hasAttribute("inert");
+
+        lockedStates.set(root, desiredStates);
+
+        root.style.visibility = "hidden";
+        root.setAttribute("aria-busy", "true");
+        root.setAttribute("inert", "");
+
+        expandAll(root);
+
+        try {
+          mathJax.texReset();
+          await mathJax.typesetPromise([root]);
+        } finally {
+          restore(root, desiredStates);
+          lockedStates.delete(root);
+
+          root.style.visibility = oldVisibility;
+
+          if (oldBusy === null) {
+            root.removeAttribute("aria-busy");
+          } else {
+            root.setAttribute("aria-busy", oldBusy);
+          }
+
+          if (!wasInert) {
+            root.removeAttribute("inert");
+          }
+        }
+      }
+
+      function render(root, html) {
+        const revision = (revisions.get(root) || 0) + 1;
+        revisions.set(root, revision);
+
+        if (!window.MathJax?.typesetPromise) {
+          const states = snapshot(root);
+          root.innerHTML = html;
+          restore(root, states);
+        }
+
+        return schedule(async (mathJax) => {
+          if (revisions.get(root) !== revision) {
+            return Boolean(mathJax);
+          }
+
+          const states = snapshot(root);
+
+          if (mathJax) {
+            mathJax.typesetClear([root]);
+          }
+
+          root.innerHTML = html;
+
+          if (!mathJax) {
+            restore(root, states);
+            return false;
+          }
+
+          await typesetOpen(root, mathJax, states);
+          return true;
+        });
+      }
+
+      function typeset(root) {
+        return schedule(async (mathJax) => {
+          if (!root || !mathJax) {
+            return false;
+          }
+
+          await typesetOpen(root, mathJax, snapshot(root));
+          return true;
+        });
+      }
+
+      function revealTarget(target) {
+        for (
+          let element = target;
+          element;
+          element = element.parentElement
+        ) {
+          if (element.matches("details")) {
+            element.open = true;
+          }
+
+          if (element.matches(".reason-box")) {
+            setReasonExpanded(element, true);
+          }
+        }
+      }
+
+      function targetFromHash(hash) {
+        try {
+          const id = decodeURIComponent(hash.replace(/^#/, ""));
+          return id ? document.getElementById(id) : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function revealHash() {
+        const target = targetFromHash(window.location.hash);
+
+        if (target) {
+          revealTarget(target);
+          requestAnimationFrame(() => target.scrollIntoView());
+        }
+      }
+
+      document.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element)) {
+          return;
+        }
+
+        const button = event.target.closest(".reason-toggle");
+
+        if (button) {
+          const box = button.closest(".reason-box");
+
+          if (box) {
+            setReasonExpanded(box, !isExpanded(box));
+          }
+
+          return;
+        }
+
+        const link = event.target.closest('a[href^="#"]');
+
+        if (!link) {
+          return;
+        }
+
+        const hash = link.getAttribute("href");
+        const target = targetFromHash(hash);
+
+        if (!target) {
+          return;
+        }
+
+        event.preventDefault();
+        revealTarget(target);
+
+        try {
+          history.replaceState(null, "", hash);
+        } catch {
+          // file:で履歴操作が制限されても移動は続行する。
+        }
+
+        requestAnimationFrame(() => target.scrollIntoView());
+      });
+
+      window.addEventListener("hashchange", revealHash);
+
+      window.addEventListener("beforeprint", () => {
+        if (printState) {
+          return;
+        }
+
+        printState = Array.from(
+          document.querySelectorAll(".paper"),
+          (root) => ({
+            root,
+            states: snapshot(root)
+          })
+        );
+
+        for (const { root } of printState) {
+          expandAll(root);
+        }
+      });
+
+      window.addEventListener("afterprint", () => {
+        if (!printState) {
+          return;
+        }
+
+        for (const { root, states } of printState) {
+          if (root.isConnected) {
+            restore(root, states);
+          }
+        }
+
+        printState = null;
+      });
+
+      return {
+        render,
+        typeset,
+        snapshot,
+        restore,
+        revealHash
+      };
+    })();
+  </script>
+
+  <script>
+    MystyleRuntime
+      .typeset(document.getElementById("public-document"))
+      .then(() => MystyleRuntime.revealHash())
+      .catch((error) => {
+        console.error(error);
+        MystyleRuntime.revealHash();
+      });
+  </script>
+</body>
+</html>
