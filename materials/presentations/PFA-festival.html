@@ -1,0 +1,4046 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PFAの無矛盾性　発表原稿 — Chicken-generic over Rice</title>
+  <link
+              rel="stylesheet"
+              href="/style.css"
+            >
+
+  <script id="mathjax-config">
+window.MathJax = {
+      startup: {
+        typeset: false
+      },
+      tex: {
+        inlineMath: [
+          ["\\(", "\\)"],
+          ["$", "$"]
+        ],
+        displayMath: [
+          ["\\[", "\\]"],
+          ["$$", "$$"]
+        ],
+        tags: "ams",
+        useLabelIds: true,
+        processEscapes: true,
+        macros: {
+          be: ["#1:\\text{#2}", 2],
+          proves: "\\vdash",
+          forces: "\\Vdash",
+          PA: "\\mathrm{PA}",
+          BST: "\\mathrm{BST}",
+          ZF: "\\mathrm{ZF}",
+          ZFC: "\\mathrm{ZFC}",
+          Con: "\\mathrm{Con}",
+          MA: "\\mathrm{MA}",
+          HF: "\\mathrm{HF}",
+          bval: ["\\left[\\!\\left[ #1 \\right]\\!\\right]", 1],
+          set: ["\\{{}#1{}\\}", 1],
+          power: "\\mathcal{P}",
+          Def: "\\mathrm{def}",
+          val: "\\mathrm{val}",
+          prm: "\\mathrm{prm}",
+          img: "\\text{``}",
+          dom: "\\mathrm{dom}",
+          ran: "\\mathrm{ran}",
+          inj: "\\overset{1-1}{\\longrightarrow}",
+          surj: "\\overset{onto}{\\longrightarrow}",
+          bij: "\\xrightarrow[onto]{1-1}",
+          iso: "\\overset{\\sim}{\\longrightarrow}",
+          ee: "\\overset{\\prec}{\\rightarrow}",
+          ON: "\\mathrm{ON}",
+          ot: "\\mathrm{ot}",
+          cf: "\\mathrm{cf}",
+          len: "\\mathrm{len}",
+          club: "\\mathrm{club}",
+          nonstat: "\\mathrm{nonstat}",
+          inn: "\\varepsilon",
+          obj: ["\\ulcorner #1\\urcorner", 1],
+          bbepsilon: "\\mathord{\\unicode{x03F5}}",
+          mathbbl: ["\\mathbb{#1}", 1]
+        }
+      },
+      chtml: {
+        displayAlign: "left",
+        displayIndent: "1.5em"
+      },
+      options: {
+        skipHtmlTags: [
+          "script",
+          "noscript",
+          "style",
+          "textarea",
+          "pre",
+          "code"
+        ]
+      }
+    };
+  </script>
+
+  <script
+    id="mathjax-loader"
+    defer
+    src="/MathJax-4.1.3/tex-chtml.js"
+  ></script>
+</head>
+
+<body class="public-page" id="top">
+  <header class="site-header">
+    <a class="site-brand" href="/index.html">
+      
+            <img
+              src="/images/header.png"
+              alt="Chicken-generic over Rice"
+            >
+          
+    </a>
+
+    <nav class="site-nav" aria-label="メインナビゲーション">
+      <a href="/index.html">ホーム</a>
+      <a href="materials.html">資料</a>
+      <a href="/updates.html">更新履歴</a>
+      <a href="/about.html">このサイトについて</a>
+      <a href="/links.html">リンク</a>
+    </nav>
+  </header>
+
+  <div class="public-document" id="public-document">
+    <header class="document-heading">
+      <h1>PFAの無矛盾性　発表原稿</h1>
+      
+            <div class="document-meta">
+              <span>著者：Ud.afhal</span>
+<span class="meta-separator">·</span>
+<span>
+              更新日：<time>2026-9-11</time>
+            </span>
+            </div>
+          
+    </header>
+
+    <main class="paper">
+      <p>本ノートは，2026年9月11日に行われたオンラインセミナー「PROPER FORCING AXIOM祭り」において筆者が行った講演「PFAの無矛盾性」の発表原稿です．</p>
+
+          <nav class="table-of-contents" aria-label="目次">
+            <h2>目次</h2>
+            <ol role="list">
+              
+            <li>
+              <a href="#section-1">
+              1
+              はじめに
+            </a>
+              
+            </li>
+          
+
+            <li>
+              <a href="#section-2">
+              2
+              初等埋め込み
+            </a>
+              
+            </li>
+          
+
+            <li>
+              <a href="#section-3">
+              3
+              超冪と正規超フィルター
+            </a>
+              
+              <ol role="list">
+                <li><a href="#subsection-3-1">
+              3.1
+              超冪と初等埋め込み
+            </a></li>
+<li><a href="#subsection-3-2">
+              3.2
+              正規超フィルターとスーパーコンパクト基数
+            </a></li>
+              </ol>
+            
+            </li>
+          
+
+            <li>
+              <a href="#section-4">
+              4
+              Laver関数
+            </a>
+              
+            </li>
+          
+
+            <li>
+              <a href="#section-5">
+              5
+              PFAの無矛盾性証明
+            </a>
+              
+            </li>
+          
+
+            <li>
+              <a href="#section-6">
+              6
+              PFAの無矛盾性の下界について
+            </a>
+              
+            </li>
+          
+            </ol>
+          </nav>
+        
+
+          <h1 id="section-1">
+            
+            <span class="section-number">1.</span>
+            はじめに
+          </h1>
+        
+<p>本講演を通して，所属関係を表す二項関係記号$\in$のみを非論理記号にもつ一階述語論理の言語上で，公理系$\ZFC$の下で議論する．また，クラスと言った場合には，パラメタを用いて定義可能なクラス，すなわち，勝手な論理式$\Phi(x,\vec{y})$を非公式に$\set{x:\Phi(x,\vec{y})}$と見做したものを考える．</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">1.1</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>forcing poset $\langle\mathbb{P},\leq_{\mathbb{P}},1_{\mathbb{P}}\rangle$（以降では記号を濫用して，単に$\mathbb{P}$と書く．）がproperであるとは，次を満たすことをいう：</p>
+
+              <div class="math-display">
+                
+                \[
+  \forall\be{\lambda&gt;\omega}{cardinal}\forall \be{x}{stationary subset of $[\lambda]^{\omega}$}
+  (\mathbb{P}\forces\text{``$\be{x}{stationary subset of $([\lambda]^{\omega})^{\check{V}[\dot{G}]}$}$&#39;&#39;})
+\]
+              </div>
+            
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">1.2</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>proper forcing axiom(PFA)とは，次の命題である：</p>
+
+              <div class="math-display">
+                
+                \[
+  \begin{gathered}
+    \forall \be{\mathbb{Q}}{proper forcing poset}\forall \be{\mathcal{D}=\langle \mathcal{D}_\alpha:\alpha&lt;\beta\rangle}{$&lt;\omega_2$-sequence of dense subsets of $\mathbb{Q}$}\\
+    \exists \be{F}{filter on $\mathbb{Q}$} \forall \alpha&lt;\beta(F\cap \mathcal{D}_\alpha\neq \varnothing)
+    \end{gathered}
+  \]
+              </div>
+            
+            </div>
+          </div>
+        
+<p>実は，PFAの無矛盾性の証明においては，posetのproper性の定義そのものはそこまで重要でない．直接に必要となるのは次の性質である：</p>
+
+          <div
+            class="theorem-box" id="label-fact"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              事実
+              <span class="number">1.3</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>forcing posetのproper性に関して，次が成り立つ：</p>
+
+          
+          <ol>
+            <li><p>forcing poset $\mathbb{P}$がproperならば，$\mathbb{P}$は$\omega_1$を保つ</p></li>
+<li><p>(Shelah). proper forcing posetの可算台反復によって得られるforcing posetもproperである</p></li>
+<li><p>trivial forcing poset（$\mathbb{P}=\langle\set{\varnothing},=,\varnothing\rangle$）はproperである</p></li>
+<li><p>forcing poset $\mathbb{P}$のproper性は，次の意味で局所的である：$\mathbb{P}$がproperであるか否かは， $\mathbb{P}$のサイズに対して十分大きい$\lambda$に対する$(\set{x:|\mathrm{trcl}(x)|\leq \lambda},\in)$の構造のみによって決定する</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+<p>例えば，上のproperをsemi-properに置き換えた場合には(i),(iii),(iv)が成り立ち，さらに(ii)も可算台反復を修正可算台反復に置き換えて成り立つ．故に本質的にPFAの相対的無矛盾性証明と同じ議論によって，semi-proper forcing axiom(SPFA)の相対的無矛盾性も証明可能である．</p>
+<p>$\mathrm{PFA}$を満たす$\ZFC$のモデルは，スーパーコンパクト基数と呼ばれる巨大基数を用いて，反復強制法によるジェネリック拡大として得ることができる．特に</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#2563eb"
+          >
+            <div class="box-title">
+              定理
+              <span class="number">1.4</span>
+              <span class="theorem-note">(Baumgartner)</span>
+            </div>
+            <div class="theorem-content">
+              
+              <div class="math-display">
+                
+                \[
+    \mathrm{Con}(\ZFC+\exists \text{スーパーコンパクト基数})\to \mathrm{Con}(\ZFC+\mathrm{PFA})
+  \]
+              </div>
+            
+            </div>
+          </div>
+        
+<p>本講演では，この証明の理解を目標とする．</p>
+<p>参考とする文献は主に<span class="citation-group">[<a
+              class="citation"
+              id="cite-MR2905394"
+              href="#bib-MR2905394"
+            >Kun11</a>]</span>（強制法の一般論に関して），<span class="citation-group">[<a
+              class="citation"
+              id="cite-MR823775"
+              href="#bib-MR823775"
+            >Bau83</a>]</span>（反復強制法の定義ならびに一般論に関して），<span class="citation-group">[<a
+              class="citation"
+              id="cite-MR1321144"
+              href="#bib-MR1321144"
+            >Kan94</a>]</span> (スーパーコンパクト基数に関して)，<span class="citation-group">[<a
+              class="citation"
+              id="cite-MR472529"
+              href="#bib-MR472529"
+            >Lav78</a>]</span>（Laver関数について），<span class="citation-group">[<a
+              class="citation"
+              id="cite-MR1940513"
+              href="#bib-MR1940513"
+            >Jec03</a>]</span>（主定理の直接の証明部分），<span class="citation-group">[<a
+              class="citation"
+              id="cite-blue2026failuresquareuncountablecardinals"
+              href="#bib-blue2026failuresquareuncountablecardinals"
+            >BLS26</a>]</span>（PFAの無矛盾性の下界について）である．</p>
+<p>ある程度一般的と思われる定義や記号については断りなく用いているが，口頭で補足するつもりである． 記号，定義，内容について分からない部分があれば講演者の不手際なので，遠慮なく聞いてください．</p>
+
+          <h1 id="section-2">
+            
+            <span class="section-number">2.</span>
+            初等埋め込み
+          </h1>
+        
+<p>はじめに，スーパーコンパクト基数について紹介する：</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">2.1</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>クラス$M$が$\ZFC$の内部モデルであるとは，次を満たすことをいう：</p>
+
+          
+          <ol>
+            <li><p>$M$は推移的，すなわち，$\forall x\in M\forall y\in x(y\in M)$</p></li>
+<li><p>$\ON\subseteq M$</p></li>
+<li><p>$(M,\in)\models \ZFC$</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">2.2</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\ZFC$の（具体的に書き下せる）有限部分$T$で，任意のクラス$M$と任意の$\ZFC$の公理$\Psi$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+  \ZFC\proves \be{M}{transitive}\land \ON\subseteq M\land\bigwedge_{\Phi\in T}\Phi^M\to \Psi^M
+\]
+              </div>
+            
+<p>となるものが取れる．これを踏まえて，$(M,\in)\models \ZFC$は$\bigwedge_{\Phi\in T}\Phi^M$によって定式化される．（より具体的な定式化については<span class="citation-group">[<a
+              class="citation"
+              id="cite-MR1321144-2"
+              href="#bib-MR1321144"
+            >Kan94</a>]</span>のp.33を参照．）</p>
+            </div>
+          </div>
+        
+<p>簡単のため，$M\models \Phi[a_1,\ldots,a_n]\equiv\Phi^M(a_1,\ldots,a_n)$と表す．</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">2.3</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>クラス$M,N,j$に対して，$M,N$は$\ZFC$の内部モデル，$j:N\to M$はクラス関数とする． 各論理式$\Phi(x_1,\ldots,x_n)$に対して</p>
+
+              <div class="math-display">
+                <span id="label-eq:elementary"></span>
+                \begin{equation}\label{eq:elementary}
+    j:N\xrightarrow{\prec_\Phi}M\equiv \forall a_1,\ldots,a_n\in N\left(N\models \Phi[a_1,\ldots,a_n]\iff M\models \Phi[j(a_1),\ldots,j(a_n)]\right)
+   \end{equation}
+              </div>
+            
+<p>が成り立つとき，$j$を$N$から$M$への初等埋め込みといい，$j:N\xrightarrow{\prec} M$と書く．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">2.4</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>具体的に書き下せる有限個の論理式の集まり$S$で，任意の論理式$\Psi$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+     \ZFC\proves\left(\bigwedge_{\Phi\in S}j:N\xrightarrow{\prec_\Phi}M\right)\to \left(j:N\xrightarrow{\prec_\Psi}M\right)
+  \]
+              </div>
+            
+<p>となるものが取れる．これを踏まえて，$j:N\xrightarrow{\prec}M$は$\bigwedge_{\Phi\in S}j:N\xrightarrow{\prec_\Phi}M$によって定式化される．（より具体的な定式化については<span class="citation-group">[<a
+              class="citation"
+              id="cite-MR1321144-3"
+              href="#bib-MR1321144"
+            >Kan94</a>]</span>のp.45を参照．）</p>
+            </div>
+          </div>
+        
+<p>先に，このような初等埋め込みに関する基本的性質について確認する：</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              命題
+              <span class="number">2.5</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$M,N$を$\ZFC$の内部モデル，$j:N\xrightarrow{\prec}M$とする．</p>
+
+          
+          <ol>
+            <li><p>$j|\ON:\ON\to\ON$は狭義増加関数．特に$\forall \alpha\in\ON (\alpha\leq j(\alpha))$．</p></li>
+<li><p>$\alpha\in \ON$に対して$j|\alpha$が恒等写像ならば，$j|\set{x\in N:|\mathrm{trcl}(x)|^N&lt;\alpha}$は恒等写像．</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-280"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>(i)は</p>
+
+              <div class="math-display">
+                
+                \[
+    \be{x}{ordinal}\iff N\models \be{x}{ordinal}\iff M\models \be{j(x)}{ordinal} \iff \be{j(x)}{ordinal}
+  \]
+              </div>
+            
+<p>と</p>
+
+              <div class="math-display">
+                
+                \[
+    \alpha\in \beta\iff N\models \alpha\in \beta\iff M\models j(\alpha)\in j(\beta)\iff j(\alpha)\in j(\beta)
+  \]
+              </div>
+            
+<p>より明らか． (ii)を示す．</p>
+<p>$x\in N$は$|\mathrm{trcl}(x)|^N&lt;\alpha$を満たすとする．このとき$N$において$\mathrm{trcl}(\set{x})$とある$\beta&lt; \alpha$との間の全単射が取れるから，それによって$\mathrm{trcl}(\set{x})$上の二項関係としての$\in$を$\beta$に写すことで，$E\in N$で</p>
+
+              <div class="math-display">
+                
+                \[
+     N\models E\subseteq \beta\times \beta\land \exists f(f:(\beta,E)\iso(\mathrm{trcl}(\set{x}),\in))
+  \]
+              </div>
+            
+<p>となるものが取れる．このとき絶対性から$\exists f(f:(\beta,E)\iso(\mathrm{trcl}(\set{x}),\in))$．</p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$j(E)=E$</p>
+
+          
+          <ol>
+            <li><p>$N\models E\subseteq \beta\times \beta$より$E\subseteq \beta\times \beta$</p></li>
+<li><p>$N\models E\subseteq \beta\times \beta$より$M\models j(E)\subseteq j(\beta)\times j(\beta)$より$M\models j(E)\subseteq \beta\times \beta$より$j(E)\subseteq \beta\times \beta$</p></li>
+<li><p>$\xi,\zeta\in \beta$に対して</p>
+
+              <div class="math-display">
+                
+                \begin{align}
+      \langle \xi,\zeta\rangle\in E&amp;\iff N\models \langle \xi,\zeta\rangle\in E\\
+      &amp;\iff M\models \langle j(\xi),j(\zeta)\rangle \in j(E)\\
+      &amp;\iff M\models \langle \xi,\zeta\rangle \in j(E)\\
+      &amp;\iff \langle \xi,\zeta\rangle \in j(E)
+    \end{align}
+              </div>
+            
+<p>より$(1),(2)$から$E=j(E)$</p></li>
+          </ol>
+        </div>
+            </li>
+          
+          </ul>
+        
+<p>よって</p>
+
+              <div class="math-display">
+                
+                \[
+     M\models \exists f(f:(j(\beta),j(E))\iso(\mathrm{trcl}(\set{j(x)}),\in))
+  \]
+              </div>
+            
+<p>より</p>
+
+              <div class="math-display">
+                
+                \[
+     M\models \exists f(f:(\beta,E)\iso(\mathrm{trcl}(\set{j(x)}),\in))
+  \]
+              </div>
+            
+<p>より$\exists f(f:(\beta,E)\iso(\mathrm{trcl}(\set{j(x)}),\in))$．</p>
+<p>故に$(\mathrm{trcl}(\set{x}),\in)\simeq (\mathrm{trcl}(\set{j(x)}),\in)$となって，Mostowski崩潰の一意性から$x=j(x)$となる．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              系
+              <span class="number">2.6</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$j:N\xrightarrow{\prec}M$が恒等写像でなければ，$j|\ON$は恒等写像でない．</p>
+            </div>
+          </div>
+        
+<p>以降では，恒等写像でない初等埋め込みのことを非自明な初等埋め込みと言う．</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">2.7</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>非自明な$j:N\xrightarrow{\prec}M$の臨界点$\mathrm{crit}(j)$とは，$\alpha&lt;j(\alpha)$となる最小の順序数$\alpha$のことをいう．$j:N\xrightarrow{\prec}_\alpha M$によって，$j:N\xrightarrow{\prec}M\land j\neq \mathrm{id}_N\land \mathrm{crit}(j)=\alpha$を表すとする．</p>
+            </div>
+          </div>
+        
+<p>基本となるのは，非自明な初等埋め込みの始域が集合全体の宇宙$V$の場合である：</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#238636"
+          >
+            <div class="box-title">
+              補題
+              <span class="number">2.8</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>非自明な$j:V\xrightarrow{\prec}M$に対して$j$の臨界点$\mathrm{crit}(j)$は到達不能基数．特に，$j|V_{\mathrm{crit}(j)}$は恒等写像である．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-281"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$\kappa=\mathrm{crit}(j)$とおく．</p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\omega&lt;\kappa$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-282"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-282-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-282-content"
+                >
+                  
+              <div class="math-display">
+                
+                \[
+      V\models \forall x\in \varnothing(x\neq x)\iff M\models\forall x\in j(\varnothing)(x\neq x)\iff \forall x\in j(\varnothing)(x\neq x)
+    \]
+              </div>
+            
+<p>より，$j(\varnothing)=\varnothing$．</p>
+<p>同様に$[\text{$\alpha$は$\beta$の次の順序数}]$は$\Delta_0$-論理式で表せるから</p>
+
+              <div class="math-display">
+                
+                \begin{align}
+      V\models [\text{$\alpha$は$\beta$の次の順序数}]&amp;\iff M\models [\text{$j(\alpha)$は$j(\beta)$の次の順序数}]\\
+      &amp;\iff [\text{$j(\alpha)$は$j(\beta)$の次の順序数}]
+    \end{align}
+              </div>
+            
+<p>より，$j(\beta+1)=j(\beta)+1$．よって数学的帰納法より$j|\omega$は恒等写像．</p>
+<p>また，$\Phi(x)\equiv [\text{$x$は極限順序数を元に持たない極限順序数}]$は$\Delta_0$-論理式で表せるから，</p>
+
+              <div class="math-display">
+                
+                \[
+      V\models \Phi(\omega)\iff M\models\Phi(j(\omega))\iff \Phi(j(\omega))
+    \]
+              </div>
+            
+<p>より，$\exists ! x\Phi(x)$に注意して$j(\omega)=\omega$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\kappa$は正則基数</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-283"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-283-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-283-content"
+                >
+                  <p>そうでないとして，$\alpha&lt;\kappa$と共終写像$f:\alpha\to \kappa$を取る．$j(\alpha)=\alpha$より</p>
+
+              <div class="math-display">
+                
+                \[
+      V\models f:\alpha\xrightarrow{\text{cofinal}}\kappa\iff M\models j(f):j(\alpha)\xrightarrow{\text{cofinal}}j(\kappa)\iff j(f):\alpha\xrightarrow{\text{cofinal}}j(\kappa)
+    \]
+              </div>
+            
+<p>他方で$\beta&lt;\alpha$に対して$f(\beta)&lt;\kappa$より$j(\beta)=\beta$，$j(f(\beta))=f(\beta)$に注意して</p>
+
+              <div class="math-display">
+                
+                \[
+      V\models f(\beta)=f(\beta)\iff M\models j(f)(j(\beta))=j(f(\beta))\iff j(f)(\beta)=f(\beta)
+    \]
+              </div>
+            
+<p>より$j(f)=f$．よって$f:\alpha\xrightarrow{\text{cofinal}} j(\kappa)$となるが，これは$f\img \alpha\subseteq \kappa&lt;j(\kappa)$に矛盾．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\kappa$は強極限基数</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-284"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-284-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-284-content"
+                >
+                  <p>そうでないとして，$\alpha&lt;\kappa$と全射$f:\power(\alpha)\to \kappa$を取る．$j(\alpha)=\alpha$より</p>
+
+              <div class="math-display">
+                
+                \begin{align}
+      V\models f:\power(\alpha)\surj\kappa&amp;\iff M\models j(f):\power(j(\alpha))\surj j(\kappa)\\
+      &amp;\iff j(f):\power^M(\alpha)\surj j(\kappa)
+    \end{align}
+              </div>
+            
+<p>他方で$x\subseteq \alpha$に対して$|\mathrm{trcl}(x)|\leq |\alpha|&lt;\kappa$，$f(x)&lt;\kappa$より$j(x)=x$，$j(f(x))=f(x)$に注意して</p>
+
+              <div class="math-display">
+                
+                \[
+      V\models f(x)=f(x)\iff M\models j(f)(j(x))=j(f(x))\iff j(f)(x)=f(x)
+    \]
+              </div>
+            
+<p>より，$\power^M(\alpha)\subseteq \power(\alpha)$に注意して$j(f)=f$．よって $f:\power(\alpha)\surj j(\kappa)$となるが，これは$f\img \power(\alpha)\subseteq \kappa&lt;j(\kappa)$に矛盾．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+<p>十分大きな巨大基数の多くは，それが臨界点となるような，終域の内部モデルが十分な閉性を持つ（$\approx$ 終域の内部モデルが$V$に十分近い）$V$からの非自明な初等埋め込みの存在によって特徴付けられる．特に</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">2.9</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\kappa&gt;\omega$とする．$\gamma\geq \kappa$に対して$\kappa$が$\gamma$-スーパーコンパクト基数であるとは，次を満たす$\ZFC$の内部モデル$M$と初等埋め込み$j:V\xrightarrow{\prec}_\kappa M$が存在することをいう：</p>
+
+          
+          <ol>
+            <li><p>$\gamma&lt;j(\kappa)$</p></li>
+<li><p>${}^\gamma M\subseteq M$</p></li>
+          </ol>
+        
+<p>$\kappa$が$\kappa$-スーパーコンパクト基数であるとき，$\kappa$は可測基数であるという． 任意の$\gamma\geq \kappa$に対して$\kappa$が$\gamma$-スーパーコンパクト基数であるとき，$\kappa$はスーパーコンパクト基数であるという．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">2.10</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>${}^\gamma M\subseteq M$から$\set{x\in M:|\mathrm{trcl}(x)|^M\leq\gamma}=\set{x\in V:|\mathrm{trcl}(x)|\leq\gamma}$が従う．</p>
+            </div>
+          </div>
+        
+<p>以降では，$\kappa$が$\gamma$-スーパーコンパクト基数であることを保証する$j:V\xrightarrow{\prec}_\kappa M$のことを$\gamma$-supercompact embeddingということにする．</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">2.11</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\mathcal{U}$のみをパラメタとして定義可能なクラス$M_{\mathcal{U}},j_\mathcal{U}$で，任意のクラス$M,j$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+    \ZFC\proves\left(
+      \begin{aligned}
+      &amp;\be{j:V\xrightarrow{\prec}_\kappa M}{$\gamma$-supercompact embedding}\\
+      &amp;\qquad\qquad\qquad\to \exists \mathcal{U}[\be{j_{\mathcal{U}}:V\xrightarrow{\prec}_\kappa M_{\mathcal{U}}}{$\gamma$-supercompact embedding}]
+      \end{aligned}
+      \right)
+  \]
+              </div>
+            
+<p>となるものが取れる．これを踏まえて，$\be{\kappa}{$\gamma$-スーパーコンパクト基数}$は$\exists \mathcal{U}[\be{j_{\mathcal{U}}:V\xrightarrow{\prec}_\kappa M_{\mathcal{U}}}{$\gamma$-supercompact embedding}]$によって定式化される．</p>
+            </div>
+          </div>
+        
+<p>定式化の問題に限らず，このような$M_{\mathcal{U}},j_{\mathcal{U}}$の具体的構成とそこから分かる性質は，特に<a class="reference" href="#label-sec%3Alaver">4</a>節における議論で重要となる．次節では，これについて扱う．</p>
+
+          <h1 id="section-3">
+            
+            <span class="section-number">3.</span>
+            超冪と正規超フィルター
+          </h1>
+        
+
+          <h2 id="subsection-3-1">
+            
+            <span class="section-number">3.1</span>
+            超冪と初等埋め込み
+          </h2>
+        
+<p>ここでは，超フィルターと初等埋め込みとに関する一般論を扱う：</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">3.1</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\mathcal{F}$が非空集合$S$上のフィルターであるとは，次を満たすことをいう：</p>
+
+          
+          <ol>
+            <li><p>$\mathcal{F}\subseteq \power(S)$</p></li>
+<li><p>$S\in\mathcal{F}$，$\varnothing\notin \mathcal{F}$</p></li>
+<li><p>$\forall X\in \mathcal{F}\forall Y\in \power(S)[X\subseteq Y\to Y\in \mathcal{F}]$</p></li>
+<li><p>$\forall X,Y\in\mathcal{F}(X\cap Y\in \mathcal{F})$</p></li>
+          </ol>
+        
+<p>さらに次を満たすとき，$\mathcal{F}$は超フィルターであるという：</p>
+
+              <div class="math-display">
+                
+                \begin{equation}
+    \forall X\in \power(S)(X\in \mathcal{F}\lor S\setminus X\in \mathcal{F})
+  \end{equation}
+              </div>
+            
+            </div>
+          </div>
+        
+<p>以降では，$X\subseteq S$が$\mathcal{F}$に属することを$X$が（$\mathcal{F}$に関して）measure one，$S\setminus X$がmeasure oneであることを$X$がmeasure zero，$X$がmeasure zeroでないことを$X$がmeasure positiveであるということにする．$\mathcal{F}$に関してmeasure positiveな$S$の部分集合全体のなす集合を$\mathcal{F}^+$と書くことにする．</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">3.2</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>非空集合$S$上の超フィルター$\mathcal{U}$に対して，集合全体の宇宙$V$の$\mathcal{U}$に関する超冪$({}^SV/\mathcal{U},E_{\mathcal{U}})$を以下で定める：</p>
+
+          
+          <ol>
+            <li><p>${}^SV$上の同値関係を$f\sim_{\mathcal{U}} g\iff \set{i\in S:f(i)=g(i)}\in \mathcal{U}$で定める．$f$の同値類（集合とは限らない）を$(f)_\mathcal{U}$と定める．</p></li>
+<li><p>同値類がクラスのままでは扱いにくいため，新たに同値類の非空部分集合を</p>
+
+              <div class="math-display">
+                
+                \begin{equation}
+    (f)^0_{\mathcal{U}} = \set{g\in (f)_\mathcal{U}:\text{$g$は$(f)_\mathcal{U}$に属するものの中で最小のランクを持つもの}}
+  \end{equation}
+              </div>
+            
+<p>と定める．</p></li>
+<li><p>${}^SV/\mathcal{U}$をクラス$\set{(f)^0_{\mathcal{U}}:f\in {}^SV}$として定める．</p></li>
+<li><p>${}^SV/\mathcal{U}$上のクラス二項関係を$(f)^0_{\mathcal{U}}E_{\mathcal{U}}(g)^0_{\mathcal{U}}\iff \set{i\in S:f(i)\in g(i)}\in \mathcal{U}$と定める．</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+<p>通常のŁośの定理と同様に，以下が成り立つ</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#238636"
+          >
+            <div class="box-title">
+              補題
+              <span class="number">3.3</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>論理式$\Phi(x_1,\ldots,x_n)$ごとに，任意の非空集合$S$，$S$上の超フィルター$\mathcal{U}$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+   \forall f_1,\ldots,f_n\in {}^SV\left[({}^SV/\mathcal{U},E_{\mathcal{U}})\models \Phi[(f_1)^0_{\mathcal{U}},\ldots,(f_n)^0_{\mathcal{U}}]\iff \set{i\in S:V\models \Phi[f_1(i),\ldots,f_n(i)]}\in \mathcal{U}\right]
+\]
+              </div>
+            
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-285"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>メタレベルでの論理式の複雑さに関する帰納法によって，通常のŁośの定理と同様にして示される．（詳細は省く）</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+<p>$M_{\mathcal{U}},j_{\mathcal{U}}$を得るために，超冪$({}^SV/\mathcal{U},E_{\mathcal{U}})$をMostowski崩潰によって同型に潰したい．このために必要なのは，$({}^SV/\mathcal{U},E_{\mathcal{U}})$が外延性公理を満たし，集合状かつ整礎的であることであった．</p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$({}^SV/\mathcal{U},E_{\mathcal{U}})\models (\text{外延性公理})$</p></div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$({}^SV/\mathcal{U},E_{\mathcal{U}})$は集合状，すなわち，任意の$f\in {}^SV$に対して$\set{(g)^0_{\mathcal{U}}:(g)^0_{\mathcal{U}}E_{\mathcal{U}}(f)^0_{\mathcal{U}}}$は集合</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-286"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-286-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-286-content"
+                >
+                  <p>$(g)^0_{\mathcal{U}}E_{\mathcal{U}}(f)^0_{\mathcal{U}}$ならば$\set{i\in S:g(i)\in f(i)}\in \mathcal{U}$． このとき$h\in {}^SV$を$\set{i\in S:g(i)\in f(i)}$上で$g$に一致し，$S\setminus \set{i\in S:g(i)\in f(i)}$上で常に$\varnothing$に値を取る写像とすれば，$(h)^0_{\mathcal{U}}=(g)^0_{\mathcal{U}}$である． このとき特に$h\in V_{\mathrm{rank}(f)+1}$であるから，$\set{(g)^0_{\mathcal{U}}:(g)^0_{\mathcal{U}}E_{\mathcal{U}}(f)^0_{\mathcal{U}}}=\set{(h)^0_{\mathcal{U}}:(h)^0_{\mathcal{U}}E_{\mathcal{U}}(f)^0_{\mathcal{U}}\land h\in V_{\mathrm{rank}(f)+1}}$となってこれは集合．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              命題
+              <span class="number">3.4</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$S$上の超フィルター$\mathcal{U}$が可算完備，すなわち，$\forall\langle X_n:n&lt;\omega\rangle\in {}^\omega\mathcal{U}(\bigcap_{n&lt;\omega}X_n\in \mathcal{U})$であるとき，$({}^SV/\mathcal{U},E_{\mathcal{U}})$は整礎的．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">3.5</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>逆も成り立つ．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-287"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$({}^SV/\mathcal{U},E_{\mathcal{U}})$が整礎的でないとすると，長さ$\omega$の$E_{\mathcal{U}}$-下降列$\langle (f_n)^0_{\mathcal{U}}:n&lt;\omega\rangle\in {}^\omega ({}^SV/\mathcal{U})$が取れる．このとき$\forall n&lt;\omega (\set{i\in S:f_{n+1}(i)\in f_n(i)}\in \mathcal{U})$より，$\mathcal{U}$の可算完備性から$\set{i\in S:\forall n&lt;\omega(f_{n+1}(i)\in f_n(i))}=\bigcap_{n&lt;\omega}\set{i\in S:f_{n+1}(i)\in f_n(i)}\in \mathcal{U}$となる．よってある$i_0\in S$に対して$\langle f_n(i_0):n&lt;\omega\rangle$は長さ$\omega$の$\in$-下降列となるが，これは整礎性公理に反する．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+<p>よって，$S$上の超フィルター$\mathcal{U}$が可算完備であるとき，$({}^SV/\mathcal{U},E_{\mathcal{U}})$のMostowski崩潰写像</p>
+
+              <div class="math-display">
+                
+                \[
+  \pi_{({}^SV/\mathcal{U},E_{\mathcal{U}})}:({}^SV/\mathcal{U},E_{\mathcal{U}})\iso (M_{\mathcal{U}},\in);(f)^0_{\mathcal{U}}\mapsto \set{\pi_{({}^SV/\mathcal{U},E_{\mathcal{U}})}((g)^0_{\mathcal{U}}):(g)^0_{\mathcal{U}}E_{\mathcal{U}}(f)^0_{\mathcal{U}}}
+\]
+              </div>
+            
+<p>を，$\mathcal{U}$のみをパラメタとして定義可能なクラス関数として取ることができる．この値域である，$\mathcal{U}$のみをパラメタとして定義可能な推移的クラスを$M_{\mathcal{U}}$と書くことにする．以上を踏まえて</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">3.6</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>非空集合$S$上の可算完備超フィルター$\mathcal{U}$に対して，以下を定義する：</p>
+
+          
+          <ol>
+            <li><p>$[\cdot]_{\mathcal{U}}:{}^SV\surj M_{\mathcal{U}};f\mapsto\pi_{({}^SV/\mathcal{U},E_{\mathcal{U}})}((f)^0_{\mathcal{U}})$</p></li>
+<li><p>$j_{\mathcal{U}}:V\to M_{\mathcal{U}};x\mapsto [c_x]_{\mathcal{U}}$．ここで$c_x:S\to V;i\mapsto x$とする．</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#238636"
+          >
+            <div class="box-title">
+              補題
+              <span class="number">3.7</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>非空集合$S$上の可算完備超フィルター$\mathcal{U}$に対して，以下が成立：</p>
+
+          
+          <ol>
+            <li><p>$[\cdot]_{\mathcal{U}}:{}^SV\surj M_{\mathcal{U}}$に関してŁośの定理が成り立つ：</p>
+
+              <div class="math-display">
+                
+                \[
+   \forall f_1,\ldots,f_n\in {}^SV\left[M_{\mathcal{U}}\models \Phi[[f_1]_{\mathcal{U}},\ldots,[f_n]_{\mathcal{U}}]\iff \set{i\in S:V\models \Phi[f_1(i),\ldots,f_n(i)]}\in \mathcal{U}\right]
+\]
+              </div>
+            </li>
+<li><p>$M_{\mathcal{U}}$は$\ZFC$の内部モデルであり，$j_{\mathcal{U}}:V\xrightarrow{\prec}M_{\mathcal{U}}$</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-288"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>(i)はMostowski崩潰写像が同型写像であることと，超冪に関する\L o\&#39; sの定理の成立から直接従う． (ii)は，(i)より明らかに</p>
+
+              <div class="math-display">
+                
+                \[
+    \forall a_1,\ldots,a_n \in V\left[V\models \Phi[a_1,\ldots,a_n]\iff M_{\mathcal{U}}\models \Phi[j_{\mathcal{U}}(a_1),\ldots,j_{\mathcal{U}}(a_n)] \right]
+  \]
+              </div>
+            
+<p>であるから，あとは$M_{\mathcal{U}}$が$\ZFC$の内部モデルであるのを見れば良い．$V\models \ZFC$より$M_{\mathcal{U}}\models \ZFC$は明らか．$\ON\subseteq M_{\mathcal{U}}$を示す．</p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$j_{\mathcal{U}}|\ON:\ON\to\ON$は狭義増加で，特に$\forall \alpha\in \ON(\alpha\leq j_{\mathcal{U}}(\alpha))$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-289"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-289-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-289-content"
+                >
+                  <p>$V\models \alpha\in \ON\implies M_{\mathcal{U}}\models j_{\mathcal{U}}(\alpha)\in \ON\implies j_{\mathcal{U}}(\alpha)\in \ON$．また $V\models \beta\in \alpha\in \ON\implies M_{\mathcal{U}}\models j_{\mathcal{U}}(\beta)\in j_{\mathcal{U}}(\alpha)\implies j_{\mathcal{U}}(\beta)\in j_{\mathcal{U}}(\alpha)$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        
+<p>$j_{\mathcal{U}}\img \ON\subseteq M_{\mathcal{U}}$は$\ON$で共終より，$M_{\mathcal{U}}$が推移的であることから$\ON\subseteq M_{\mathcal{U}}$．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              命題
+              <span class="number">3.8</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>非空集合$S$上の可算完備超フィルター$\mathcal{U}$が非単項ならば，$j_{\mathcal{U}}:V\xrightarrow{\prec}M_{\mathcal{U}}$は非自明である．</p>
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">3.9</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>逆も成り立つ．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-290"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$\mathcal{U}$を非単項として，$[\mathrm{id}_S]_{\mathcal{U}}\notin j_{\mathcal{U}}\img V$を示す．任意の$x\in V$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+    j_{\mathcal{U}}(x)=[\mathrm{id}_S]_{\mathcal{U}}\iff [c_x]_{\mathcal{U}}=[\mathrm{id}_S]_{\mathcal{U}}\iff \set{i\in S: x=i}\in \mathcal{U}\iff \bot
+  \]
+              </div>
+            
+<p>より明らか．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+<p>以上より，可算完備な非単項超フィルターから，$V$から内部モデルへの非自明な初等埋め込みを構成できることがわかった．</p>
+
+          <h2 id="subsection-3-2">
+            
+            <span class="section-number">3.2</span>
+            正規超フィルターとスーパーコンパクト基数
+          </h2>
+        
+<p>ここでは，一般論を踏まえて，$\power_\kappa\gamma$上の正規超フィルターと$\gamma$-スーパーコンパクト基数との間の関係を見る．</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              定義
+              <span class="number">3.10</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\kappa&gt;\omega$を基数とする．サイズ$\kappa$以上の集合$s$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+    \power_\kappa s:=[s]^{&lt;\kappa}=\set{x\in \power(s):|x|&lt;\kappa}
+  \]
+              </div>
+            
+<p>$\power_\kappa s$上のフィルター$\mathcal{F}$が正規であるとは，以下を満たすことをいう：</p>
+
+          
+          <ol>
+            <li><p>$\mathcal{F}$は$\kappa$-完備，すなわち，$\forall \langle X_\xi:\xi&lt;\alpha\rangle\in {}^{&lt;\kappa}\mathcal{F}(\bigcap_{\xi&lt;\alpha}X_\xi \in \mathcal{F})$</p></li>
+<li><p>$\forall i\in s(\set{x\in \power_\kappa s:i\in x}\in \mathcal{F})$</p></li>
+<li><p>$\forall \langle X_i:i\in s\rangle\in {}^s\mathcal{F}(\bigtriangleup_{i\in s}X_i:=\set{x\in \power_\kappa s:\forall i\in x(x\in X_i)}\in \mathcal{F})$</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">3.11</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\power_\kappa s$上の正規超フィルターは以下の性質を持つ：</p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\mathcal{F}$は可算完備</p></div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\mathcal{F}$を拡張する単項フィルターは存在しない</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-291"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-291-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-291-content"
+                >
+                  <p>$x\in \power_\kappa s$に対して，$i_0\in s\setminus x$を取れば，$x\notin\set{y\in \power_\kappa s:i_0\in y}\in \mathcal{F}$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$f:\power_\kappa s\to V$がある$\mathcal{F}^+$の元上において選択関数ならば，$f:\power_\kappa s\to V$はある$\mathcal{F}^+$の元上において，ある$i\in s$に値を取る定数関数</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-292"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-292-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-292-content"
+                >
+                  <p>対偶を示す：$\forall i\in s (\power_\kappa s\setminus f^{-1}\set{i}\in \mathcal{F})$ならば$\power_\kappa s\setminus \set{x\in \power_\kappa s:f(x)\in x}=\set{x\in \power_\kappa s:\forall i\in x(f(x)\neq i)}=\bigtriangleup_{i\in s}\power_\kappa s\setminus f^{-1}\set{i}\in \mathcal{F}$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        
+            </div>
+          </div>
+        
+
+          <div
+            class="theorem-box" id="label-th:fil_to_emb"
+            style="--bar:#238636"
+          >
+            <div class="box-title">
+              補題
+              <span class="number">3.12</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\kappa&gt;\omega$を基数，$\gamma\geq \kappa$とする． $\power_\kappa \gamma$上の正規超フィルター$\mathcal{U}$に対して，$j_{\mathcal{U}}:V\xrightarrow{\prec}M_{\mathcal{U}}$は$\gamma$-supercompact embedding．特に次を満たす：</p>
+
+          
+          <ol>
+            <li><p>$[\mathrm{id}_{\power_\kappa\gamma}]_{\mathcal{U}}=j_{\mathcal{U}}\img \gamma$</p></li>
+<li><p>$\gamma&lt;j_{\mathcal{U}}(\kappa)$</p></li>
+<li><p>$\mathrm{crit}(j_{\mathcal{U}})=\kappa$</p></li>
+<li><p>${}^\gamma M_{\mathcal{U}}\subseteq M_{\mathcal{U}}$</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-293"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$\mathcal{U}$は超フィルターより$\mathcal{U}^+=\mathcal{U}$に注意する．</p>
+
+          
+          <ol>
+            <li><p>$\mathcal{U}$の正規性より</p>
+
+              <div class="math-display">
+                
+                \begin{align}
+    [f]_{\mathcal{U}}\in [\mathrm{id}_{\power_\kappa\gamma}]_{\mathcal{U}}&amp;\iff \set{x\in \power_\kappa\gamma:f(x)\in x}\in \mathcal{U}\\
+    &amp;\iff \exists \alpha&lt;\gamma [\set{x\in \power_\kappa\gamma:f(x)=\alpha}\in \mathcal{U}]\\
+    &amp;\iff \exists \alpha&lt;\gamma \left[[f]_{\mathcal{U}}=j_{\mathcal{U}}(\alpha)\right]
+    \end{align}
+              </div>
+            </li>
+<li><p>$\mathrm{ot}^{M_{\mathcal{U}}}(j_{\mathcal{U}}\img \gamma)=\mathrm{ot}(j_{\mathcal{U}}\img \gamma)=\gamma$に注意して</p>
+
+              <div class="math-display">
+                
+                \begin{align}
+      \gamma&lt;j_{\mathcal{U}}(\kappa)&amp;\iff M_{\mathcal{U}}\models \mathrm{ot}([\mathrm{id}_{\power_\kappa \gamma}]_{\mathcal{U}})&lt;j_{\mathcal{U}}(\kappa)\\
+      &amp;\iff \set{x\in \power_\kappa\gamma:\mathrm{ot}(x)&lt;\kappa}\in \mathcal{U}\iff \top
+    \end{align}
+              </div>
+            </li>
+<li><p>$\alpha&lt;\kappa$に対して，$\mathcal{U}$の$\kappa$-完備性より</p>
+
+              <div class="math-display">
+                
+                \begin{align}
+      [f]_{\mathcal{U}}\in j_{\mathcal{U}}(\alpha)&amp;\iff  \set{x\in \power_\kappa\gamma:f(x)\in \alpha}\in \mathcal{U}\\
+      &amp;\iff\exists \beta\in \alpha \left[\set{x\in \power_\kappa\gamma:f(x)=\beta}\in \mathcal{U}\right]\\
+      &amp;\iff \exists \beta\in \alpha \left[[f]_{\mathcal{U}}=j_{\mathcal{U}}(\beta)\right]
+    \end{align}
+              </div>
+            
+<p>より，順序数$j_{\mathcal{U}}(\alpha)$は$\alpha$と順序同型より$j_{\mathcal{U}}(\alpha)=\alpha$．よって(ii)と合わせて明らか．</p></li>
+<li><p>はじめに，次に注意する：</p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$j_{\mathcal{U}}|\gamma\in M_{\mathcal{U}}$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-294"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-294-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-294-content"
+                >
+                  <p>$j_{\mathcal{U}}\img \gamma\in M_{\mathcal{U}}$かつ$\mathrm{ot}^{M_{\mathcal{U}}}(j_{\mathcal{U}}\img \gamma)=\mathrm{ot}(j_{\mathcal{U}}\img \gamma)=\gamma$に注意して$M_{\mathcal{U}}\models \exists e(e:\gamma\iso j_{\mathcal{U}}\img \gamma)$．このwitness $e\in M_{\mathcal{U}}$は$j_{\mathcal{U}}|\gamma$に一致する．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        
+<p>$\langle [f_\alpha]_{\mathcal{U}}:\alpha&lt;\gamma\rangle\in {}^\gamma M_{\mathcal{U}}$に対して，$g\in {}^{\power_\kappa\gamma}V$を任意の$x\in \power_\kappa\gamma$に対して $g(x):\gamma\to V;\alpha\mapsto f_\alpha(x)$で定める．このとき</p>
+
+              <div class="math-display">
+                
+                \begin{align}
+      \set{x\in\power_\kappa\gamma:V\models g(x):\gamma\to V}\in \mathcal{U}&amp;\implies M_{\mathcal{U}}\models[g]_{\mathcal{U}}:j_{\mathcal{U}}(\gamma)\to M_{\mathcal{U}}\\
+      &amp;\implies [g]_{\mathcal{U}}:j_{\mathcal{U}}(\gamma)\to M_{\mathcal{U}} 
+    \end{align}
+              </div>
+            
+<p>任意の$\alpha&lt;\gamma$に対して</p>
+
+              <div class="math-display">
+                
+                \begin{align}
+      \set{x\in \power_\kappa\gamma:\left(g(x)\right)(\alpha)=f_\alpha(x)}\in \mathcal{U}&amp;\implies M_{\mathcal{U}}\models [g]_{\mathcal{U}}(j_{\mathcal{U}}(\alpha))=[f_\alpha]_{\mathcal{U}}\\&amp;\implies[g]_{\mathcal{U}}(j_{\mathcal{U}}(\alpha))=[f_\alpha]_{\mathcal{U}}
+    \end{align}
+              </div>
+            
+<p>よって，$\langle [f_\alpha]_{\mathcal{U}}:\alpha&lt;\gamma\rangle=[g]_{\mathcal{U}}\circ j_{\mathcal{U}}| \gamma =[g]_{\mathcal{U}}\circ^{M_{\mathcal{U}}} j_{\mathcal{U}}| \gamma\in M_{\mathcal{U}}$</p></li>
+          </ol>
+        
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box" id="label-th:emb_to_fil"
+            style="--bar:#238636"
+          >
+            <div class="box-title">
+              補題
+              <span class="number">3.13</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$j,M$をクラスとする．$\gamma\geq \kappa$に対して$\be{j:V\xrightarrow{\prec}_\kappa M}{$\gamma$-supercompact embedding}$ならば，$\power_\kappa\gamma$上の正規超フィルターが存在する．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-295"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$\gamma&lt;j(\kappa)$，$j\img \gamma\in M$，$\mathrm{ot}^M(j\img \gamma)=\gamma$より$j\img\gamma\in \power^M_{j(\kappa)}j(\gamma)$であるのに注意して，以下で定まる$\mathcal{U}$が望むものとなる：</p>
+
+              <div class="math-display">
+                
+                \[
+    \mathcal{U}=\set{X\in\power(\power_\kappa\gamma):j\img \gamma \in j(X)}
+  \]
+              </div>
+            
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\mathcal{U}$は$\power_\kappa\gamma$上の超フィルター</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-296"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-296-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-296-content"
+                >
+                  <p>$j$が初等埋め込みであるのに注意して簡単に従う．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\mathcal{U}$は$\kappa$-完備</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-297"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-297-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-297-content"
+                >
+                  <p>$X=\langle X_\xi:\xi&lt;\alpha\rangle\in{}^{&lt;\kappa}\power(\power_\kappa\gamma)$に対して，$j(X)_\xi=j(X)_{j(\xi)}=j(X)_{j(\xi)}^M=j(X_\xi)$に注意して</p>
+
+              <div class="math-display">
+                
+                \begin{align}
+      V\models \bigcap_{\xi&lt;\alpha}X_\xi=\bigcap_{\xi&lt;\alpha}X_\xi&amp;\iff M\models j(\bigcap_{\xi&lt;\alpha}X_\xi)=\bigcap_{\xi&lt;j(\alpha)}j(X)_\xi\\&amp;\iff j(\bigcap_{\xi&lt;\alpha}X_\xi)=\bigcap_{\xi&lt;\alpha}j(X_\xi)
+    \end{align}
+              </div>
+            
+<p>より明らか．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\forall \alpha\in \gamma(\set{x\in \power_\kappa\gamma:\alpha\in x}\in \mathcal{U})$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-298"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-298-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-298-content"
+                >
+                  
+              <div class="math-display">
+                
+                \begin{align}
+      \set{x\in \power_\kappa\gamma:\alpha\in x}\in \mathcal{U}&amp;\iff j\img \gamma \in j(\set{x\in \power_\kappa\gamma:\alpha\in x})\\
+      &amp;\iff j(\alpha)\in j\img \gamma\iff \top
+    \end{align}
+              </div>
+            
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\forall \langle X_\alpha:\alpha\in \gamma\rangle\in {}^\gamma\mathcal{U}(\bigtriangleup_{\alpha\in \gamma}X_\alpha\in \mathcal{U})$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-299"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-299-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-299-content"
+                >
+                  <p>$j(\bigtriangleup_{\alpha\in \gamma}X_\alpha)=\set{x\in \power^M_{j(\kappa)}j(\gamma):\forall \alpha\in x(x\in j(X)_\alpha)}$に注意して</p>
+
+              <div class="math-display">
+                
+                \[
+      j\img\gamma\in j(\bigtriangleup_{\alpha\in \gamma}X_\alpha)\iff \forall \alpha \in j\img \gamma(j\img \gamma\in j(X)_\alpha)\iff \forall\alpha&lt;\gamma(j\img \gamma\in j(X_\alpha))
+    \]
+              </div>
+            
+<p>より明らか．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              系
+              <span class="number">3.14</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$j,M$をクラスとする．$\gamma\geq \kappa$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+    \be{j:V\xrightarrow{\prec}_\kappa M}{$\gamma$-supercompact embedding}\implies \exists \mathcal{U}(\be{j_{\mathcal{U}}:V\xrightarrow{\prec}_\kappa M_{\mathcal{U}}}{$\gamma$-supercompact embedding})
+  \]
+              </div>
+            
+<p>が成り立つ． 特に，$\kappa$が$\gamma$-supercompact cardinalであることは</p>
+
+              <div class="math-display">
+                
+                \[
+    \exists \mathcal{U}(\be{j_{\mathcal{U}}:V\xrightarrow{\prec}_\kappa M_{\mathcal{U}}}{$\gamma$-supercompact embedding})
+  \]
+              </div>
+            
+<p>同値に</p>
+
+              <div class="math-display">
+                
+                \[
+    \be{\kappa&gt;\omega}{cardinal}\land \exists\mathcal{U}(\be{\mathcal{U}}{normal ultrafilter on $\power_\kappa\gamma$})
+  \]
+              </div>
+            
+<p>によって定式化できる．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-300"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>補題<a class="reference" href="#label-th%3Afil_to_emb">3.12</a>ならびに<a class="reference" href="#label-th%3Aemb_to_fil">3.13</a>からただちに従う．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <h1 id="section-4">
+            <span id="label-sec:laver"></span>
+            <span class="section-number">4.</span>
+            Laver関数
+          </h1>
+        
+<p>ここでは，Richard Laverによって導入された，Laver関数と呼ばれる，スーパーコンパクト基数に関する特別な関数の存在を示す．Laverは<span class="citation-group">[<a
+              class="citation"
+              id="cite-MR472529-2"
+              href="#bib-MR472529"
+            >Lav78</a>]</span>において，良い性質を持つforcing posetによる強制法でスーパーコンパクト基数が常に保たれる$\ZFC$のモデルをジェネリック拡大として得るためにこれを導入した．この技法はPFAやその一般化であるSPFA（同値にMM）の無矛盾性を示す際にも，重要な役割を果たしている．</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#2563eb"
+          >
+            <div class="box-title">
+              定理
+              <span class="number">4.1</span>
+              <span class="theorem-note">(Laver)</span>
+            </div>
+            <div class="theorem-content">
+              <p>$\kappa$をスーパーコンパクト基数とする．次を満たす関数$f:\kappa\to V_\kappa$（Laver関数という）が存在する：</p>
+
+              <div class="math-display">
+                
+                \begin{equation}
+   \forall x\in V \forall \gamma\geq \max\set{|\mathrm{trcl}(x)|,\kappa}\exists \be{\mathcal{U}_\gamma}{normal ultrafilter on $\power_\kappa\gamma$}(j_{\mathcal{U}_\gamma}(f)(\kappa)=x)
+ \end{equation}
+              </div>
+            
+            </div>
+          </div>
+        
+<p>先に定理の意味について説明しておく．説明のため$f:\kappa\to V_\kappa$を長さ$\kappa$の列$A=\langle A_\xi:\xi&lt;\kappa\rangle\in {}^\kappa V_\kappa$と同一視する．</p>
+<p>このとき$j(A)=\langle j(A)_\xi:\xi&lt;j(\kappa)\rangle$は長さ$j(\kappa)$の列となる．また$\xi&lt;\kappa$に対しては</p>
+
+              <div class="math-display">
+                
+                \begin{equation}
+   j(A)_{\xi}=j(A)_{j(\xi)}=j(A)^M_{j(\xi)}=j(A_\xi)=A_\xi
+ \end{equation}
+              </div>
+            
+<p>よって$\kappa&lt;j(\kappa)$に注意して$j(A)$は$A$の真の延長になっており，初めて$A$に加わる値が$j(A)_\kappa$である．</p>
+<p>この$j(A)_\kappa$が（$j$を動かした時に）どのような値を取りうるかは，$A$がどのような$\kappa$-列であるかによって異なる． 例えば$A=\langle \xi:\xi&lt;\kappa\rangle$ならば，$j(A)_\kappa$の取りうる値は$\kappa$のみである．</p>
+<p>この定理は，特別な$\kappa$-列$A$が存在して，どんな集合$x$に対してもいくらでも大きい$\gamma$-supercompact embedding $j$で$j(A)_\kappa$の値を$x$とするものが取れることを保証している．</p>
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-301"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$f:\kappa\to V_\kappa$を再帰的に以下で定義する：</p>
+
+          
+          <ol>
+            <li><p>$\alpha&gt;\omega$が基数のとき，$f(\alpha)$は，可能な限り， 次を満たす$\langle x,\delta\rangle$全体のうち第二成分の取りうる最小値を実現する$x$とする：</p>
+
+              <div class="math-display">
+                
+                \[
+   \max\set{\alpha,|\mathrm{trcl}(x)|}\leq \delta&lt;\kappa\land \forall \be{\mathcal{U}_\delta}{normal ultrafilter on $\power_\alpha\delta$}((j_{\mathcal{U}_\delta}(f|\alpha))(\alpha)\neq x)
+ \]
+              </div>
+            </li>
+<li><p>それ以外の場合には$f(\alpha)=\varnothing$と定める．</p></li>
+          </ol>
+        
+<p>$f$が望む関数であるのを背理法によって示す．$f$が望む性質を満たさないとする．このとき，次を満たすような最小の$\gamma_0\geq \kappa$が取れる：</p>
+
+              <div class="math-display">
+                <span id="label-eq:countar-example"></span>
+                \begin{equation}\label{eq:countar-example}
+  \exists x[ \max\set{\kappa,|\mathrm{trcl}(x)|}\leq \gamma_0\land\forall \be{\mathcal{U}_{\gamma_0}}{normal ultrafilter on $\power_\kappa{\gamma_0}$}((j_{\mathcal{U}_{\gamma_0}}(f))(\kappa)\neq x)]
+ \end{equation}
+              </div>
+            
+<p>はじめに，次が成り立つ（直感的には$j:V\xrightarrow{\prec}_\kappa M$が$M=V$かつ$\gamma_0&lt;j(\kappa)$を満たす場合を念頭に置くと良い．ただしそのようなものは実際には存在し得ないのに注意せよ．）：</p>
+
+          <div
+            class="theorem-box" id="label-claim1"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              主張
+              <span class="number">4.2</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>（$\gamma_0$に関して）十分大きい$\lambda$に対して$\be{j:V\xrightarrow{\prec}_\kappa M}{$\lambda$-supercompact embedding}$を取れば，$\left(j(f)\right)(\kappa)$は式<a class="reference" href="#label-eq%3Acountar-example">30</a>のwitnessとなる．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-302"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$\lambda&gt;\gamma_0$を十分大きく取って固定する．$\lambda$-supercompact embedding $j:V\xrightarrow{\prec}_\kappa M$を取って固定する．</p>
+<p>$\lambda$を十分大きく取ったから，${}^\lambda M\subseteq M$に注意して，任意の$\kappa\leq\gamma\leq \gamma_0$に対して</p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\power^{M}_\kappa \gamma=\power_\kappa\gamma$</p></div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\power^{M}(\power_\kappa\gamma)=\power(\power_\kappa\gamma)$</p></div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\set{\mathcal{U}_{\gamma}:\text{normal ultrafilter on $\power_\kappa{\gamma}$}}^{M}=\set{\mathcal{U}_{\gamma}:\text{normal ultrafilter on $\power_\kappa{\gamma}$}}$</p></div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\power_\kappa{\gamma}$上の正規超フィルター$\mathcal{U}_{\gamma}$に対して$j_{\mathcal{U}_{\gamma}}^M=j_{\mathcal{U}_{\gamma}}|M$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-303"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-303-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-303-content"
+                >
+                  <p>より強く，任意の$g\in {}^{\power_\kappa\gamma}M\subseteq M$に対して$[g]^M_{\mathcal{U}_\gamma}=[g]_{\mathcal{U}_\gamma}$となる：定義から任意の$h\in {}^{\power_\kappa\gamma}M$に対して$[h]^M_{\mathcal{U}_\gamma}\in [g]^M_{\mathcal{U}_\gamma}\iff [h]_{\mathcal{U}_\gamma}\in [g]_{\mathcal{U}_\gamma}$であり，さらに任意の$h\in {}^{\power_\kappa\gamma}V$ s.t. $[h]_{\mathcal{U}_\gamma}\in [g]_{\mathcal{U}_\gamma}$に対して$\set{x\in \power_\kappa\gamma :h(x)\in g(x)\in M}\in \mathcal{U}_\gamma$より$h_0\in {}^{\power_\kappa\gamma}M$で$[h]_{\mathcal{U}_\gamma}=[h_0]_{\mathcal{U}_\gamma}$となるものが取れるから，（$[g]_{\mathcal{U}_\gamma}$のランクに関する）帰納法により明らか．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\set{x\in M:|\mathrm{trcl}(x)|^M\leq \gamma}=\set{x\in V:|\mathrm{trcl}(x)|\leq\gamma}$</p></div>
+            </li>
+          
+          </ul>
+        
+<p>よって，$x_0\in V$について以下は同値であり，さらに，そのような第二成分の最小値はどちらでも$\gamma_0$に一致する：</p>
+
+          
+          <ol>
+            <li><p>$x_0$は次を満たす$\langle x,\gamma\rangle$全体のうち第二成分の取りうる最小値を実現する$x$のうちの一つ：</p>
+
+              <div class="math-display">
+                
+                \[
+   \max\set{\kappa,|\mathrm{trcl}(x)|}\leq \gamma&lt;j(\kappa)\land \forall \be{\mathcal{U}_\gamma}{normal ultrafilter on $\power_\kappa\gamma$}(j_{\mathcal{U}_\gamma}(f)(\kappa)\neq x)
+ \]
+              </div>
+            </li>
+<li><p>$x_0\in M$であり，$M$において次が成り立つ：$x_0$は次を満たす$\langle x,\gamma\rangle$全体のうち第二成分の取りうる最小値を実現する$x$のうちの一つ：</p>
+
+              <div class="math-display">
+                
+                \[   \max\set{\kappa,|\mathrm{trcl}(x)|}\leq \gamma&lt;j(\kappa)\land \forall \be{\mathcal{U}_\gamma}{normal ultrafilter on $\power_\kappa\gamma$}(j_{\mathcal{U}_\gamma}(f)(\kappa)\neq x)
+ \]
+              </div>
+            </li>
+          </ol>
+        
+<p>ここで， $j(f)$が$M$において$f$の定義式を満たすことと$j(f)|\kappa=f$であることとから，$\left(j(f)\right)(\kappa)$はそのような$x_0$となる．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+<p>さらに，次が成り立つ：</p>
+
+          <div
+            class="theorem-box" id="label-claim2"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              主張
+              <span class="number">4.3</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$\power_\kappa \gamma_0$上の適当な正規超フィルター$\mathcal{U}$に対して$j_{\mathcal{U}}(f)(\kappa)$は式<a class="reference" href="#label-eq%3Acountar-example">30</a>のwitnessとなる．</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-304"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$j:V\xrightarrow{\prec}_\kappa M$を主張<a class="reference" href="#label-claim1">4.2</a>のようなものとする． $\power_\kappa \gamma_0$上の正規超フィルター$\mathcal{U}$を以下で定める：</p>
+
+              <div class="math-display">
+                
+                \[
+  \mathcal{U}=\set{ X\subseteq \power_\kappa \gamma_0:j\img \gamma_0\in j(X)}
+\]
+              </div>
+            
+<p>このとき$(j_{\mathcal{U}}(f))(\kappa)=(j(f))(\kappa)$となる：</p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$k:M_{\mathcal{U}}\xrightarrow{\prec}M;[g]_{\mathcal{U}}\mapsto (j(g))(j\img\gamma_0)$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-305"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-305-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-305-content"
+                >
+                  <p>Łośの定理より$M_{\mathcal{U}}\models \Phi(\overrightarrow{[g]_{\mathcal{U}}})\iff \set{x\in \power_\kappa\gamma_0:\Phi(\overrightarrow{g(x)})}\in \mathcal{U}\iff j\img \gamma_0\in j(\set{x\in \power_\kappa\gamma_0:\Phi(\overrightarrow{g(x)})})
+    \iff M\models \Phi(\overrightarrow{(j(g))(j\img \gamma_0)})$</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$j:V\ee M$は$j_{\mathcal{U}}:V\ee M_{\mathcal{U}}$と$k:M_{\mathcal{U}}\ee M$の合成に分解できる</p></div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$k|\set{x\in M_{\mathcal{U}}:|\mathrm{trcl}(x)|^{M_{\mathcal{U}}}\leq \gamma_0}$は恒等写像</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-306"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-306-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-306-content"
+                >
+                  <p>$k\neq \mathrm{id}_{M_{\mathcal{U}}}$として$\mathrm{crit}(k)&gt;\gamma_0$を示す： $\alpha\leq \gamma_0$に対して$\alpha=\mathrm{ot}(j\img\gamma_0\cap j(\alpha))=\mathrm{ot}^{M_{\mathcal{U}}}(j_{\mathcal{U}}\img\gamma_0\cap j_{\mathcal{U}}(\alpha))=[\langle\mathrm{ot}(x\cap \alpha):x\in \power_\kappa\gamma_0\rangle]_{\mathcal{U}}$より$k(\alpha)=(j(\langle\mathrm{ot}(x\cap \alpha):x\in \power_\kappa\gamma_0\rangle))(j\img \gamma_0)=\mathrm{ot}^M(j\img\gamma_0\cap j(\alpha))=\mathrm{ot}(j\img\gamma_0\cap j(\alpha))=\alpha$</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        
+<p>よって${}^{\gamma_0} M_{\mathcal{U}}\subseteq M_{\mathcal{U}}$より$\set{x\in M_{\mathcal{U}}:|\mathrm{trcl}(x)|^{M_{\mathcal{U}}}\leq \gamma_0}=\set{x\in V:|\mathrm{trcl}(x)|\leq \gamma_0}\ni (j(f))(\kappa)$に注意して</p>
+
+              <div class="math-display">
+                
+                \[
+  k((j(f))(\kappa))=(j(f))(\kappa)=(k(j_{\mathcal{U}}(f)))(\kappa)= (k(j_{\mathcal{U}}(f)))(k(\kappa))=k((j_{\mathcal{U}}(f))(\kappa))
+\]
+              </div>
+            
+<p>よって$k$の単射性から$(j(f))(\kappa)=(j_{\mathcal{U}}(f))(\kappa)$．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+<p>しかし，式<a class="reference" href="#label-eq%3Acountar-example">30</a>の内容から，主張<a class="reference" href="#label-claim2">4.3</a>は矛盾である．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <div
+            class="theorem-box"
+            style="--bar:#ef8c00"
+          >
+            <div class="box-title">
+              注意
+              <span class="number">4.4</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>Laver関数$f:\kappa\to V_\kappa$に対して，$\langle f(\alpha)\cap \alpha:\alpha&lt;\kappa\rangle$は$\diamondsuit_\kappa$-列となる．</p>
+            </div>
+          </div>
+        
+
+          <h1 id="section-5">
+            
+            <span class="section-number">5.</span>
+            PFAの無矛盾性証明
+          </h1>
+        
+<p>1984年，James&nbsp;E. Baumgartnerはproper forcing axiomを導入した．この無矛盾性証明においては，冒頭に述べた以下の事実が重要となる：</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#c62828"
+          >
+            <div class="box-title">
+              事実
+              <span class="number">5.1</span>
+              <span class="theorem-note">(再掲)</span>
+            </div>
+            <div class="theorem-content">
+              <p>forcing posetのproper性に関して，次が成り立つ：</p>
+
+          
+          <ol>
+            <li><p>forcing poset $\mathbb{P}$がproperならば，$\mathbb{P}$は$\omega_1$を保つ</p></li>
+<li><p>(Shelah). proper forcing posetの可算台反復によって得られるforcing posetもproperである</p></li>
+<li><p>trivial forcing poset（$\mathbb{P}=\langle\set{\varnothing},=,\varnothing\rangle$）はproperである</p></li>
+<li><p>forcing poset $\mathbb{P}$のproper性は，次の意味で局所的である：$\mathbb{P}$がproperであるか否かは， $\mathbb{P}$のサイズに対して十分大きい$\lambda$に対する$(\set{x:|\mathrm{trcl}(x)|\leq \lambda},\in)$の構造のみによって決定する</p></li>
+          </ol>
+        
+            </div>
+          </div>
+        
+<p>これを用いて，目標であった定理を示す：</p>
+
+          <div
+            class="theorem-box"
+            style="--bar:#2563eb"
+          >
+            <div class="box-title">
+              定理
+              <span class="number">5.2</span>
+              <span class="theorem-note">(Baumgartner)</span>
+            </div>
+            <div class="theorem-content">
+              <p>スーパーコンパクト基数$\kappa$の存在を仮定する．このとき，ある反復強制法の$\kappa$-stage $\mathbb{P}_\kappa$で，$\mathbb{P}_\kappa\forces\text{``$\mathrm{PFA}$&#39;&#39;}$とするものが存在する．特に</p>
+
+              <div class="math-display">
+                
+                \begin{equation}
+    \mathrm{Con}(\ZFC+\exists \text{スーパーコンパクト基数})\to \mathrm{Con}(\ZFC+\mathrm{PFA})
+  \end{equation}
+              </div>
+            
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-307"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>スーパーコンパクト基数$\kappa$とLaver関数 $f:\kappa\to V_\kappa$を取って固定する．iteration $\mathbb{P}=\langle \mathbb{P}_\alpha:\alpha\leq \kappa\rangle$を以下で定義する：</p>
+
+          
+          <ol>
+            <li><p>$\mathbb{P}$は可算台反復（共終数$\omega$のところでinverse limit，そうでないところでdirect limit）</p></li>
+<li><p>$\forall \alpha&lt;\kappa(\mathbb{P}_\alpha\in V_\kappa)$</p></li>
+<li><p>$\alpha&lt;\kappa$が到達不能基数であり，さらに</p>
+
+              <div class="math-display">
+                
+                \begin{equation}
+    f(\alpha)= \dot{\mathbb{Q}}\land \mathbb{P}_{\alpha}\forces\text{``$\be{\dot{\mathbb{Q}}}{proper forcing poset}$&#39;&#39;}
+  \end{equation}
+              </div>
+            
+<p>なる$\dot{\mathbb{Q}}\in V^{\mathbb{P}_\alpha}$があるとき，$\mathbb{P}_{\alpha+1}=\mathbb{P}_\alpha*\dot{\mathbb{Q}}$</p></li>
+<li><p>それ以外の場合の全てのsuccessor stageではtrivial forcing posetを合成</p></li>
+          </ol>
+        
+<p>$\mathbb{P}_\kappa$が望むforcing posetであるのを示す．</p>
+
+          
+          <ol>
+            
+            <li class="custom-item">
+              <span class="item-label">$1^\circ$</span>
+              <div class="item-body"><p>$\mathbb{P}_\kappa$の基本的性質の確認：<br></p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\be{\mathbb{P}_\kappa}{proper forcing poset}$．特に$\mathbb{P}_\kappa$は$\omega_1$を保つ．</p></div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\be{\mathbb{P}_\kappa}{direct limit of $\mathbb{P}|\kappa$}$かつ$\be{\mathbb{P}_\kappa}{$\kappa$-c.c.}$．特に$\mathbb{P}_\kappa$は$\kappa$が基数であるのを保つ．</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-308"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-308-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-308-content"
+                >
+                  <p>$\kappa$はスーパーコンパクト基数より到達不能基数であるから，$\be{\mathbb{P}_\kappa}{direct limit of $\mathbb{P}|\kappa$}$．また，任意の$\alpha&lt;\kappa$に対して$\mathbb{P}_\alpha\in V_\kappa$より特に$\be{\mathbb{P}_\alpha}{$\kappa$-c.c.}$である．さらに，$\mathbb{P}$は可算台反復より，特に$\kappa$未満のlimit stagesでstationary manyにdirect limitを取っている．故に，delta system lemmaを用いた計算により$\mathbb{P}_\kappa$は$\kappa$-c.c.となる．（詳細については<span class="citation-group">[<a
+              class="citation"
+              id="cite-MR823775-2"
+              href="#bib-MR823775"
+            >Bau83</a>]</span> Thm 2.2を参照．）</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\mathbb{P}_\kappa\forces\text{``$(\omega_2)^{\check{V}[\dot{G}]}\leq \kappa$&#39;&#39;}$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-309"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-309-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-309-content"
+                >
+                  <p>上二つから直ちに従う．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        </div>
+            </li>
+          
+          </ol>
+        
+<p>$\mathbb{P}_\kappa\forces \text{``$\be{\dot{\mathbb{Q}}}{proper forcing poset}$&#39;&#39;}$を任意に取る． $(1^\circ)$より，</p>
+
+              <div class="math-display">
+                
+                \[
+  \mathbb{P}_\kappa\forces\text{``$\forall \be{\mathcal{D}}{$&lt;\kappa$-sequence of dense subsets of $\dot{\mathbb{Q}}$}\exists \be{F}{filter on $\dot{\mathbb{Q}}$}\forall \alpha\in \dom(\mathcal{D})(F\cap {\mathcal{D}}_\alpha\neq \varnothing)$&#39;&#39;}
+\]
+              </div>
+            
+<p>を示せば良い．</p>
+<p>（$|\mathrm{trcl}(\dot{\mathbb{Q}})|$に関して）十分大きな$\lambda\geq \kappa$に対して，$\lambda$-supercompact embedding $j:V\xrightarrow{\prec}_\kappa M$で，$(j(f))(\kappa)=\dot{\mathbb{Q}}$となるものを取る．</p>
+
+          
+          <ol>
+            
+            <li class="custom-item">
+              <span class="item-label">$2^\circ$</span>
+              <div class="item-body"><p>$j(\mathbb{P})$の基本的性質の確認：<br></p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$j(\mathbb{P})=\langle j(\mathbb{P})_\alpha:\alpha\leq j(\kappa)\rangle$，$j(\mathbb{P})|\kappa+1=\mathbb{P}$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-310"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-310-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-310-content"
+                >
+                  <p>$\alpha&lt;\kappa$に対して$j(\mathbb{P})_\alpha=j(\mathbb{P})_{j(\alpha)}=j(\mathbb{P})^M_{j(\alpha)}=j(\mathbb{P}_\alpha)=\mathbb{P}_\alpha$．</p>
+<p>さらに，到達不能基数$\kappa&lt;j(\kappa)$は下方絶対性より$M\models \be{\kappa}{inaccessible}$であるのに注意して，$j(\mathbb{P})$が$M$において$\mathbb{P}$の定義式を満たすことから，</p>
+
+              <div class="math-display">
+                
+                \begin{equation}
+      M\models \be{j(\mathbb{P})_\kappa}{direct limit of $j(\mathbb{P})|\kappa$}
+    \end{equation}
+              </div>
+            
+<p>より，$j(\mathbb{P})|\kappa=\mathbb{P}|\kappa$ ならびにdirect limitの絶対性から，$\be{j(\mathbb{P})_\kappa}{direct limit of $\mathbb{P}|\kappa$}$．他方で$\mathbb{P}_\kappa$もそうであるから，$j(\mathbb{P})_\kappa=\mathbb{P}_\kappa$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        
+<p>${}^\lambda M\subseteq M$であったことから</p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\mathbb{P}_\kappa\forces \text{``${}^\lambda\check{M}[\dot{G}_\kappa]\subseteq \check{M}[\dot{G}_\kappa]$&#39;&#39;}$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-311"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-311-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-311-content"
+                >
+                  <p>$\mathbb{P}_\kappa\forces\text{``$\dot{g}:\lambda\to \check{M}[\dot{G}]$&#39;&#39;}$とする．$\dot{h}\in M^{\mathbb{P}_\kappa}$で$\mathbb{P}_\kappa\forces\text{``$\dot{g}=\dot{h}$&#39;&#39;}$となるものが存在するのを示す．</p>
+<p>$\mathbb{P}_\kappa\forces \text{``$\dot{g}(\alpha)\in \check{M}[\dot{G}]$&#39;&#39;}$より$\set{p\in \mathbb{P}_\kappa:\exists \dot{x}\in M^{\mathbb{P}}(p\forces \text{``$\dot{g}(\alpha)=\dot{x}$&#39;&#39;})}$は$\mathbb{P}_\kappa$の稠密部分集合．よって$\mathbb{P}_\kappa$上の極大反鎖$A_\alpha$と$\langle \dot{x}^\alpha_p:p\in A_\alpha\rangle\in {}^{A_\alpha}M^{\mathbb{P}}$で</p>
+
+              <div class="math-display">
+                
+                \begin{equation}
+      \forall p\in A_\alpha(p\forces\text{``$\dot{g}(\alpha)=\dot{x}^\alpha_p$&#39;&#39;})
+    \end{equation}
+              </div>
+            
+<p>となるものが取れる．そこで$\dot{h}\in V^{\mathbb{P}_\kappa}$を</p>
+
+              <div class="math-display">
+                
+                \begin{equation}
+  \dot{h}=\set{\langle\mathrm{pair}(\check{\alpha},\dot{x}^\alpha_p),p\rangle:\alpha&lt;\lambda\land p\in A_\alpha}
+\end{equation}
+              </div>
+            
+<p>と定めれば，その定義より$\mathbb{P}_\kappa\forces\text{``$\dot{g}=\dot{h}$&#39;&#39;}$．</p>
+<p>ここで$\kappa\leq \lambda$，$\forall \alpha&lt;\lambda(|A_\alpha|\leq \lambda)$に注意して，${}^\lambda M\subseteq M$より$\dot{h}\in M$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$j(\mathbb{P})_{\kappa+1}=\mathbb{P}_\kappa*^M \dot{\mathbb{Q}}$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-312"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-312-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-312-content"
+                >
+                  <p>$j(\mathbb{P})$は$M$において$\mathbb{P}$の定義式を満たすから，$j(\mathbb{P})_\kappa=\mathbb{P}_\kappa$と$M\models \be{\kappa}{inaccessible}$とに注意して，以下を示せば良い：</p>
+
+          
+          <ol>
+            
+            <li class="custom-item">
+              <span class="item-label">(i)</span>
+              <div class="item-body"><p>$(j(f))(\kappa)=\dot{\mathbb{Q}}$</p></div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">(ii)</span>
+              <div class="item-body"><p>$\mathbb{P}_{\kappa}\forces^M\text{``$\be{\dot{\mathbb{Q}}}{proper forcing poset}$&#39;&#39;}$</p></div>
+            </li>
+          
+          </ol>
+        
+<p>(i)は，$f$がLaver関数であり，$j$をこれを満たすように取っていたから明らか．(ii)については，まず$\power^M(\mathbb{P}_\kappa)=\power(\mathbb{P}_\kappa)$より，（hyperuniverse上で）任意の$G$に対して$\be{G}{$(\mathbb{P}_\kappa,V)$-generic}\iff \be{G}{$(\mathbb{P}_\kappa,M)$-generic}$となるのに注意して，以下を示せば十分：</p>
+
+          
+          <ol>
+            
+            <li class="custom-item">
+              <span class="item-label">(ii&#39;)</span>
+              <div class="item-body"><p>$\mathbb{P}_{\kappa}\forces\text{``$\check{M}[\dot{G}_\kappa]\models\be{\dot{\mathbb{Q}}}{proper forcing poset}$&#39;&#39;}$</p></div>
+            </li>
+          
+          </ol>
+        
+<p>$\mathbb{P}_{\kappa}\forces\text{``$\be{\dot{\mathbb{Q}}\in \check{M}[\dot{G}_\kappa]}{proper forcing poset}$&#39;&#39;}$であって，さらに$\mathbb{P}_\kappa\forces \text{``${}^\lambda\check{M}[\dot{G}_\kappa]\subseteq \check{M}[\dot{G}_\kappa]$&#39;&#39;}$より特に$\mathbb{P}_\kappa\forces \text{``$\set{x:|\mathrm{trcl}(x)|\leq \lambda}^{\check{M}[\dot{G}_\kappa]}=\set{x:|\mathrm{trcl}(x)|\leq \lambda}$&#39;&#39;}$であることから，$\lambda$が$\dot{\mathbb{Q}}$のサイズに対して十分大きく取られていることとposetのproper性が事実<a class="reference" href="#label-fact">1.3</a>(iv)の意味で局所的であることから明らか．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$\dot{\mathbb{R}}\in M^{\mathbb{P}_\kappa*^M\dot{\mathbb{Q}}}$と稠密埋め込み$j(\mathbb{P}_\kappa)\to_d(\mathbb{P}_\kappa*^M \dot{\mathbb{Q}})*^M\dot{\mathbb{R}};p\mapsto \langle\langle p|\kappa,p(\kappa)\rangle,\check{p|[\kappa+1,j(\kappa))}\rangle$が取れる．</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-313"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-313-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-313-content"
+                >
+                  <p>$M$において，iteration $j(\mathbb{P})$に関して$j(\mathbb{P})_{j(\kappa)}=j(\mathbb{P}_\kappa)$は$j(\mathbb{P})_{\kappa+1}$より後ろのstageより，標準的な完備埋め込みが取れるから，これに関して$M$で分解定理を適用すれば良い．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        </div>
+            </li>
+          
+          </ol>
+        
+<p>以上を踏まえて，hyperuniverse上で議論する． 目標は任意の$\be{G_\kappa}{$(\mathbb{P}_\kappa,V)$-generic filter}$に対して</p>
+
+              <div class="math-display">
+                
+                \[
+  V[G_\kappa]\models\forall \be{\mathcal{D}}{$&lt;\kappa$-sequence of dense subsets of $\dot{\mathbb{Q}}_{G_\kappa}$}\exists \be{F}{filter on $\dot{\mathbb{Q}}_{G_\kappa}$}\forall \alpha\in \dom(\mathcal{D})(F\cap {\mathcal{D}}_\alpha\neq \varnothing)
+\]
+              </div>
+            
+<p>を示すことであった．</p>
+
+          
+          <ol>
+            
+            <li class="custom-item">
+              <span class="item-label">$3^\circ$</span>
+              <div class="item-body"><p>初等埋め込みの持ち上げ：<br> $\be{H}{$(\dot{\mathbb{Q}}_{G_\kappa},V[G_\kappa])$-generic filter}$と$\be{K}{$(\dot{\mathbb{R}}_{G_\kappa*^M H},M[G_\kappa*^M H])$-generic filter}$とを取って固定する．$(G_\kappa*^M H)*^M K$に対応する$(j(\mathbb{P}_\kappa),M)$-generic filterを$j(G_\kappa)$と書く．</p>
+
+          
+          <ul>
+            
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$j\img G_\kappa\subseteq j(G_\kappa)$</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-314"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-314-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-314-content"
+                >
+                  <p>$\mathbb{P}_\kappa$はdirect limitであったから，その元はある$\alpha&lt;\kappa$と$p\in \mathbb{P}_\alpha$に対して$p^\frown 1_\kappa|[\alpha,\kappa)$の形で書ける．よって$j(p^\frown 1_\kappa|[\alpha,\kappa))=j(p)^\frown j(1_\kappa|[\alpha,\kappa))=p^\frown j(1)_{j(\kappa)}|[\alpha,j(\kappa))$である．よって$p^\frown 1_\kappa|[\alpha,\kappa)\in G_\kappa$に対して$j(p)$に対応する$(\mathbb{P}_\kappa*^M\dot{\mathbb{Q}})*\dot{\mathbb{R}}$の元$\langle\langle p^\frown 1_\kappa|[\alpha,\kappa),j(1)_{j(\kappa)}(\kappa)\rangle,j(1)_{j(\kappa)}|[\kappa+1,j(\kappa))\rangle$は$(G_\kappa*^M H)*K$に属するから，$j(p)\in j(G_\kappa)$．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+
+            <li class="custom-item">
+              <span class="item-label">$\checkmark$</span>
+              <div class="item-body"><p>$j:V\xrightarrow{\prec}_\kappa M$は$j:V[G_\kappa]\xrightarrow{\prec}_\kappa M[j(G_\kappa)]=M[G_\kappa][H][K];\dot{x}_{G_\kappa}\mapsto j(\dot{x})_{j(G_\kappa)}$に拡張できる．</p>
+
+            <div
+              class="reason-box"
+              data-toggle-key="fold-315"
+            >
+              
+          <svg
+            class="reason-paren reason-paren--left"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 13 2 C 2 20 2 80 13 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+              <div class="reason-inner">
+                <div class="reason-prefix">
+                  
+                  <button
+                    type="button"
+                    class="reason-toggle"
+                    aria-expanded="true"
+                    aria-controls="fold-315-content"
+                    aria-label="理由を折り畳む"
+                  >▸</button>
+                  <span class="reason-because" aria-label="理由">∵</span>
+                </div>
+                <div
+                  class="reason-text"
+                  id="fold-315-content"
+                >
+                  <p>$V[G_\kappa]\models \Phi[\overrightarrow{\dot{x}}_{G_\kappa}]$ならば，ある$p\in \mathbb{P}_\kappa$に対して$V\models p\forces\text{``$\Phi(\overrightarrow{\dot{x}})$&#39;&#39;}$より，$M\models j(p)\forces\text{``$\Phi(\overrightarrow{j(\dot{x})})$&#39;&#39;}$．$j(p)\in j\img G_\kappa\subseteq j(G_\kappa)$より，$M[j(G_\kappa)]\models \Phi[\overrightarrow{j(\dot{x})_{j(G_\kappa)}}]$となる．これが元の$j$の拡張となるのは，$x\in V$の標準名称が$j$によって$j(x)\in M$の標準名称に写ることから明らか．</p>
+                </div>
+              </div>
+              
+          <svg
+            class="reason-paren reason-paren--right"
+            viewBox="0 0 16 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M 3 2 C 14 20 14 80 3 98"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"
+            ></path>
+          </svg>
+        
+            </div>
+          </div>
+            </li>
+          
+          </ul>
+        </div>
+            </li>
+          
+          </ol>
+        
+<p>したがって，目標を示すには，$\be{\mathcal{D}\in V[G_\kappa]}{$&lt;\kappa$-sequence of dense subsets of $\dot{\mathbb{Q}}_{G_\kappa}$}$ごとに</p>
+
+              <div class="math-display">
+                
+                \[
+  M[j(G_\kappa)]\models\exists \be{F}{filter on $j(\dot{\mathbb{Q}}_{G_\kappa})$}\forall \alpha\in j(\dom(\mathcal{D}))(F\cap j(\mathcal{D}){}_\alpha\neq \varnothing)
+\]
+              </div>
+            
+<p>を示せば良い．ここで$\dom(\mathcal{D})&lt;\kappa$に注意して$j(\mathcal{D})=\langle j(\mathcal{D}_\alpha):\alpha\in \dom(\mathcal{D})\rangle$であるから，絶対性より，以下を満たす$F\in M[j(G_\kappa)]$を見つければ良い：</p>
+
+              <div class="math-display">
+                
+                \[
+\be{F}{filter on $j(\dot{\mathbb{Q}}_{G_\kappa})$}\land \forall \alpha\in \dom(\mathcal{D})(F\cap j(\mathcal{D}_\alpha)\neq \varnothing)
+\]
+              </div>
+            
+
+          <div
+            class="theorem-box"
+            style="--bar:#4b5563"
+          >
+            <div class="box-title">
+              主張
+              <span class="number">5.3</span>
+              
+            </div>
+            <div class="theorem-content">
+              <p>$j(\dot{\mathbb{Q}}_{G_\kappa})$のフィルター基$j\img H$の生成するフィルター$F$が望むものとなる：</p>
+            </div>
+          </div>
+        
+
+            <details
+              class="theorem-box proof-box"
+              data-toggle-key="fold-316"
+              style="--bar:rgba(0,0,0,.28)"
+              open
+            >
+              <summary class="box-title">
+                
+                <span>証明</span>
+              </summary>
+              <div class="proof-content">
+                <p>$H$は定め方より$(\dot{\mathbb{Q}}_{G_\kappa},V[G_\kappa])$-generic fiter．よって$j\img H$は$j(\dot{\mathbb{Q}}_{G_\kappa})$のフィルター基かつ$\forall \alpha\in \dom(\mathcal{D})(j\img H\cap j(\mathcal{D}_\alpha)\neq \varnothing)$． あとは$F\in M[j(G_\kappa)]$を見れば良く，それには$j\img H\in M[j(G_\kappa)]$を示せば良い．$V\models {}^\lambda M\subseteq M$より$j|\mathrm{trcl}(\dot{\mathbb{Q}})\in M$であるから，$G_\kappa,j(G_\kappa)\in M[j(G_\kappa)]=M[G_\kappa][H][K]$に注意して，$j|\dot{\mathbb{Q}}_{G_\kappa}\in M[j(G_\kappa)]$．さらに$\dot{\mathbb{Q}}_{G_\kappa}\supseteq H\in M[G_\kappa][H][K]=M[j(G_\kappa)]$でもあるから，$j\img H\in M[j(G_\kappa)]$．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+<p>以上より，$\mathbb{P}_\kappa\forces\text{``$\mathrm{PFA}$&#39;&#39;}$が結論される．</p>
+                <div class="proof-end">⊣</div>
+              </div>
+            </details>
+          
+
+          <h1 id="section-6">
+            
+            <span class="section-number">6.</span>
+            PFAの無矛盾性の下界について
+          </h1>
+        
+<p>Blue-Larson-Sargsyanによるプレプリント<span class="citation-group">[<a
+              class="citation"
+              id="cite-blue2026failuresquareuncountablecardinals-2"
+              href="#bib-blue2026failuresquareuncountablecardinals"
+            >BLS26</a>]</span>のイントロダクションでは，研究状況について次のように述べられている．$\mathrm{Con}(\ZFC+\mathrm{PFA})$から$\mathrm{Con}(\ZFC+\exists\text{スーパーコンパクト基数})$が導かれるかどうかは，未解決である．これまでにTodorčevićによって，$\ZFC$の下で</p>
+
+              <div class="math-display">
+                
+                \begin{equation}
+\mathrm{PFA}\implies \forall \be{\kappa}{uncountable cardinal}(\neg \square_\kappa)
+\end{equation}
+              </div>
+            
+<p>が示されており，これまで，この$\ZFC+\forall \be{\kappa}{uncountable cardinal}(\neg \square_\kappa)$の無矛盾性はかなり強いと考えられていた．このことが$\mathrm{Con}(\ZFC+\mathrm{PFA})$から$\mathrm{Con}(\ZFC+\exists\text{スーパーコンパクト基数})$が導けるのではないかという期待の大きな根拠になっていた．</p>
+<p>同じく<span class="citation-group">[<a
+              class="citation"
+              id="cite-blue2026failuresquareuncountablecardinals-3"
+              href="#bib-blue2026failuresquareuncountablecardinals"
+            >BLS26</a>]</span>のイントロダクションにおいて，当プレプリント内で，$\ZFC+\forall \be{\kappa}{uncountable cardinal}(\neg \square_\kappa)$の無矛盾性がスーパーコンパクト基数の存在の無矛盾性よりもかなり弱いことを示したと述べられている．</p>
+
+          <section class="bibliography">
+            <h2>参考文献</h2>
+            
+            <ol
+              class="bibliography-list"
+              role="list"
+              style="--bib-label-width:7ch"
+            >
+              
+            <li
+              class="bibliography-entry"
+              id="bib-MR823775"
+            >
+              <span class="bib-label">[Bau83]</span>
+              <div class="bib-content">
+                
+                <p>James&nbsp;E. Baumgartner, <em>Iterated forcing</em>, Surveys in set theory, London Math. Soc. Lecture Note Ser., vol.&nbsp;87, Cambridge Univ. Press, Cambridge, 1983, pp.&nbsp;1--59.</p>
+                
+              <a
+                class="backref"
+                href="#cite-MR823775"
+                aria-label="本文の引用へ戻る"
+              >↩</a>
+            
+              </div>
+            </li>
+          
+
+            <li
+              class="bibliography-entry"
+              id="bib-blue2026failuresquareuncountablecardinals"
+            >
+              <span class="bib-label">[BLS26]</span>
+              <div class="bib-content">
+                
+                <p>Douglas Blue, Paul Larson, and Grigor Sargsyan, <em>The failure of square at all uncountable cardinals is weaker than a woodin limit of woodin cardinals</em>, 2026.</p>
+                
+              <a
+                class="backref"
+                href="#cite-blue2026failuresquareuncountablecardinals"
+                aria-label="本文の引用へ戻る"
+              >↩</a>
+            
+              </div>
+            </li>
+          
+
+            <li
+              class="bibliography-entry"
+              id="bib-MR1940513"
+            >
+              <span class="bib-label">[Jec03]</span>
+              <div class="bib-content">
+                
+                <p>Thomas Jech, <em>Set theory</em>, millennium ed., Springer Monographs in Mathematics, Springer-Verlag, Berlin, 2003.</p>
+                
+              <a
+                class="backref"
+                href="#cite-MR1940513"
+                aria-label="本文の引用へ戻る"
+              >↩</a>
+            
+              </div>
+            </li>
+          
+
+            <li
+              class="bibliography-entry"
+              id="bib-MR1321144"
+            >
+              <span class="bib-label">[Kan94]</span>
+              <div class="bib-content">
+                
+                <p>Akihiro Kanamori, <em>The higher infinite</em>, Perspectives in Mathematical Logic, Springer-Verlag, Berlin, 1994, Large cardinals in set theory from their beginnings.</p>
+                
+              <a
+                class="backref"
+                href="#cite-MR1321144"
+                aria-label="本文の引用へ戻る"
+              >↩</a>
+            
+              </div>
+            </li>
+          
+
+            <li
+              class="bibliography-entry"
+              id="bib-MR2905394"
+            >
+              <span class="bib-label">[Kun11]</span>
+              <div class="bib-content">
+                
+                <p>Kenneth Kunen, <em>Set theory</em>, Studies in Logic (London), vol.&nbsp;34, College Publications, London, 2011.</p>
+                
+              <a
+                class="backref"
+                href="#cite-MR2905394"
+                aria-label="本文の引用へ戻る"
+              >↩</a>
+            
+              </div>
+            </li>
+          
+
+            <li
+              class="bibliography-entry"
+              id="bib-MR472529"
+            >
+              <span class="bib-label">[Lav78]</span>
+              <div class="bib-content">
+                
+                <p>Richard Laver, <em>Making the supercompactness of {$\kappa $} indestructible under {$\kappa $}-directed closed forcing</em>, Israel J. Math. <strong>29</strong> (1978), no.&nbsp;4, 385--388.</p>
+                
+              <a
+                class="backref"
+                href="#cite-MR472529"
+                aria-label="本文の引用へ戻る"
+              >↩</a>
+            
+              </div>
+            </li>
+          
+            </ol>
+          </section>
+        
+
+      <p class="back-to-top">
+        <a href="#top">ページ先頭に戻る</a>
+      </p>
+
+      <p>
+        <a href="materials.html">資料一覧に戻る</a>
+      </p>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    © 2026 Ud.afhal
+  </footer>
+
+  <script id="document-runtime">
+const MystyleRuntime = (() => {
+      "use strict";
+
+      const TOGGLE_SELECTOR =
+        "details.proof-box[data-toggle-key], .reason-box[data-toggle-key]";
+
+      const revisions = new WeakMap();
+      const lockedStates = new WeakMap();
+
+      let queue = Promise.resolve();
+      let printState = null;
+
+      const mathReady = new Promise((resolve) => {
+        const loader = document.getElementById("mathjax-loader");
+        let settled = false;
+
+        const timer = window.setTimeout(() => finish(null), 20000);
+
+        function finish(value) {
+          if (settled) {
+            return;
+          }
+
+          settled = true;
+          window.clearTimeout(timer);
+          resolve(value);
+        }
+
+        async function loaded() {
+          try {
+            const mathJax = window.MathJax;
+
+            if (mathJax?.startup?.promise) {
+              await mathJax.startup.promise;
+            }
+
+            finish(mathJax?.typesetPromise ? mathJax : null);
+          } catch {
+            finish(null);
+          }
+        }
+
+        if (window.MathJax?.startup?.promise) {
+          loaded();
+        } else if (loader) {
+          loader.addEventListener("load", loaded, {
+            once: true
+          });
+
+          loader.addEventListener("error", () => finish(null), {
+            once: true
+          });
+        } else {
+          finish(null);
+        }
+      });
+
+      function schedule(task) {
+        const pending = queue
+          .catch(() => undefined)
+          .then(() => mathReady)
+          .then(async (initialMathJax) => {
+            const mathJax = window.MathJax?.typesetPromise
+              ? window.MathJax
+              : initialMathJax;
+
+            if (mathJax?.startup?.promise) {
+              await mathJax.startup.promise;
+            }
+
+            return task(mathJax);
+          });
+
+        queue = pending;
+        return pending;
+      }
+
+      function toggleElements(root) {
+        return Array.from(root.querySelectorAll(TOGGLE_SELECTOR));
+      }
+
+      function isExpanded(element) {
+        return element.matches("details.proof-box")
+          ? element.open
+          : !element.classList.contains("is-collapsed");
+      }
+
+      function setReasonExpanded(box, expanded) {
+        const button = box.querySelector(
+          ":scope > .reason-inner > .reason-prefix > .reason-toggle"
+        );
+
+        const content = box.querySelector(
+          ":scope > .reason-inner > .reason-text"
+        );
+
+        box.classList.toggle("is-collapsed", !expanded);
+
+        if (content) {
+          content.hidden = !expanded;
+        }
+
+        if (button) {
+          button.setAttribute("aria-expanded", String(expanded));
+          button.setAttribute(
+            "aria-label",
+            expanded ? "理由を折り畳む" : "理由を展開"
+          );
+        }
+      }
+
+      function setExpanded(element, expanded) {
+        if (element.matches("details.proof-box")) {
+          element.open = expanded;
+        } else {
+          setReasonExpanded(element, expanded);
+        }
+      }
+
+      function snapshot(root) {
+        if (lockedStates.has(root)) {
+          return new Map(lockedStates.get(root));
+        }
+
+        return new Map(
+          toggleElements(root).map((element) => [
+            element.dataset.toggleKey,
+            isExpanded(element)
+          ])
+        );
+      }
+
+      function restore(root, states) {
+        for (const element of toggleElements(root)) {
+          const key = element.dataset.toggleKey;
+
+          setExpanded(
+            element,
+            states.has(key) ? states.get(key) : true
+          );
+        }
+      }
+
+      function expandAll(root) {
+        for (const element of toggleElements(root)) {
+          setExpanded(element, true);
+        }
+      }
+
+      async function typesetOpen(root, mathJax, previousStates) {
+        const desiredStates = new Map(
+          toggleElements(root).map((element) => {
+            const key = element.dataset.toggleKey;
+
+            return [
+              key,
+              previousStates.has(key) ? previousStates.get(key) : true
+            ];
+          })
+        );
+
+        const oldVisibility = root.style.visibility;
+        const oldBusy = root.getAttribute("aria-busy");
+        const wasInert = root.hasAttribute("inert");
+
+        lockedStates.set(root, desiredStates);
+
+        root.style.visibility = "hidden";
+        root.setAttribute("aria-busy", "true");
+        root.setAttribute("inert", "");
+
+        expandAll(root);
+
+        try {
+          mathJax.texReset();
+          await mathJax.typesetPromise([root]);
+        } finally {
+          restore(root, desiredStates);
+          lockedStates.delete(root);
+
+          root.style.visibility = oldVisibility;
+
+          if (oldBusy === null) {
+            root.removeAttribute("aria-busy");
+          } else {
+            root.setAttribute("aria-busy", oldBusy);
+          }
+
+          if (!wasInert) {
+            root.removeAttribute("inert");
+          }
+        }
+      }
+
+      function render(root, html) {
+        const revision = (revisions.get(root) || 0) + 1;
+        revisions.set(root, revision);
+
+        if (!window.MathJax?.typesetPromise) {
+          const states = snapshot(root);
+          root.innerHTML = html;
+          restore(root, states);
+        }
+
+        return schedule(async (mathJax) => {
+          if (revisions.get(root) !== revision) {
+            return Boolean(mathJax);
+          }
+
+          const states = snapshot(root);
+
+          if (mathJax) {
+            mathJax.typesetClear([root]);
+          }
+
+          root.innerHTML = html;
+
+          if (!mathJax) {
+            restore(root, states);
+            return false;
+          }
+
+          await typesetOpen(root, mathJax, states);
+          return true;
+        });
+      }
+
+      function typeset(root) {
+        return schedule(async (mathJax) => {
+          if (!root || !mathJax) {
+            return false;
+          }
+
+          await typesetOpen(root, mathJax, snapshot(root));
+          return true;
+        });
+      }
+
+      function revealTarget(target) {
+        for (
+          let element = target;
+          element;
+          element = element.parentElement
+        ) {
+          if (element.matches("details")) {
+            element.open = true;
+          }
+
+          if (element.matches(".reason-box")) {
+            setReasonExpanded(element, true);
+          }
+        }
+      }
+
+      function targetFromHash(hash) {
+        try {
+          const id = decodeURIComponent(hash.replace(/^#/, ""));
+          return id ? document.getElementById(id) : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function revealHash() {
+        const target = targetFromHash(window.location.hash);
+
+        if (target) {
+          revealTarget(target);
+          requestAnimationFrame(() => target.scrollIntoView());
+        }
+      }
+
+      document.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element)) {
+          return;
+        }
+
+        const button = event.target.closest(".reason-toggle");
+
+        if (button) {
+          const box = button.closest(".reason-box");
+
+          if (box) {
+            setReasonExpanded(box, !isExpanded(box));
+          }
+
+          return;
+        }
+
+        const link = event.target.closest('a[href^="#"]');
+
+        if (!link) {
+          return;
+        }
+
+        const hash = link.getAttribute("href");
+        const target = targetFromHash(hash);
+
+        if (!target) {
+          return;
+        }
+
+        event.preventDefault();
+        revealTarget(target);
+
+        try {
+          history.replaceState(null, "", hash);
+        } catch {
+          // file:で履歴操作が制限されても移動は続行する。
+        }
+
+        requestAnimationFrame(() => target.scrollIntoView());
+      });
+
+      window.addEventListener("hashchange", revealHash);
+
+      window.addEventListener("beforeprint", () => {
+        if (printState) {
+          return;
+        }
+
+        printState = Array.from(
+          document.querySelectorAll(".paper"),
+          (root) => ({
+            root,
+            states: snapshot(root)
+          })
+        );
+
+        for (const { root } of printState) {
+          expandAll(root);
+        }
+      });
+
+      window.addEventListener("afterprint", () => {
+        if (!printState) {
+          return;
+        }
+
+        for (const { root, states } of printState) {
+          if (root.isConnected) {
+            restore(root, states);
+          }
+        }
+
+        printState = null;
+      });
+
+      return {
+        render,
+        typeset,
+        snapshot,
+        restore,
+        revealHash
+      };
+    })();
+  </script>
+
+  <script>
+    MystyleRuntime
+      .typeset(document.getElementById("public-document"))
+      .then(() => MystyleRuntime.revealHash())
+      .catch((error) => {
+        console.error(error);
+        MystyleRuntime.revealHash();
+      });
+  </script>
+</body>
+</html>
