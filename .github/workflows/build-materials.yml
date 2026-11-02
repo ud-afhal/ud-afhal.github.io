@@ -1,0 +1,67 @@
+name: Build and deploy materials
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test shared compiler
+        run: node --test tests/compiler.test.mjs
+
+      - name: Build site
+        run: node scripts/build-materials.mjs
+
+      - name: Upload build for inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiled-site
+          path: .site/
+          include-hidden-files: true
+
+      - name: Upload Pages artifact
+        if: >-
+          github.event_name != 'pull_request' &&
+          github.ref_name == github.event.repository.default_branch
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .site
+
+  deploy:
+    if: >-
+      github.event_name != 'pull_request' &&
+      github.ref_name == github.event.repository.default_branch
+    needs: build
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: materials-pages-deployment
+      cancel-in-progress: false
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
