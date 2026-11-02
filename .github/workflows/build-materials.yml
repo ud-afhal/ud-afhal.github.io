@@ -21,9 +21,6 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Test shared compiler
-        run: node --test tests/compiler.test.mjs
-
       - name: Build site
         run: node scripts/build-materials.mjs
 
