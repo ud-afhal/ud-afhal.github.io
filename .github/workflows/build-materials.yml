@@ -23,7 +23,10 @@ jobs:
 
       - name: Build site
         run: node scripts/build-materials.mjs
-
+        
+      - name: Generate materials index
+        run: node generate-materials.js
+  
       - name: Upload build for inspection
         uses: actions/upload-artifact@v4
         with:
