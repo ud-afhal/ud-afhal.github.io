@@ -1,13 +1,9 @@
 /*!
- * mystyle.js — LaTeX風ソース(.txt/.tex)から公開用HTMLを生成する。
+ * mystyle.js — LaTeX風ソース(.txt/.tex)から公開用HTMLを生成する変換ライブラリ。
  *
- * 1つのファイルを次の3か所で共有する。
- *   - editor.html            : <script src="mystyle.js"> として読み込む
- *   - GitHub Actions など    : node mystyle.js [ディレクトリまたは.txt ...]
- *   - 他のNodeスクリプト      : require("./mystyle.js")
- *
- * CLIは、指定した場所(省略時はカレントディレクトリ)以下の *.txt を探し、
- * 同じ位置に同じ名前の *.html を書き出す。
+ * editor.html は <script src="mystyle.js"> として読み込み、
+ * ビルド用スクリプト(scripts/*.js)は require("../materials/mystyle.js") で使う。
+ * コマンドラインからの実行機能は持たない。
  *
  * 公開ページの表題・著者・更新日は、ソースの
  *   \title{...}  \author{...}  \date{YYYY-MM-DD}
@@ -2540,116 +2536,3 @@ const MystyleRuntime = (${createRuntime.toString()})();
     escapeHTML
   });
 });
-
-// ====================================================================
-// CLI: node mystyle.js [ディレクトリまたは.txt ...]
-//   指定した場所(省略時はカレントディレクトリ)以下の *.txt を、
-//   同じ位置・同じ名前の *.html に変換する。
-// ====================================================================
-if (
-  typeof require === "function" &&
-  typeof module === "object" &&
-  require.main === module
-) {
-  (function runCli(api) {
-    "use strict";
-
-    const fs = require("fs");
-    const path = require("path");
-
-    // 走査から除くもの。隠しディレクトリ(.git, .github など)、
-    // node_modules、MathJax一式、および文書ではない定番のテキスト。
-    const SKIPPED_DIRECTORIES = /^(?:\..*|node_modules|MathJax.*)$/i;
-    const SKIPPED_FILES = /^(?:robots|humans|ads|license|readme)\.txt$/i;
-    const TEXT_FILE = /\.txt$/i;
-
-    const annotate = Boolean(process.env.GITHUB_ACTIONS);
-
-    function report(level, file, message) {
-      console.log(
-        annotate
-          ? `::${level} file=${file}::${message}`
-          : `${level}: ${file}: ${message}`
-      );
-    }
-
-    function readUtf8(file) {
-      try {
-        return new TextDecoder("utf-8", { fatal: true })
-          .decode(fs.readFileSync(file));
-      } catch (error) {
-        throw error instanceof TypeError
-          ? new Error("UTF-8のテキストとして読み込めませんでした。")
-          : error;
-      }
-    }
-
-    function collect(entry, found) {
-      if (fs.statSync(entry).isFile()) {
-        if (!TEXT_FILE.test(entry)) {
-          throw new Error(`.txt ファイルではありません: ${entry}`);
-        }
-
-        found.push(entry);
-        return;
-      }
-
-      for (const child of fs.readdirSync(entry, { withFileTypes: true })) {
-        const full = path.join(entry, child.name);
-
-        if (child.isDirectory()) {
-          if (!SKIPPED_DIRECTORIES.test(child.name)) {
-            collect(full, found);
-          }
-        } else if (
-          child.isFile() &&
-          TEXT_FILE.test(child.name) &&
-          !SKIPPED_FILES.test(child.name)
-        ) {
-          found.push(full);
-        }
-      }
-    }
-
-    const targets = process.argv.length > 2
-      ? process.argv.slice(2)
-      : ["."];
-
-    const files = [];
-    let failed = 0;
-
-    try {
-      for (const target of targets) {
-        collect(target, files);
-      }
-    } catch (error) {
-      console.error(error.message);
-      process.exit(1);
-    }
-
-    files.sort();
-
-    for (const file of files) {
-      try {
-        const { html, issues } = api.buildPage(readUtf8(file));
-        const output = file.replace(TEXT_FILE, ".html");
-
-        fs.writeFileSync(output, html, "utf8");
-        console.log(`${file} -> ${output}`);
-
-        for (const issue of issues) {
-          report("warning", file, issue);
-        }
-      } catch (error) {
-        failed++;
-        report("error", file, error.message);
-      }
-    }
-
-    console.log(
-      `${files.length - failed}/${files.length} 件を変換しました。`
-    );
-
-    process.exitCode = failed ? 1 : 0;
-  })(module.exports);
-}

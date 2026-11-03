@@ -1,0 +1,55 @@
+name: Build and deploy site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 同時に複数回デプロイしない(後から来た実行は待つ)。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # materials-auto.js のコミット用
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 1. txt から資料一覧のソース(materials-auto.js)を更新する
+      - name: Update materials list
+        run: node scripts/update-materials.js
+
+      # 2. 変更があればソースにコミットする(botのpushでは再実行されない)
+      - name: Commit materials-auto.js
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add materials-auto.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Update materials list"
+            git push
+          fi
+
+      # 3. 更新後のソースと txt から、公開用フォルダ _site を作る
+      - name: Build _site
+        run: node scripts/compile.js
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
