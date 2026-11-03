@@ -1,0 +1,771 @@
+\title{PFAの無矛盾性　発表原稿}
+\date{2026-09-11}
+\author{Ud.afhal}
+本ノートは，2026年9月11日に行われたオンラインセミナー「PROPER FORCING AXIOM祭り」において筆者が行った講演「PFAの無矛盾性」の発表原稿です．
+\tableofcontents
+
+
+\section{はじめに}
+本講演を通して，所属関係を表す二項関係記号$\in$のみを非論理記号にもつ一階述語論理の言語上で，公理系$\ZFC$の下で議論する．また，クラスと言った場合には，パラメタを用いて定義可能なクラス，すなわち，勝手な論理式$\Phi(x,\vec{y})$を非公式に$\set{x:\Phi(x,\vec{y})}$と見做したものを考える．
+\begin{definition}
+forcing poset $\langle\mathbb{P},\leq_{\mathbb{P}},1_{\mathbb{P}}\rangle$（以降では記号を濫用して，単に$\mathbb{P}$と書く．）がproperであるとは，次を満たすことをいう：
+\[
+  \forall\be{\lambda>\omega}{cardinal}\forall \be{x}{stationary subset of $[\lambda]^{\omega}$}
+  (\mathbb{P}\forces\text{``$\be{x}{stationary subset of $([\lambda]^{\omega})^{\check{V}[\dot{G}]}$}$''})
+\]
+\end{definition}
+\begin{definition}
+  proper forcing axiom(PFA)とは，次の命題である：
+  \[
+  \begin{gathered}
+    \forall \be{\mathbb{Q}}{proper forcing poset}\forall \be{\mathcal{D}=\langle \mathcal{D}_\alpha:\alpha<\beta\rangle}{$<\omega_2$-sequence of dense subsets of $\mathbb{Q}$}\\
+    \exists \be{F}{filter on $\mathbb{Q}$} \forall \alpha<\beta(F\cap \mathcal{D}_\alpha\neq \varnothing)
+    \end{gathered}
+  \]
+\end{definition}
+
+実は，PFAの無矛盾性の証明においては，posetのproper性の定義そのものはそこまで重要でない．直接に必要となるのは次の性質である：
+\begin{fact}\label{fact}forcing posetのproper性に関して，次が成り立つ：
+\begin{enumerate}
+  \item forcing poset $\mathbb{P}$がproperならば，$\mathbb{P}$は$\omega_1$を保つ
+  \item(Shelah). proper forcing posetの可算台反復によって得られるforcing posetもproperである
+  \item trivial forcing poset（$\mathbb{P}=\langle\set{\varnothing},=,\varnothing\rangle$）はproperである
+  \item forcing poset $\mathbb{P}$のproper性は，次の意味で局所的である：$\mathbb{P}$がproperであるか否かは，
+  $\mathbb{P}$のサイズに対して十分大きい$\lambda$に対する$(\set{x:|\mathrm{trcl}(x)|\leq \lambda},\in)$の構造のみによって決定する
+\end{enumerate}
+\end{fact}
+例えば，上のproperをsemi-properに置き換えた場合には(i),(iii),(iv)が成り立ち，さらに(ii)も可算台反復を修正可算台反復に置き換えて成り立つ．故に本質的にPFAの相対的無矛盾性証明と同じ議論によって，semi-proper forcing axiom(SPFA)の相対的無矛盾性も証明可能である．
+
+$\mathrm{PFA}$を満たす$\ZFC$のモデルは，スーパーコンパクト基数と呼ばれる巨大基数を用いて，反復強制法によるジェネリック拡大として得ることができる．特に
+\begin{theorem}[Baumgartner]
+  \[
+    \mathrm{Con}(\ZFC+\exists \text{スーパーコンパクト基数})\to \mathrm{Con}(\ZFC+\mathrm{PFA})
+  \]
+\end{theorem}
+本講演では，この証明の理解を目標とする．
+
+参考とする文献は主に\cite{MR2905394}（強制法の一般論に関して），\cite{MR823775}（反復強制法の定義ならびに一般論に関して），\cite{MR1321144} (スーパーコンパクト基数に関して)，\cite{MR472529}（Laver関数について），\cite{MR1940513}（主定理の直接の証明部分），\cite{blue2026failuresquareuncountablecardinals}（PFAの無矛盾性の下界について）である．
+
+ある程度一般的と思われる定義や記号については断りなく用いているが，口頭で補足するつもりである．
+記号，定義，内容について分からない部分があれば講演者の不手際なので，遠慮なく聞いてください．
+\section{初等埋め込み}
+はじめに，スーパーコンパクト基数について紹介する：
+\begin{definition}
+  クラス$M$が$\ZFC$の内部モデルであるとは，次を満たすことをいう：
+  \begin{enumerate}
+    \item $M$は推移的，すなわち，$\forall x\in M\forall y\in x(y\in M)$
+    \item $\ON\subseteq M$
+    \item $(M,\in)\models \ZFC$
+  \end{enumerate}
+\end{definition}
+\begin{remark}
+$\ZFC$の（具体的に書き下せる）有限部分$T$で，任意のクラス$M$と任意の$\ZFC$の公理$\Psi$に対して
+\[
+  \ZFC\proves \be{M}{transitive}\land \ON\subseteq M\land\bigwedge_{\Phi\in T}\Phi^M\to \Psi^M
+\]
+となるものが取れる．これを踏まえて，$(M,\in)\models \ZFC$は$\bigwedge_{\Phi\in T}\Phi^M$によって定式化される．（より具体的な定式化については\cite{MR1321144}のp.33を参照．）
+ \end{remark}
+ 簡単のため，$M\models \Phi[a_1,\ldots,a_n]\equiv\Phi^M(a_1,\ldots,a_n)$と表す．
+ \begin{definition}
+   クラス$M,N,j$に対して，$M,N$は$\ZFC$の内部モデル，$j:N\to M$はクラス関数とする．
+   各論理式$\Phi(x_1,\ldots,x_n)$に対して
+   \begin{equation}\label{eq:elementary}
+    j:N\xrightarrow{\prec_\Phi}M\equiv \forall a_1,\ldots,a_n\in N\left(N\models \Phi[a_1,\ldots,a_n]\iff M\models \Phi[j(a_1),\ldots,j(a_n)]\right)
+   \end{equation}
+   が成り立つとき，$j$を$N$から$M$への初等埋め込みといい，$j:N\xrightarrow{\prec} M$と書く．
+ \end{definition}
+ \begin{remark}
+   具体的に書き下せる有限個の論理式の集まり$S$で，任意の論理式$\Psi$に対して
+   \[
+     \ZFC\proves\left(\bigwedge_{\Phi\in S}j:N\xrightarrow{\prec_\Phi}M\right)\to \left(j:N\xrightarrow{\prec_\Psi}M\right)
+  \]
+   となるものが取れる．これを踏まえて，$j:N\xrightarrow{\prec}M$は$\bigwedge_{\Phi\in S}j:N\xrightarrow{\prec_\Phi}M$によって定式化される．（より具体的な定式化については\cite{MR1321144}のp.45を参照．）
+ \end{remark}
+ 先に，このような初等埋め込みに関する基本的性質について確認する：
+ \begin{proposition}
+  $M,N$を$\ZFC$の内部モデル，$j:N\xrightarrow{\prec}M$とする．
+  \begin{enumerate}
+    \item $j|\ON:\ON\to\ON$は狭義増加関数．特に$\forall \alpha\in\ON (\alpha\leq j(\alpha))$．
+    \item  $\alpha\in \ON$に対して$j|\alpha$が恒等写像ならば，$j|\set{x\in N:|\mathrm{trcl}(x)|^N<\alpha}$は恒等写像．
+  \end{enumerate}
+ \end{proposition}
+\begin{proof}
+  (i)は
+  \[
+    \be{x}{ordinal}\iff N\models \be{x}{ordinal}\iff M\models \be{j(x)}{ordinal} \iff \be{j(x)}{ordinal}
+  \]
+  と
+  \[
+    \alpha\in \beta\iff N\models \alpha\in \beta\iff M\models j(\alpha)\in j(\beta)\iff j(\alpha)\in j(\beta)
+  \]
+  より明らか．
+  (ii)を示す．
+
+  $x\in N$は$|\mathrm{trcl}(x)|^N<\alpha$を満たすとする．このとき$N$において$\mathrm{trcl}(\set{x})$とある$\beta< \alpha$との間の全単射が取れるから，それによって$\mathrm{trcl}(\set{x})$上の二項関係としての$\in$を$\beta$に写すことで，$E\in N$で
+  \[
+     N\models E\subseteq \beta\times \beta\land \exists f(f:(\beta,E)\iso(\mathrm{trcl}(\set{x}),\in))
+  \]
+  となるものが取れる．このとき絶対性から$\exists f(f:(\beta,E)\iso(\mathrm{trcl}(\set{x}),\in))$．
+  \begin{itemize}
+  \item[$\checkmark$] $j(E)=E$
+  \begin{enumerate}
+    \item $N\models E\subseteq \beta\times \beta$より$E\subseteq \beta\times \beta$
+    \item $N\models E\subseteq \beta\times \beta$より$M\models j(E)\subseteq j(\beta)\times j(\beta)$より$M\models j(E)\subseteq \beta\times \beta$より$j(E)\subseteq \beta\times \beta$
+    \item $\xi,\zeta\in \beta$に対して
+    \begin{align}
+      \langle \xi,\zeta\rangle\in E&\iff N\models \langle \xi,\zeta\rangle\in E\\
+      &\iff M\models \langle j(\xi),j(\zeta)\rangle \in j(E)\\
+      &\iff M\models \langle \xi,\zeta\rangle \in j(E)\\
+      &\iff \langle \xi,\zeta\rangle \in j(E)
+    \end{align}
+    より$(1),(2)$から$E=j(E)$
+  \end{enumerate}
+  \end{itemize}
+  よって
+  \[
+     M\models \exists f(f:(j(\beta),j(E))\iso(\mathrm{trcl}(\set{j(x)}),\in))
+  \]
+  より
+  \[
+     M\models \exists f(f:(\beta,E)\iso(\mathrm{trcl}(\set{j(x)}),\in))
+  \]
+  より$\exists f(f:(\beta,E)\iso(\mathrm{trcl}(\set{j(x)}),\in))$．
+
+  故に$(\mathrm{trcl}(\set{x}),\in)\simeq (\mathrm{trcl}(\set{j(x)}),\in)$となって，Mostowski崩潰の一意性から$x=j(x)$となる．
+\end{proof}
+\begin{corollary}
+  $j:N\xrightarrow{\prec}M$が恒等写像でなければ，$j|\ON$は恒等写像でない．
+\end{corollary}
+以降では，恒等写像でない初等埋め込みのことを非自明な初等埋め込みと言う．
+\begin{definition}
+  非自明な$j:N\xrightarrow{\prec}M$の臨界点$\mathrm{crit}(j)$とは，$\alpha<j(\alpha)$となる最小の順序数$\alpha$のことをいう．$j:N\xrightarrow{\prec}_\alpha M$によって，$j:N\xrightarrow{\prec}M\land j\neq \mathrm{id}_N\land \mathrm{crit}(j)=\alpha$を表すとする．
+\end{definition}
+基本となるのは，非自明な初等埋め込みの始域が集合全体の宇宙$V$の場合である：
+\begin{lemma}
+  非自明な$j:V\xrightarrow{\prec}M$に対して$j$の臨界点$\mathrm{crit}(j)$は到達不能基数．特に，$j|V_{\mathrm{crit}(j)}$は恒等写像である．
+\end{lemma}
+\begin{proof}
+  $\kappa=\mathrm{crit}(j)$とおく．
+    \begin{itemize}
+      \item [$\checkmark$] $\omega<\kappa$
+          \begin{reason}
+\[
+      V\models \forall x\in \varnothing(x\neq x)\iff M\models\forall x\in j(\varnothing)(x\neq x)\iff \forall x\in j(\varnothing)(x\neq x)
+    \]
+    より，$j(\varnothing)=\varnothing$．
+    
+    同様に$[\text{$\alpha$は$\beta$の次の順序数}]$は$\Delta_0$-論理式で表せるから
+    \begin{align}
+      V\models [\text{$\alpha$は$\beta$の次の順序数}]&\iff M\models [\text{$j(\alpha)$は$j(\beta)$の次の順序数}]\\
+      &\iff [\text{$j(\alpha)$は$j(\beta)$の次の順序数}]
+    \end{align}
+    より，$j(\beta+1)=j(\beta)+1$．よって数学的帰納法より$j|\omega$は恒等写像．
+    
+    また，$\Phi(x)\equiv [\text{$x$は極限順序数を元に持たない極限順序数}]$は$\Delta_0$-論理式で表せるから，
+    \[
+      V\models \Phi(\omega)\iff M\models\Phi(j(\omega))\iff \Phi(j(\omega))
+    \]
+    より，$\exists ! x\Phi(x)$に注意して$j(\omega)=\omega$．
+\end{reason}
+      \item [$\checkmark$] $\kappa$は正則基数
+          \begin{reason}
+そうでないとして，$\alpha<\kappa$と共終写像$f:\alpha\to \kappa$を取る．$j(\alpha)=\alpha$より
+    \[
+      V\models f:\alpha\xrightarrow{\text{cofinal}}\kappa\iff M\models j(f):j(\alpha)\xrightarrow{\text{cofinal}}j(\kappa)\iff j(f):\alpha\xrightarrow{\text{cofinal}}j(\kappa)
+    \]
+    他方で$\beta<\alpha$に対して$f(\beta)<\kappa$より$j(\beta)=\beta$，$j(f(\beta))=f(\beta)$に注意して
+    \[
+      V\models f(\beta)=f(\beta)\iff M\models j(f)(j(\beta))=j(f(\beta))\iff j(f)(\beta)=f(\beta)
+    \]
+    より$j(f)=f$．よって$f:\alpha\xrightarrow{\text{cofinal}} j(\kappa)$となるが，これは$f\img \alpha\subseteq \kappa<j(\kappa)$に矛盾．
+\end{reason}
+    \item [$\checkmark$] $\kappa$は強極限基数
+          \begin{reason}
+そうでないとして，$\alpha<\kappa$と全射$f:\power(\alpha)\to \kappa$を取る．$j(\alpha)=\alpha$より
+    \begin{align}
+      V\models f:\power(\alpha)\surj\kappa&\iff M\models j(f):\power(j(\alpha))\surj j(\kappa)\\
+      &\iff j(f):\power^M(\alpha)\surj j(\kappa)
+    \end{align}
+    他方で$x\subseteq \alpha$に対して$|\mathrm{trcl}(x)|\leq |\alpha|<\kappa$，$f(x)<\kappa$より$j(x)=x$，$j(f(x))=f(x)$に注意して
+    \[
+      V\models f(x)=f(x)\iff M\models j(f)(j(x))=j(f(x))\iff j(f)(x)=f(x)
+    \]
+    より，$\power^M(\alpha)\subseteq \power(\alpha)$に注意して$j(f)=f$．よって
+    $f:\power(\alpha)\surj j(\kappa)$となるが，これは$f\img \power(\alpha)\subseteq \kappa<j(\kappa)$に矛盾．
+\end{reason}
+    \end{itemize}
+    
+\end{proof}
+
+十分大きな巨大基数の多くは，それが臨界点となるような，終域の内部モデルが十分な閉性を持つ（$\approx$ 終域の内部モデルが$V$に十分近い）$V$からの非自明な初等埋め込みの存在によって特徴付けられる．特に
+\begin{definition}
+  $\kappa>\omega$とする．$\gamma\geq \kappa$に対して$\kappa$が$\gamma$-スーパーコンパクト基数であるとは，次を満たす$\ZFC$の内部モデル$M$と初等埋め込み$j:V\xrightarrow{\prec}_\kappa M$が存在することをいう：
+  \begin{enumerate}
+    \item $\gamma<j(\kappa)$
+    \item ${}^\gamma M\subseteq M$
+  \end{enumerate}
+
+  $\kappa$が$\kappa$-スーパーコンパクト基数であるとき，$\kappa$は可測基数であるという．
+  任意の$\gamma\geq \kappa$に対して$\kappa$が$\gamma$-スーパーコンパクト基数であるとき，$\kappa$はスーパーコンパクト基数であるという．
+\end{definition}
+\begin{remark}
+  ${}^\gamma M\subseteq M$から$\set{x\in M:|\mathrm{trcl}(x)|^M\leq\gamma}=\set{x\in V:|\mathrm{trcl}(x)|\leq\gamma}$が従う．  
+\end{remark}
+以降では，$\kappa$が$\gamma$-スーパーコンパクト基数であることを保証する$j:V\xrightarrow{\prec}_\kappa M$のことを$\gamma$-supercompact embeddingということにする．
+\begin{remark}
+  $\mathcal{U}$のみをパラメタとして定義可能なクラス$M_{\mathcal{U}},j_\mathcal{U}$で，任意のクラス$M,j$に対して
+   \[
+    \ZFC\proves\left(
+      \begin{aligned}
+      &\be{j:V\xrightarrow{\prec}_\kappa M}{$\gamma$-supercompact embedding}\\
+      &\qquad\qquad\qquad\to \exists \mathcal{U}[\be{j_{\mathcal{U}}:V\xrightarrow{\prec}_\kappa M_{\mathcal{U}}}{$\gamma$-supercompact embedding}]
+      \end{aligned}
+      \right)
+  \]  となるものが取れる．これを踏まえて，$\be{\kappa}{$\gamma$-スーパーコンパクト基数}$は$\exists \mathcal{U}[\be{j_{\mathcal{U}}:V\xrightarrow{\prec}_\kappa M_{\mathcal{U}}}{$\gamma$-supercompact embedding}]$によって定式化される．
+\end{remark}
+
+定式化の問題に限らず，このような$M_{\mathcal{U}},j_{\mathcal{U}}$の具体的構成とそこから分かる性質は，特に\ref{sec:laver}節における議論で重要となる．次節では，これについて扱う．
+
+\section{超冪と正規超フィルター}
+\subsection{超冪と初等埋め込み}
+ここでは，超フィルターと初等埋め込みとに関する一般論を扱う：
+\begin{definition}
+  $\mathcal{F}$が非空集合$S$上のフィルターであるとは，次を満たすことをいう：
+  \begin{enumerate}
+    \item $\mathcal{F}\subseteq \power(S)$
+    \item $S\in\mathcal{F}$，$\varnothing\notin \mathcal{F}$
+    \item $\forall X\in \mathcal{F}\forall Y\in \power(S)[X\subseteq Y\to Y\in \mathcal{F}]$
+    \item $\forall X,Y\in\mathcal{F}(X\cap Y\in \mathcal{F})$   
+  \end{enumerate}
+  
+  さらに次を満たすとき，$\mathcal{F}$は超フィルターであるという：
+  \begin{equation}
+    \forall X\in \power(S)(X\in \mathcal{F}\lor S\setminus X\in \mathcal{F})
+  \end{equation}
+\end{definition}
+ 以降では，$X\subseteq S$が$\mathcal{F}$に属することを$X$が（$\mathcal{F}$に関して）measure one，$S\setminus X$がmeasure oneであることを$X$がmeasure zero，$X$がmeasure zeroでないことを$X$がmeasure positiveであるということにする．$\mathcal{F}$に関してmeasure positiveな$S$の部分集合全体のなす集合を$\mathcal{F}^+$と書くことにする．
+
+\begin{definition}
+非空集合$S$上の超フィルター$\mathcal{U}$に対して，集合全体の宇宙$V$の$\mathcal{U}$に関する超冪$({}^SV/\mathcal{U},E_{\mathcal{U}})$を以下で定める：
+\begin{enumerate}
+  \item ${}^SV$上の同値関係を$f\sim_{\mathcal{U}} g\iff \set{i\in S:f(i)=g(i)}\in \mathcal{U}$で定める．$f$の同値類（集合とは限らない）を$(f)_\mathcal{U}$と定める．
+  \item 同値類がクラスのままでは扱いにくいため，新たに同値類の非空部分集合を
+  \begin{equation}
+    (f)^0_{\mathcal{U}} = \set{g\in (f)_\mathcal{U}:\text{$g$は$(f)_\mathcal{U}$に属するものの中で最小のランクを持つもの}}
+  \end{equation}
+  と定める．
+  \item ${}^SV/\mathcal{U}$をクラス$\set{(f)^0_{\mathcal{U}}:f\in {}^SV}$として定める．
+  \item ${}^SV/\mathcal{U}$上のクラス二項関係を$(f)^0_{\mathcal{U}}E_{\mathcal{U}}(g)^0_{\mathcal{U}}\iff \set{i\in S:f(i)\in g(i)}\in \mathcal{U}$と定める．
+\end{enumerate}
+\end{definition}
+通常のŁośの定理と同様に，以下が成り立つ
+\begin{lemma}
+  論理式$\Phi(x_1,\ldots,x_n)$ごとに，任意の非空集合$S$，$S$上の超フィルター$\mathcal{U}$に対して
+\[
+   \forall f_1,\ldots,f_n\in {}^SV\left[({}^SV/\mathcal{U},E_{\mathcal{U}})\models \Phi[(f_1)^0_{\mathcal{U}},\ldots,(f_n)^0_{\mathcal{U}}]\iff \set{i\in S:V\models \Phi[f_1(i),\ldots,f_n(i)]}\in \mathcal{U}\right]
+\]
+\end{lemma}
+\begin{proof}
+  メタレベルでの論理式の複雑さに関する帰納法によって，通常のŁośの定理と同様にして示される．（詳細は省く）
+\end{proof}
+
+$M_{\mathcal{U}},j_{\mathcal{U}}$を得るために，超冪$({}^SV/\mathcal{U},E_{\mathcal{U}})$をMostowski崩潰によって同型に潰したい．このために必要なのは，$({}^SV/\mathcal{U},E_{\mathcal{U}})$が外延性公理を満たし，集合状かつ整礎的であることであった．
+\begin{itemize}
+  \item[$\checkmark$] $({}^SV/\mathcal{U},E_{\mathcal{U}})\models (\text{外延性公理})$
+  \item[$\checkmark$]  $({}^SV/\mathcal{U},E_{\mathcal{U}})$は集合状，すなわち，任意の$f\in {}^SV$に対して$\set{(g)^0_{\mathcal{U}}:(g)^0_{\mathcal{U}}E_{\mathcal{U}}(f)^0_{\mathcal{U}}}$は集合
+\begin{reason}
+$(g)^0_{\mathcal{U}}E_{\mathcal{U}}(f)^0_{\mathcal{U}}$ならば$\set{i\in S:g(i)\in f(i)}\in \mathcal{U}$．
+ このとき$h\in {}^SV$を$\set{i\in S:g(i)\in f(i)}$上で$g$に一致し，$S\setminus \set{i\in S:g(i)\in f(i)}$上で常に$\varnothing$に値を取る写像とすれば，$(h)^0_{\mathcal{U}}=(g)^0_{\mathcal{U}}$である．
+ このとき特に$h\in V_{\mathrm{rank}(f)+1}$であるから，$\set{(g)^0_{\mathcal{U}}:(g)^0_{\mathcal{U}}E_{\mathcal{U}}(f)^0_{\mathcal{U}}}=\set{(h)^0_{\mathcal{U}}:(h)^0_{\mathcal{U}}E_{\mathcal{U}}(f)^0_{\mathcal{U}}\land h\in V_{\mathrm{rank}(f)+1}}$となってこれは集合．
+\end{reason}
+\end{itemize}
+\begin{proposition}
+  $S$上の超フィルター$\mathcal{U}$が可算完備，すなわち，$\forall\langle X_n:n<\omega\rangle\in {}^\omega\mathcal{U}(\bigcap_{n<\omega}X_n\in \mathcal{U})$であるとき，$({}^SV/\mathcal{U},E_{\mathcal{U}})$は整礎的．
+\end{proposition}
+\begin{remark}
+  逆も成り立つ．
+\end{remark}
+\begin{proof}
+  $({}^SV/\mathcal{U},E_{\mathcal{U}})$が整礎的でないとすると，長さ$\omega$の$E_{\mathcal{U}}$-下降列$\langle (f_n)^0_{\mathcal{U}}:n<\omega\rangle\in {}^\omega ({}^SV/\mathcal{U})$が取れる．このとき$\forall n<\omega (\set{i\in S:f_{n+1}(i)\in f_n(i)}\in \mathcal{U})$より，$\mathcal{U}$の可算完備性から$\set{i\in S:\forall n<\omega(f_{n+1}(i)\in f_n(i))}=\bigcap_{n<\omega}\set{i\in S:f_{n+1}(i)\in f_n(i)}\in \mathcal{U}$となる．よってある$i_0\in S$に対して$\langle f_n(i_0):n<\omega\rangle$は長さ$\omega$の$\in$-下降列となるが，これは整礎性公理に反する．
+\end{proof}
+よって，$S$上の超フィルター$\mathcal{U}$が可算完備であるとき，$({}^SV/\mathcal{U},E_{\mathcal{U}})$のMostowski崩潰写像
+\[
+  \pi_{({}^SV/\mathcal{U},E_{\mathcal{U}})}:({}^SV/\mathcal{U},E_{\mathcal{U}})\iso (M_{\mathcal{U}},\in);(f)^0_{\mathcal{U}}\mapsto \set{\pi_{({}^SV/\mathcal{U},E_{\mathcal{U}})}((g)^0_{\mathcal{U}}):(g)^0_{\mathcal{U}}E_{\mathcal{U}}(f)^0_{\mathcal{U}}}
+\]
+を，$\mathcal{U}$のみをパラメタとして定義可能なクラス関数として取ることができる．この値域である，$\mathcal{U}$のみをパラメタとして定義可能な推移的クラスを$M_{\mathcal{U}}$と書くことにする．以上を踏まえて
+
+\begin{definition}
+非空集合$S$上の可算完備超フィルター$\mathcal{U}$に対して，以下を定義する：
+\begin{enumerate}
+  \item $[\cdot]_{\mathcal{U}}:{}^SV\surj M_{\mathcal{U}};f\mapsto\pi_{({}^SV/\mathcal{U},E_{\mathcal{U}})}((f)^0_{\mathcal{U}})$
+  \item $j_{\mathcal{U}}:V\to M_{\mathcal{U}};x\mapsto [c_x]_{\mathcal{U}}$．ここで$c_x:S\to V;i\mapsto x$とする．
+\end{enumerate}
+
+\end{definition}
+\begin{lemma}
+非空集合$S$上の可算完備超フィルター$\mathcal{U}$に対して，以下が成立：
+  \begin{enumerate}
+    \item    $[\cdot]_{\mathcal{U}}:{}^SV\surj M_{\mathcal{U}}$に関してŁośの定理が成り立つ：
+    \[
+   \forall f_1,\ldots,f_n\in {}^SV\left[M_{\mathcal{U}}\models \Phi[[f_1]_{\mathcal{U}},\ldots,[f_n]_{\mathcal{U}}]\iff \set{i\in S:V\models \Phi[f_1(i),\ldots,f_n(i)]}\in \mathcal{U}\right]
+\]
+    \item $M_{\mathcal{U}}$は$\ZFC$の内部モデルであり，$j_{\mathcal{U}}:V\xrightarrow{\prec}M_{\mathcal{U}}$
+  \end{enumerate}
+\end{lemma}
+\begin{proof}
+(i)はMostowski崩潰写像が同型写像であることと，超冪に関する\L o\' sの定理の成立から直接従う．
+(ii)は，(i)より明らかに
+  \[
+    \forall a_1,\ldots,a_n \in V\left[V\models \Phi[a_1,\ldots,a_n]\iff M_{\mathcal{U}}\models \Phi[j_{\mathcal{U}}(a_1),\ldots,j_{\mathcal{U}}(a_n)] \right]
+  \]
+  であるから，あとは$M_{\mathcal{U}}$が$\ZFC$の内部モデルであるのを見れば良い．$V\models \ZFC$より$M_{\mathcal{U}}\models \ZFC$は明らか．$\ON\subseteq M_{\mathcal{U}}$を示す．
+
+  \begin{itemize}
+    \item[$\checkmark$] $j_{\mathcal{U}}|\ON:\ON\to\ON$は狭義増加で，特に$\forall \alpha\in \ON(\alpha\leq j_{\mathcal{U}}(\alpha))$
+    \begin{reason}
+$V\models \alpha\in \ON\implies M_{\mathcal{U}}\models j_{\mathcal{U}}(\alpha)\in \ON\implies j_{\mathcal{U}}(\alpha)\in \ON$．また
+  $V\models \beta\in \alpha\in \ON\implies M_{\mathcal{U}}\models j_{\mathcal{U}}(\beta)\in j_{\mathcal{U}}(\alpha)\implies j_{\mathcal{U}}(\beta)\in j_{\mathcal{U}}(\alpha)$．
+\end{reason}
+  \end{itemize}
+  $j_{\mathcal{U}}\img \ON\subseteq M_{\mathcal{U}}$は$\ON$で共終より，$M_{\mathcal{U}}$が推移的であることから$\ON\subseteq M_{\mathcal{U}}$．
+\end{proof}
+\begin{proposition}
+  非空集合$S$上の可算完備超フィルター$\mathcal{U}$が非単項ならば，$j_{\mathcal{U}}:V\xrightarrow{\prec}M_{\mathcal{U}}$は非自明である．
+\end{proposition}
+\begin{remark}
+  逆も成り立つ．
+\end{remark}
+\begin{proof}
+ $\mathcal{U}$を非単項として，$[\mathrm{id}_S]_{\mathcal{U}}\notin j_{\mathcal{U}}\img V$を示す．任意の$x\in V$に対して
+  \[
+    j_{\mathcal{U}}(x)=[\mathrm{id}_S]_{\mathcal{U}}\iff [c_x]_{\mathcal{U}}=[\mathrm{id}_S]_{\mathcal{U}}\iff \set{i\in S: x=i}\in \mathcal{U}\iff \bot
+  \]
+  より明らか．
+\end{proof}
+以上より，可算完備な非単項超フィルターから，$V$から内部モデルへの非自明な初等埋め込みを構成できることがわかった．
+\subsection{正規超フィルターとスーパーコンパクト基数}
+ここでは，一般論を踏まえて，$\power_\kappa\gamma$上の正規超フィルターと$\gamma$-スーパーコンパクト基数との間の関係を見る．
+\begin{definition}
+  $\kappa>\omega$を基数とする．サイズ$\kappa$以上の集合$s$に対して
+  \[
+    \power_\kappa s:=[s]^{<\kappa}=\set{x\in \power(s):|x|<\kappa}
+  \]
+  $\power_\kappa s$上のフィルター$\mathcal{F}$が正規であるとは，以下を満たすことをいう：
+  \begin{enumerate}
+    \item $\mathcal{F}$は$\kappa$-完備，すなわち，$\forall \langle X_\xi:\xi<\alpha\rangle\in {}^{<\kappa}\mathcal{F}(\bigcap_{\xi<\alpha}X_\xi \in \mathcal{F})$
+    \item $\forall i\in s(\set{x\in \power_\kappa s:i\in x}\in \mathcal{F})$
+    \item $\forall \langle X_i:i\in s\rangle\in {}^s\mathcal{F}(\bigtriangleup_{i\in s}X_i:=\set{x\in \power_\kappa s:\forall i\in x(x\in X_i)}\in \mathcal{F})$
+  \end{enumerate}
+
+\end{definition}
+\begin{remark}
+$\power_\kappa s$上の正規超フィルターは以下の性質を持つ：
+  \begin{itemize}
+    \item[$\checkmark$]$\mathcal{F}$は可算完備
+    \item[$\checkmark$]$\mathcal{F}$を拡張する単項フィルターは存在しない
+    \begin{reason}
+$x\in \power_\kappa s$に対して，$i_0\in s\setminus x$を取れば，$x\notin\set{y\in \power_\kappa s:i_0\in y}\in \mathcal{F}$．
+\end{reason}
+      \item[$\checkmark$]$f:\power_\kappa s\to V$がある$\mathcal{F}^+$の元上において選択関数ならば，$f:\power_\kappa s\to V$はある$\mathcal{F}^+$の元上において，ある$i\in s$に値を取る定数関数
+    \begin{reason}
+対偶を示す：$\forall i\in s (\power_\kappa s\setminus f^{-1}\set{i}\in \mathcal{F})$ならば$\power_\kappa s\setminus \set{x\in \power_\kappa s:f(x)\in x}=\set{x\in \power_\kappa s:\forall i\in x(f(x)\neq i)}=\bigtriangleup_{i\in s}\power_\kappa s\setminus f^{-1}\set{i}\in \mathcal{F}$．
+\end{reason}
+  \end{itemize}  
+\end{remark}
+\begin{lemma}\label{th:fil_to_emb}
+ $\kappa>\omega$を基数，$\gamma\geq \kappa$とする．
+  $\power_\kappa \gamma$上の正規超フィルター$\mathcal{U}$に対して，$j_{\mathcal{U}}:V\xrightarrow{\prec}M_{\mathcal{U}}$は$\gamma$-supercompact embedding．特に次を満たす：
+  \begin{enumerate}
+    \item $[\mathrm{id}_{\power_\kappa\gamma}]_{\mathcal{U}}=j_{\mathcal{U}}\img \gamma$
+    \item $\gamma<j_{\mathcal{U}}(\kappa)$
+    \item $\mathrm{crit}(j_{\mathcal{U}})=\kappa$
+    \item ${}^\gamma M_{\mathcal{U}}\subseteq M_{\mathcal{U}}$
+  \end{enumerate}
+\end{lemma}
+\begin{proof}$\mathcal{U}$は超フィルターより$\mathcal{U}^+=\mathcal{U}$に注意する．
+  \begin{enumerate}
+    \item $\mathcal{U}$の正規性より
+    \begin{align}
+    [f]_{\mathcal{U}}\in [\mathrm{id}_{\power_\kappa\gamma}]_{\mathcal{U}}&\iff \set{x\in \power_\kappa\gamma:f(x)\in x}\in \mathcal{U}\\
+    &\iff \exists \alpha<\gamma [\set{x\in \power_\kappa\gamma:f(x)=\alpha}\in \mathcal{U}]\\
+    &\iff \exists \alpha<\gamma \left[[f]_{\mathcal{U}}=j_{\mathcal{U}}(\alpha)\right]
+    \end{align}
+    \item $\mathrm{ot}^{M_{\mathcal{U}}}(j_{\mathcal{U}}\img \gamma)=\mathrm{ot}(j_{\mathcal{U}}\img \gamma)=\gamma$に注意して
+    \begin{align}
+      \gamma<j_{\mathcal{U}}(\kappa)&\iff M_{\mathcal{U}}\models \mathrm{ot}([\mathrm{id}_{\power_\kappa \gamma}]_{\mathcal{U}})<j_{\mathcal{U}}(\kappa)\\
+      &\iff \set{x\in \power_\kappa\gamma:\mathrm{ot}(x)<\kappa}\in \mathcal{U}\iff \top
+    \end{align}
+    \item $\alpha<\kappa$に対して，$\mathcal{U}$の$\kappa$-完備性より
+    \begin{align}
+      [f]_{\mathcal{U}}\in j_{\mathcal{U}}(\alpha)&\iff  \set{x\in \power_\kappa\gamma:f(x)\in \alpha}\in \mathcal{U}\\
+      &\iff\exists \beta\in \alpha \left[\set{x\in \power_\kappa\gamma:f(x)=\beta}\in \mathcal{U}\right]\\
+      &\iff \exists \beta\in \alpha \left[[f]_{\mathcal{U}}=j_{\mathcal{U}}(\beta)\right]
+    \end{align}
+    より，順序数$j_{\mathcal{U}}(\alpha)$は$\alpha$と順序同型より$j_{\mathcal{U}}(\alpha)=\alpha$．よって(ii)と合わせて明らか．
+    \item はじめに，次に注意する：
+    \begin{itemize}
+      \item [$\checkmark$] $j_{\mathcal{U}}|\gamma\in M_{\mathcal{U}}$
+          \begin{reason}
+$j_{\mathcal{U}}\img \gamma\in M_{\mathcal{U}}$かつ$\mathrm{ot}^{M_{\mathcal{U}}}(j_{\mathcal{U}}\img \gamma)=\mathrm{ot}(j_{\mathcal{U}}\img \gamma)=\gamma$に注意して$M_{\mathcal{U}}\models \exists e(e:\gamma\iso j_{\mathcal{U}}\img \gamma)$．このwitness $e\in M_{\mathcal{U}}$は$j_{\mathcal{U}}|\gamma$に一致する．
+\end{reason}
+    \end{itemize}
+    
+    $\langle [f_\alpha]_{\mathcal{U}}:\alpha<\gamma\rangle\in {}^\gamma M_{\mathcal{U}}$に対して，$g\in {}^{\power_\kappa\gamma}V$を任意の$x\in \power_\kappa\gamma$に対して
+    $g(x):\gamma\to V;\alpha\mapsto f_\alpha(x)$で定める．このとき
+    \begin{align}
+      \set{x\in\power_\kappa\gamma:V\models g(x):\gamma\to V}\in \mathcal{U}&\implies M_{\mathcal{U}}\models[g]_{\mathcal{U}}:j_{\mathcal{U}}(\gamma)\to M_{\mathcal{U}}\\
+      &\implies [g]_{\mathcal{U}}:j_{\mathcal{U}}(\gamma)\to M_{\mathcal{U}} 
+    \end{align}
+    任意の$\alpha<\gamma$に対して
+    \begin{align}
+      \set{x\in \power_\kappa\gamma:\left(g(x)\right)(\alpha)=f_\alpha(x)}\in \mathcal{U}&\implies M_{\mathcal{U}}\models [g]_{\mathcal{U}}(j_{\mathcal{U}}(\alpha))=[f_\alpha]_{\mathcal{U}}\\&\implies[g]_{\mathcal{U}}(j_{\mathcal{U}}(\alpha))=[f_\alpha]_{\mathcal{U}}
+    \end{align}
+    よって，$\langle [f_\alpha]_{\mathcal{U}}:\alpha<\gamma\rangle=[g]_{\mathcal{U}}\circ j_{\mathcal{U}}| \gamma =[g]_{\mathcal{U}}\circ^{M_{\mathcal{U}}} j_{\mathcal{U}}| \gamma\in M_{\mathcal{U}}$
+  \end{enumerate}
+\end{proof}
+\begin{lemma}\label{th:emb_to_fil}
+  $j,M$をクラスとする．$\gamma\geq \kappa$に対して$\be{j:V\xrightarrow{\prec}_\kappa M}{$\gamma$-supercompact embedding}$ならば，$\power_\kappa\gamma$上の正規超フィルターが存在する．
+\end{lemma}
+\begin{proof}
+$\gamma<j(\kappa)$，$j\img \gamma\in M$，$\mathrm{ot}^M(j\img \gamma)=\gamma$より$j\img\gamma\in \power^M_{j(\kappa)}j(\gamma)$であるのに注意して，以下で定まる$\mathcal{U}$が望むものとなる：
+  \[
+    \mathcal{U}=\set{X\in\power(\power_\kappa\gamma):j\img \gamma \in j(X)}
+  \]
+  \begin{itemize}
+      \item [$\checkmark$] $\mathcal{U}$は$\power_\kappa\gamma$上の超フィルター
+      \begin{reason}
+      $j$が初等埋め込みであるのに注意して簡単に従う．
+      \end{reason}
+      \item [$\checkmark$] $\mathcal{U}$は$\kappa$-完備
+          \begin{reason}
+$X=\langle X_\xi:\xi<\alpha\rangle\in{}^{<\kappa}\power(\power_\kappa\gamma)$に対して，$j(X)_\xi=j(X)_{j(\xi)}=j(X)_{j(\xi)}^M=j(X_\xi)$に注意して
+    \begin{align}
+      V\models \bigcap_{\xi<\alpha}X_\xi=\bigcap_{\xi<\alpha}X_\xi&\iff M\models j(\bigcap_{\xi<\alpha}X_\xi)=\bigcap_{\xi<j(\alpha)}j(X)_\xi\\&\iff j(\bigcap_{\xi<\alpha}X_\xi)=\bigcap_{\xi<\alpha}j(X_\xi)
+    \end{align}
+    より明らか．
+\end{reason}
+      \item [$\checkmark$]  $\forall \alpha\in \gamma(\set{x\in \power_\kappa\gamma:\alpha\in x}\in \mathcal{U})$
+          \begin{reason}
+\begin{align}
+      \set{x\in \power_\kappa\gamma:\alpha\in x}\in \mathcal{U}&\iff j\img \gamma \in j(\set{x\in \power_\kappa\gamma:\alpha\in x})\\
+      &\iff j(\alpha)\in j\img \gamma\iff \top
+    \end{align}
+\end{reason}
+    \item [$\checkmark$] 
+      $\forall \langle X_\alpha:\alpha\in \gamma\rangle\in {}^\gamma\mathcal{U}(\bigtriangleup_{\alpha\in \gamma}X_\alpha\in \mathcal{U})$
+          \begin{reason}
+$j(\bigtriangleup_{\alpha\in \gamma}X_\alpha)=\set{x\in \power^M_{j(\kappa)}j(\gamma):\forall \alpha\in x(x\in j(X)_\alpha)}$に注意して
+    \[
+      j\img\gamma\in j(\bigtriangleup_{\alpha\in \gamma}X_\alpha)\iff \forall \alpha \in j\img \gamma(j\img \gamma\in j(X)_\alpha)\iff \forall\alpha<\gamma(j\img \gamma\in j(X_\alpha))
+    \]
+    より明らか．
+\end{reason}
+    \end{itemize}
+\end{proof}
+\begin{corollary}$j,M$をクラスとする．$\gamma\geq \kappa$に対して
+  \[
+    \be{j:V\xrightarrow{\prec}_\kappa M}{$\gamma$-supercompact embedding}\implies \exists \mathcal{U}(\be{j_{\mathcal{U}}:V\xrightarrow{\prec}_\kappa M_{\mathcal{U}}}{$\gamma$-supercompact embedding})
+  \]
+  が成り立つ．
+  特に，$\kappa$が$\gamma$-supercompact cardinalであることは
+  \[
+    \exists \mathcal{U}(\be{j_{\mathcal{U}}:V\xrightarrow{\prec}_\kappa M_{\mathcal{U}}}{$\gamma$-supercompact embedding})
+  \]
+  同値に
+  \[
+    \be{\kappa>\omega}{cardinal}\land \exists\mathcal{U}(\be{\mathcal{U}}{normal ultrafilter on $\power_\kappa\gamma$})
+  \]
+  によって定式化できる．
+\end{corollary}
+\begin{proof}
+  補題\ref{th:fil_to_emb}ならびに\ref{th:emb_to_fil}からただちに従う．
+\end{proof}
+\section{Laver関数}\label{sec:laver}
+ここでは，Richard Laverによって導入された，Laver関数と呼ばれる，スーパーコンパクト基数に関する特別な関数の存在を示す．Laverは\cite{MR472529}において，良い性質を持つforcing posetによる強制法でスーパーコンパクト基数が常に保たれる$\ZFC$のモデルをジェネリック拡大として得るためにこれを導入した．この技法はPFAやその一般化であるSPFA（同値にMM）の無矛盾性を示す際にも，重要な役割を果たしている．
+
+\begin{theorem}[Laver]
+$\kappa$をスーパーコンパクト基数とする．次を満たす関数$f:\kappa\to V_\kappa$（Laver関数という）が存在する：
+ \begin{equation}
+   \forall x\in V \forall \gamma\geq \max\set{|\mathrm{trcl}(x)|,\kappa}\exists \be{\mathcal{U}_\gamma}{normal ultrafilter on $\power_\kappa\gamma$}(j_{\mathcal{U}_\gamma}(f)(\kappa)=x)
+ \end{equation}
+\end{theorem}
+ 先に定理の意味について説明しておく．説明のため$f:\kappa\to V_\kappa$を長さ$\kappa$の列$A=\langle A_\xi:\xi<\kappa\rangle\in {}^\kappa V_\kappa$と同一視する．
+
+ このとき$j(A)=\langle j(A)_\xi:\xi<j(\kappa)\rangle$は長さ$j(\kappa)$の列となる．また$\xi<\kappa$に対しては
+ \begin{equation}
+   j(A)_{\xi}=j(A)_{j(\xi)}=j(A)^M_{j(\xi)}=j(A_\xi)=A_\xi
+ \end{equation}
+ よって$\kappa<j(\kappa)$に注意して$j(A)$は$A$の真の延長になっており，初めて$A$に加わる値が$j(A)_\kappa$である．
+
+ この$j(A)_\kappa$が（$j$を動かした時に）どのような値を取りうるかは，$A$がどのような$\kappa$-列であるかによって異なる．
+ 例えば$A=\langle \xi:\xi<\kappa\rangle$ならば，$j(A)_\kappa$の取りうる値は$\kappa$のみである．
+
+ この定理は，特別な$\kappa$-列$A$が存在して，どんな集合$x$に対してもいくらでも大きい$\gamma$-supercompact embedding $j$で$j(A)_\kappa$の値を$x$とするものが取れることを保証している．
+ \begin{proof}
+
+$f:\kappa\to V_\kappa$を再帰的に以下で定義する：
+\begin{enumerate}
+  \item $\alpha>\omega$が基数のとき，$f(\alpha)$は，可能な限り， 次を満たす$\langle x,\delta\rangle$全体のうち第二成分の取りうる最小値を実現する$x$とする：
+ \[
+   \max\set{\alpha,|\mathrm{trcl}(x)|}\leq \delta<\kappa\land \forall \be{\mathcal{U}_\delta}{normal ultrafilter on $\power_\alpha\delta$}((j_{\mathcal{U}_\delta}(f|\alpha))(\alpha)\neq x)
+ \]
+ \item それ以外の場合には$f(\alpha)=\varnothing$と定める．
+\end{enumerate}
+
+$f$が望む関数であるのを背理法によって示す．$f$が望む性質を満たさないとする．このとき，次を満たすような最小の$\gamma_0\geq \kappa$が取れる：
+  \begin{equation}\label{eq:countar-example}
+  \exists x[ \max\set{\kappa,|\mathrm{trcl}(x)|}\leq \gamma_0\land\forall \be{\mathcal{U}_{\gamma_0}}{normal ultrafilter on $\power_\kappa{\gamma_0}$}((j_{\mathcal{U}_{\gamma_0}}(f))(\kappa)\neq x)]
+ \end{equation}
+ はじめに，次が成り立つ（直感的には$j:V\xrightarrow{\prec}_\kappa M$が$M=V$かつ$\gamma_0<j(\kappa)$を満たす場合を念頭に置くと良い．ただしそのようなものは実際には存在し得ないのに注意せよ．）：
+\begin{statement}\label{claim1}
+（$\gamma_0$に関して）十分大きい$\lambda$に対して$\be{j:V\xrightarrow{\prec}_\kappa M}{$\lambda$-supercompact embedding}$を取れば，$\left(j(f)\right)(\kappa)$は式\ref{eq:countar-example}のwitnessとなる．
+\end{statement}
+\begin{proof}
+ $\lambda>\gamma_0$を十分大きく取って固定する．$\lambda$-supercompact embedding $j:V\xrightarrow{\prec}_\kappa M$を取って固定する．
+
+$\lambda$を十分大きく取ったから，${}^\lambda M\subseteq M$に注意して，任意の$\kappa\leq\gamma\leq \gamma_0$に対して
+\begin{itemize}
+  \item[$\checkmark$] $\power^{M}_\kappa \gamma=\power_\kappa\gamma$
+  \item[$\checkmark$] $\power^{M}(\power_\kappa\gamma)=\power(\power_\kappa\gamma)$
+  \item[$\checkmark$] $\set{\mathcal{U}_{\gamma}:\text{normal ultrafilter on $\power_\kappa{\gamma}$}}^{M}=\set{\mathcal{U}_{\gamma}:\text{normal ultrafilter on $\power_\kappa{\gamma}$}}$
+\item[$\checkmark$] $\power_\kappa{\gamma}$上の正規超フィルター$\mathcal{U}_{\gamma}$に対して$j_{\mathcal{U}_{\gamma}}^M=j_{\mathcal{U}_{\gamma}}|M$
+          \begin{reason}
+より強く，任意の$g\in {}^{\power_\kappa\gamma}M\subseteq M$に対して$[g]^M_{\mathcal{U}_\gamma}=[g]_{\mathcal{U}_\gamma}$となる：定義から任意の$h\in {}^{\power_\kappa\gamma}M$に対して$[h]^M_{\mathcal{U}_\gamma}\in [g]^M_{\mathcal{U}_\gamma}\iff [h]_{\mathcal{U}_\gamma}\in [g]_{\mathcal{U}_\gamma}$であり，さらに任意の$h\in {}^{\power_\kappa\gamma}V$ s.t. $[h]_{\mathcal{U}_\gamma}\in [g]_{\mathcal{U}_\gamma}$に対して$\set{x\in \power_\kappa\gamma :h(x)\in g(x)\in M}\in \mathcal{U}_\gamma$より$h_0\in {}^{\power_\kappa\gamma}M$で$[h]_{\mathcal{U}_\gamma}=[h_0]_{\mathcal{U}_\gamma}$となるものが取れるから，（$[g]_{\mathcal{U}_\gamma}$のランクに関する）帰納法により明らか．
+\end{reason}
+    \item [$\checkmark$] $\set{x\in M:|\mathrm{trcl}(x)|^M\leq \gamma}=\set{x\in V:|\mathrm{trcl}(x)|\leq\gamma}$
+\end{itemize}
+ よって，$x_0\in V$について以下は同値であり，さらに，そのような第二成分の最小値はどちらでも$\gamma_0$に一致する：
+ \begin{enumerate}
+   \item  $x_0$は次を満たす$\langle x,\gamma\rangle$全体のうち第二成分の取りうる最小値を実現する$x$のうちの一つ：
+ \[
+   \max\set{\kappa,|\mathrm{trcl}(x)|}\leq \gamma<j(\kappa)\land \forall \be{\mathcal{U}_\gamma}{normal ultrafilter on $\power_\kappa\gamma$}(j_{\mathcal{U}_\gamma}(f)(\kappa)\neq x)
+ \] \item  $x_0\in M$であり，$M$において次が成り立つ：$x_0$は次を満たす$\langle x,\gamma\rangle$全体のうち第二成分の取りうる最小値を実現する$x$のうちの一つ：
+ \[   \max\set{\kappa,|\mathrm{trcl}(x)|}\leq \gamma<j(\kappa)\land \forall \be{\mathcal{U}_\gamma}{normal ultrafilter on $\power_\kappa\gamma$}(j_{\mathcal{U}_\gamma}(f)(\kappa)\neq x)
+ \]
+ \end{enumerate}
+ ここで，
+ $j(f)$が$M$において$f$の定義式を満たすことと$j(f)|\kappa=f$であることとから，$\left(j(f)\right)(\kappa)$はそのような$x_0$となる．
+\end{proof}
+さらに，次が成り立つ：
+\begin{statement}\label{claim2}
+$\power_\kappa \gamma_0$上の適当な正規超フィルター$\mathcal{U}$に対して$j_{\mathcal{U}}(f)(\kappa)$は式\ref{eq:countar-example}のwitnessとなる．
+\end{statement}
+\begin{proof}
+$j:V\xrightarrow{\prec}_\kappa M$を主張\ref{claim1}のようなものとする．
+$\power_\kappa \gamma_0$上の正規超フィルター$\mathcal{U}$を以下で定める：
+\[
+  \mathcal{U}=\set{ X\subseteq \power_\kappa \gamma_0:j\img \gamma_0\in j(X)}
+\]
+このとき$(j_{\mathcal{U}}(f))(\kappa)=(j(f))(\kappa)$となる：
+\begin{itemize}
+  \item[$\checkmark$] $k:M_{\mathcal{U}}\xrightarrow{\prec}M;[g]_{\mathcal{U}}\mapsto (j(g))(j\img\gamma_0)$
+          \begin{reason}
+Łośの定理より$M_{\mathcal{U}}\models \Phi(\overrightarrow{[g]_{\mathcal{U}}})\iff \set{x\in \power_\kappa\gamma_0:\Phi(\overrightarrow{g(x)})}\in \mathcal{U}\iff j\img \gamma_0\in j(\set{x\in \power_\kappa\gamma_0:\Phi(\overrightarrow{g(x)})})
+    \iff M\models \Phi(\overrightarrow{(j(g))(j\img \gamma_0)})$
+\end{reason}
+  \item[$\checkmark$] $j:V\ee M$は$j_{\mathcal{U}}:V\ee M_{\mathcal{U}}$と$k:M_{\mathcal{U}}\ee M$の合成に分解できる
+
+    \item[$\checkmark$] $k|\set{x\in M_{\mathcal{U}}:|\mathrm{trcl}(x)|^{M_{\mathcal{U}}}\leq \gamma_0}$は恒等写像
+          \begin{reason}
+          $k\neq \mathrm{id}_{M_{\mathcal{U}}}$として$\mathrm{crit}(k)>\gamma_0$を示す：
+$\alpha\leq \gamma_0$に対して$\alpha=\mathrm{ot}(j\img\gamma_0\cap j(\alpha))=\mathrm{ot}^{M_{\mathcal{U}}}(j_{\mathcal{U}}\img\gamma_0\cap j_{\mathcal{U}}(\alpha))=[\langle\mathrm{ot}(x\cap \alpha):x\in \power_\kappa\gamma_0\rangle]_{\mathcal{U}}$より$k(\alpha)=(j(\langle\mathrm{ot}(x\cap \alpha):x\in \power_\kappa\gamma_0\rangle))(j\img \gamma_0)=\mathrm{ot}^M(j\img\gamma_0\cap j(\alpha))=\mathrm{ot}(j\img\gamma_0\cap j(\alpha))=\alpha$
+\end{reason}
+\end{itemize}
+よって${}^{\gamma_0} M_{\mathcal{U}}\subseteq M_{\mathcal{U}}$より$\set{x\in M_{\mathcal{U}}:|\mathrm{trcl}(x)|^{M_{\mathcal{U}}}\leq \gamma_0}=\set{x\in V:|\mathrm{trcl}(x)|\leq \gamma_0}\ni (j(f))(\kappa)$に注意して
+\[
+  k((j(f))(\kappa))=(j(f))(\kappa)=(k(j_{\mathcal{U}}(f)))(\kappa)= (k(j_{\mathcal{U}}(f)))(k(\kappa))=k((j_{\mathcal{U}}(f))(\kappa))
+\]
+
+よって$k$の単射性から$(j(f))(\kappa)=(j_{\mathcal{U}}(f))(\kappa)$．
+\end{proof}
+しかし，式\ref{eq:countar-example}の内容から，主張\ref{claim2}は矛盾である．
+ \end{proof}
+ \begin{remark}
+   Laver関数$f:\kappa\to V_\kappa$に対して，$\langle f(\alpha)\cap \alpha:\alpha<\kappa\rangle$は$\diamondsuit_\kappa$-列となる．
+ \end{remark}
+ \section{PFAの無矛盾性証明}
+ 1984年，James~E. Baumgartnerはproper forcing axiomを導入した．この無矛盾性証明においては，冒頭に述べた以下の事実が重要となる：
+ \begin{fact}[再掲]forcing posetのproper性に関して，次が成り立つ：
+\begin{enumerate}
+  \item forcing poset $\mathbb{P}$がproperならば，$\mathbb{P}$は$\omega_1$を保つ
+  \item(Shelah). proper forcing posetの可算台反復によって得られるforcing posetもproperである
+  \item trivial forcing poset（$\mathbb{P}=\langle\set{\varnothing},=,\varnothing\rangle$）はproperである
+  \item forcing poset $\mathbb{P}$のproper性は，次の意味で局所的である：$\mathbb{P}$がproperであるか否かは，
+  $\mathbb{P}$のサイズに対して十分大きい$\lambda$に対する$(\set{x:|\mathrm{trcl}(x)|\leq \lambda},\in)$の構造のみによって決定する
+\end{enumerate}
+\end{fact}
+ これを用いて，目標であった定理を示す：
+ \begin{theorem}[Baumgartner]
+  スーパーコンパクト基数$\kappa$の存在を仮定する．このとき，ある反復強制法の$\kappa$-stage $\mathbb{P}_\kappa$で，$\mathbb{P}_\kappa\forces\text{``$\mathrm{PFA}$''}$とするものが存在する．特に
+
+    \begin{equation}
+    \mathrm{Con}(\ZFC+\exists \text{スーパーコンパクト基数})\to \mathrm{Con}(\ZFC+\mathrm{PFA})
+  \end{equation}
+\end{theorem}
+ \begin{proof}
+スーパーコンパクト基数$\kappa$とLaver関数 $f:\kappa\to V_\kappa$を取って固定する．iteration $\mathbb{P}=\langle \mathbb{P}_\alpha:\alpha\leq \kappa\rangle$を以下で定義する：
+\begin{enumerate}
+  \item $\mathbb{P}$は可算台反復（共終数$\omega$のところでinverse limit，そうでないところでdirect limit）
+  \item $\forall \alpha<\kappa(\mathbb{P}_\alpha\in V_\kappa)$
+  \item $\alpha<\kappa$が到達不能基数であり，さらに
+  \begin{equation}
+    f(\alpha)= \dot{\mathbb{Q}}\land \mathbb{P}_{\alpha}\forces\text{``$\be{\dot{\mathbb{Q}}}{proper forcing poset}$''}
+  \end{equation}
+  なる$\dot{\mathbb{Q}}\in V^{\mathbb{P}_\alpha}$があるとき，$\mathbb{P}_{\alpha+1}=\mathbb{P}_\alpha*\dot{\mathbb{Q}}$ 
+  \item それ以外の場合の全てのsuccessor stageではtrivial forcing posetを合成
+\end{enumerate}
+$\mathbb{P}_\kappa$が望むforcing posetであるのを示す．
+\begin{enumerate}
+\item[$1^\circ$]$\mathbb{P}_\kappa$の基本的性質の確認：\\
+\begin{itemize}
+   \item[$\checkmark$] $\be{\mathbb{P}_\kappa}{proper forcing poset}$．特に$\mathbb{P}_\kappa$は$\omega_1$を保つ．
+   \item[$\checkmark$] $\be{\mathbb{P}_\kappa}{direct limit of $\mathbb{P}|\kappa$}$かつ$\be{\mathbb{P}_\kappa}{$\kappa$-c.c.}$．特に$\mathbb{P}_\kappa$は$\kappa$が基数であるのを保つ．
+          \begin{reason}
+$\kappa$はスーパーコンパクト基数より到達不能基数であるから，$\be{\mathbb{P}_\kappa}{direct limit of $\mathbb{P}|\kappa$}$．また，任意の$\alpha<\kappa$に対して$\mathbb{P}_\alpha\in V_\kappa$より特に$\be{\mathbb{P}_\alpha}{$\kappa$-c.c.}$である．さらに，$\mathbb{P}$は可算台反復より，特に$\kappa$未満のlimit stagesでstationary manyにdirect limitを取っている．故に，delta system lemmaを用いた計算により$\mathbb{P}_\kappa$は$\kappa$-c.c.となる．（詳細については\cite{MR823775} Thm 2.2を参照．）
+\end{reason}
+  \item[$\checkmark$] $\mathbb{P}_\kappa\forces\text{``$(\omega_2)^{\check{V}[\dot{G}]}\leq \kappa$''}$
+  \begin{reason}
+  上二つから直ちに従う．
+  \end{reason}
+\end{itemize}
+\end{enumerate}
+
+
+$\mathbb{P}_\kappa\forces \text{``$\be{\dot{\mathbb{Q}}}{proper forcing poset}$''}$を任意に取る．
+$(1^\circ)$より，
+\[
+  \mathbb{P}_\kappa\forces\text{``$\forall \be{\mathcal{D}}{$<\kappa$-sequence of dense subsets of $\dot{\mathbb{Q}}$}\exists \be{F}{filter on $\dot{\mathbb{Q}}$}\forall \alpha\in \dom(\mathcal{D})(F\cap {\mathcal{D}}_\alpha\neq \varnothing)$''}
+\]
+を示せば良い．
+
+（$|\mathrm{trcl}(\dot{\mathbb{Q}})|$に関して）十分大きな$\lambda\geq \kappa$に対して，$\lambda$-supercompact embedding $j:V\xrightarrow{\prec}_\kappa M$で，$(j(f))(\kappa)=\dot{\mathbb{Q}}$となるものを取る．
+
+\begin{enumerate}
+  \item[$2^\circ$] $j(\mathbb{P})$の基本的性質の確認：\\
+
+  \begin{itemize}
+   \item[$\checkmark$] $j(\mathbb{P})=\langle j(\mathbb{P})_\alpha:\alpha\leq j(\kappa)\rangle$，$j(\mathbb{P})|\kappa+1=\mathbb{P}$
+    \begin{reason}
+$\alpha<\kappa$に対して$j(\mathbb{P})_\alpha=j(\mathbb{P})_{j(\alpha)}=j(\mathbb{P})^M_{j(\alpha)}=j(\mathbb{P}_\alpha)=\mathbb{P}_\alpha$．
+    
+    さらに，到達不能基数$\kappa<j(\kappa)$は下方絶対性より$M\models \be{\kappa}{inaccessible}$であるのに注意して，$j(\mathbb{P})$が$M$において$\mathbb{P}$の定義式を満たすことから，
+    \begin{equation}
+      M\models \be{j(\mathbb{P})_\kappa}{direct limit of $j(\mathbb{P})|\kappa$}
+    \end{equation}
+   より，$j(\mathbb{P})|\kappa=\mathbb{P}|\kappa$ ならびにdirect limitの絶対性から，$\be{j(\mathbb{P})_\kappa}{direct limit of $\mathbb{P}|\kappa$}$．他方で$\mathbb{P}_\kappa$もそうであるから，$j(\mathbb{P})_\kappa=\mathbb{P}_\kappa$．
+\end{reason}
+\end{itemize}
+
+    ${}^\lambda M\subseteq M$であったことから
+\begin{itemize}
+   \item[$\checkmark$] $\mathbb{P}_\kappa\forces \text{``${}^\lambda\check{M}[\dot{G}_\kappa]\subseteq \check{M}[\dot{G}_\kappa]$''}$
+          \begin{reason}
+$\mathbb{P}_\kappa\forces\text{``$\dot{g}:\lambda\to \check{M}[\dot{G}]$''}$とする．$\dot{h}\in M^{\mathbb{P}_\kappa}$で$\mathbb{P}_\kappa\forces\text{``$\dot{g}=\dot{h}$''}$となるものが存在するのを示す．
+    
+    $\mathbb{P}_\kappa\forces \text{``$\dot{g}(\alpha)\in \check{M}[\dot{G}]$''}$より$\set{p\in \mathbb{P}_\kappa:\exists \dot{x}\in M^{\mathbb{P}}(p\forces \text{``$\dot{g}(\alpha)=\dot{x}$''})}$は$\mathbb{P}_\kappa$の稠密部分集合．よって$\mathbb{P}_\kappa$上の極大反鎖$A_\alpha$と$\langle \dot{x}^\alpha_p:p\in A_\alpha\rangle\in {}^{A_\alpha}M^{\mathbb{P}}$で
+    \begin{equation}
+      \forall p\in A_\alpha(p\forces\text{``$\dot{g}(\alpha)=\dot{x}^\alpha_p$''})
+    \end{equation}
+となるものが取れる．そこで$\dot{h}\in V^{\mathbb{P}_\kappa}$を
+\begin{equation}
+  \dot{h}=\set{\langle\mathrm{pair}(\check{\alpha},\dot{x}^\alpha_p),p\rangle:\alpha<\lambda\land p\in A_\alpha}
+\end{equation}
+と定めれば，その定義より$\mathbb{P}_\kappa\forces\text{``$\dot{g}=\dot{h}$''}$．
+
+ここで$\kappa\leq \lambda$，$\forall \alpha<\lambda(|A_\alpha|\leq \lambda)$に注意して，${}^\lambda M\subseteq M$より$\dot{h}\in M$．
+\end{reason}
+   \item[$\checkmark$] $j(\mathbb{P})_{\kappa+1}=\mathbb{P}_\kappa*^M \dot{\mathbb{Q}}$
+          \begin{reason}
+$j(\mathbb{P})$は$M$において$\mathbb{P}$の定義式を満たすから，$j(\mathbb{P})_\kappa=\mathbb{P}_\kappa$と$M\models \be{\kappa}{inaccessible}$とに注意して，以下を示せば良い：
+    \begin{enumerate}
+      \item[(i)] $(j(f))(\kappa)=\dot{\mathbb{Q}}$
+      \item[(ii)] $\mathbb{P}_{\kappa}\forces^M\text{``$\be{\dot{\mathbb{Q}}}{proper forcing poset}$''}$
+    \end{enumerate}
+
+(i)は，$f$がLaver関数であり，$j$をこれを満たすように取っていたから明らか．(ii)については，まず$\power^M(\mathbb{P}_\kappa)=\power(\mathbb{P}_\kappa)$より，（hyperuniverse上で）任意の$G$に対して$\be{G}{$(\mathbb{P}_\kappa,V)$-generic}\iff \be{G}{$(\mathbb{P}_\kappa,M)$-generic}$となるのに注意して，以下を示せば十分：
+ \begin{enumerate}
+      \item[(ii')] $\mathbb{P}_{\kappa}\forces\text{``$\check{M}[\dot{G}_\kappa]\models\be{\dot{\mathbb{Q}}}{proper forcing poset}$''}$
+\end{enumerate}
+$\mathbb{P}_{\kappa}\forces\text{``$\be{\dot{\mathbb{Q}}\in \check{M}[\dot{G}_\kappa]}{proper forcing poset}$''}$であって，さらに$\mathbb{P}_\kappa\forces \text{``${}^\lambda\check{M}[\dot{G}_\kappa]\subseteq \check{M}[\dot{G}_\kappa]$''}$より特に$\mathbb{P}_\kappa\forces \text{``$\set{x:|\mathrm{trcl}(x)|\leq \lambda}^{\check{M}[\dot{G}_\kappa]}=\set{x:|\mathrm{trcl}(x)|\leq \lambda}$''}$であることから，$\lambda$が$\dot{\mathbb{Q}}$のサイズに対して十分大きく取られていることとposetのproper性が事実\ref{fact}(iv)の意味で局所的であることから明らか．
+\end{reason}
+
+     \item[$\checkmark$] $\dot{\mathbb{R}}\in M^{\mathbb{P}_\kappa*^M\dot{\mathbb{Q}}}$と稠密埋め込み$j(\mathbb{P}_\kappa)\to_d(\mathbb{P}_\kappa*^M \dot{\mathbb{Q}})*^M\dot{\mathbb{R}};p\mapsto \langle\langle p|\kappa,p(\kappa)\rangle,\check{p|[\kappa+1,j(\kappa))}\rangle$が取れる．
+          \begin{reason}
+$M$において，iteration $j(\mathbb{P})$に関して$j(\mathbb{P})_{j(\kappa)}=j(\mathbb{P}_\kappa)$は$j(\mathbb{P})_{\kappa+1}$より後ろのstageより，標準的な完備埋め込みが取れるから，これに関して$M$で分解定理を適用すれば良い．
+\end{reason}
+\end{itemize}
+\end{enumerate}
+
+以上を踏まえて，hyperuniverse上で議論する．
+目標は任意の$\be{G_\kappa}{$(\mathbb{P}_\kappa,V)$-generic filter}$に対して
+\[
+  V[G_\kappa]\models\forall \be{\mathcal{D}}{$<\kappa$-sequence of dense subsets of $\dot{\mathbb{Q}}_{G_\kappa}$}\exists \be{F}{filter on $\dot{\mathbb{Q}}_{G_\kappa}$}\forall \alpha\in \dom(\mathcal{D})(F\cap {\mathcal{D}}_\alpha\neq \varnothing)
+\]
+を示すことであった．
+\begin{enumerate}
+\item[$3^\circ$] 初等埋め込みの持ち上げ：\\
+$\be{H}{$(\dot{\mathbb{Q}}_{G_\kappa},V[G_\kappa])$-generic filter}$と$\be{K}{$(\dot{\mathbb{R}}_{G_\kappa*^M H},M[G_\kappa*^M H])$-generic filter}$とを取って固定する．$(G_\kappa*^M H)*^M K$に対応する$(j(\mathbb{P}_\kappa),M)$-generic filterを$j(G_\kappa)$と書く．
+\begin{itemize}
+   \item[$\checkmark$] $j\img G_\kappa\subseteq j(G_\kappa)$
+   \begin{reason}
+$\mathbb{P}_\kappa$はdirect limitであったから，その元はある$\alpha<\kappa$と$p\in \mathbb{P}_\alpha$に対して$p^\frown 1_\kappa|[\alpha,\kappa)$の形で書ける．よって$j(p^\frown 1_\kappa|[\alpha,\kappa))=j(p)^\frown j(1_\kappa|[\alpha,\kappa))=p^\frown j(1)_{j(\kappa)}|[\alpha,j(\kappa))$である．よって$p^\frown 1_\kappa|[\alpha,\kappa)\in G_\kappa$に対して$j(p)$に対応する$(\mathbb{P}_\kappa*^M\dot{\mathbb{Q}})*\dot{\mathbb{R}}$の元$\langle\langle p^\frown 1_\kappa|[\alpha,\kappa),j(1)_{j(\kappa)}(\kappa)\rangle,j(1)_{j(\kappa)}|[\kappa+1,j(\kappa))\rangle$は$(G_\kappa*^M H)*K$に属するから，$j(p)\in j(G_\kappa)$．
+\end{reason}
+       
+    \item[$\checkmark$] $j:V\xrightarrow{\prec}_\kappa M$は$j:V[G_\kappa]\xrightarrow{\prec}_\kappa M[j(G_\kappa)]=M[G_\kappa][H][K];\dot{x}_{G_\kappa}\mapsto j(\dot{x})_{j(G_\kappa)}$に拡張できる．
+    \begin{reason}
+$V[G_\kappa]\models \Phi[\overrightarrow{\dot{x}}_{G_\kappa}]$ならば，ある$p\in \mathbb{P}_\kappa$に対して$V\models p\forces\text{``$\Phi(\overrightarrow{\dot{x}})$''}$より，$M\models j(p)\forces\text{``$\Phi(\overrightarrow{j(\dot{x})})$''}$．$j(p)\in j\img G_\kappa\subseteq j(G_\kappa)$より，$M[j(G_\kappa)]\models \Phi[\overrightarrow{j(\dot{x})_{j(G_\kappa)}}]$となる．これが元の$j$の拡張となるのは，$x\in V$の標準名称が$j$によって$j(x)\in M$の標準名称に写ることから明らか．
+\end{reason}
+\end{itemize}
+\end{enumerate}
+
+したがって，目標を示すには，$\be{\mathcal{D}\in V[G_\kappa]}{$<\kappa$-sequence of dense subsets of $\dot{\mathbb{Q}}_{G_\kappa}$}$ごとに
+\[
+  M[j(G_\kappa)]\models\exists \be{F}{filter on $j(\dot{\mathbb{Q}}_{G_\kappa})$}\forall \alpha\in j(\dom(\mathcal{D}))(F\cap j(\mathcal{D}){}_\alpha\neq \varnothing)
+\]
+を示せば良い．ここで$\dom(\mathcal{D})<\kappa$に注意して$j(\mathcal{D})=\langle j(\mathcal{D}_\alpha):\alpha\in \dom(\mathcal{D})\rangle$であるから，絶対性より，以下を満たす$F\in M[j(G_\kappa)]$を見つければ良い：
+\[
+\be{F}{filter on $j(\dot{\mathbb{Q}}_{G_\kappa})$}\land \forall \alpha\in \dom(\mathcal{D})(F\cap j(\mathcal{D}_\alpha)\neq \varnothing)
+\]
+\begin{statement}
+$j(\dot{\mathbb{Q}}_{G_\kappa})$のフィルター基$j\img H$の生成するフィルター$F$が望むものとなる：
+\end{statement}
+\begin{proof}
+$H$は定め方より$(\dot{\mathbb{Q}}_{G_\kappa},V[G_\kappa])$-generic fiter．よって$j\img H$は$j(\dot{\mathbb{Q}}_{G_\kappa})$のフィルター基かつ$\forall \alpha\in \dom(\mathcal{D})(j\img H\cap j(\mathcal{D}_\alpha)\neq \varnothing)$．
+あとは$F\in M[j(G_\kappa)]$を見れば良く，それには$j\img H\in M[j(G_\kappa)]$を示せば良い．$V\models {}^\lambda M\subseteq M$より$j|\mathrm{trcl}(\dot{\mathbb{Q}})\in M$であるから，$G_\kappa,j(G_\kappa)\in M[j(G_\kappa)]=M[G_\kappa][H][K]$に注意して，$j|\dot{\mathbb{Q}}_{G_\kappa}\in M[j(G_\kappa)]$．さらに$\dot{\mathbb{Q}}_{G_\kappa}\supseteq H\in M[G_\kappa][H][K]=M[j(G_\kappa)]$でもあるから，$j\img H\in M[j(G_\kappa)]$．
+\end{proof}
+
+以上より，$\mathbb{P}_\kappa\forces\text{``$\mathrm{PFA}$''}$が結論される．
+\end{proof}
+
+\section{PFAの無矛盾性の下界について}
+
+Blue-Larson-Sargsyanによるプレプリント\cite{blue2026failuresquareuncountablecardinals}のイントロダクションでは，研究状況について次のように述べられている．$\mathrm{Con}(\ZFC+\mathrm{PFA})$から$\mathrm{Con}(\ZFC+\exists\text{スーパーコンパクト基数})$が導かれるかどうかは，未解決である．これまでにTodorčevićによって，$\ZFC$の下で
+\begin{equation}
+\mathrm{PFA}\implies \forall \be{\kappa}{uncountable cardinal}(\neg \square_\kappa)
+\end{equation}が示されており，これまで，この$\ZFC+\forall \be{\kappa}{uncountable cardinal}(\neg \square_\kappa)$の無矛盾性はかなり強いと考えられていた．このことが$\mathrm{Con}(\ZFC+\mathrm{PFA})$から$\mathrm{Con}(\ZFC+\exists\text{スーパーコンパクト基数})$が導けるのではないかという期待の大きな根拠になっていた．
+
+同じく\cite{blue2026failuresquareuncountablecardinals}のイントロダクションにおいて，当プレプリント内で，$\ZFC+\forall \be{\kappa}{uncountable cardinal}(\neg \square_\kappa)$の無矛盾性がスーパーコンパクト基数の存在の無矛盾性よりもかなり弱いことを示したと述べられている．
+
+
+\begin{thebibliography}{Kun11}
+
+\bibitem[Bau83]{MR823775}
+James~E. Baumgartner, \emph{Iterated forcing}, Surveys in set theory, London Math. Soc. Lecture Note Ser., vol.~87, Cambridge Univ. Press, Cambridge, 1983, pp.~1–59. 
+
+\bibitem[BLS26]{blue2026failuresquareuncountablecardinals}
+Douglas Blue, Paul Larson, and Grigor Sargsyan, \emph{The failure of square at all uncountable cardinals is weaker than a woodin limit of woodin cardinals}, 2026.
+
+\bibitem[Jec03]{MR1940513}
+Thomas Jech, \emph{Set theory}, millennium ed., Springer Monographs in Mathematics, Springer-Verlag, Berlin, 2003. 
+
+\bibitem[Kan94]{MR1321144}
+Akihiro Kanamori, \emph{The higher infinite}, Perspectives in Mathematical Logic, Springer-Verlag, Berlin, 1994, Large cardinals in set theory from their beginnings. 
+
+\bibitem[Kun11]{MR2905394}
+Kenneth Kunen, \emph{Set theory}, Studies in Logic (London), vol.~34, College Publications, London, 2011. 
+
+\bibitem[Lav78]{MR472529}
+Richard Laver, \emph{Making the supercompactness of {$\kappa $} indestructible under {$\kappa $}-directed closed forcing}, Israel J. Math. \textbf{29} (1978), no.~4, 385–388. 
+
+\end{thebibliography}
+

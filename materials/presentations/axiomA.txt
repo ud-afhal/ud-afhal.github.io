@@ -1,0 +1,200 @@
+\title{axiom A forcingの可算台反復に関する発表ノート}
+\date{2026-10-27}
+\author{Ud.afhal}
+\section{axiom A forcingの可算台反復の古典的結果}
+\begin{definition}
+forcing poset $\mathbb{P}$がaxiom Aを満たすとは，
+$\mathbb{P}$上の順序からなる列$\langle \leq_n:n<\omega\rangle$で次を満たすものが取れることをいう：
+\begin{enumerate}
+\item $\leq_0=\leq_{\mathbb{P}}$
+\item $p\leq_{n+1}q\implies p\leq_{n}q$
+\item 任意のfusion sequence $\langle p_n:n<\omega\rangle$，すなわち$\forall n<\omega(p_{n+1}\leq_n p_n)$を満たすものに対して，fusion $q\in\mathbb{P}$，すなわち$\forall n<\omega(q\leq_n p)$なるものが取れる．
+\item 任意の$\mathbb{P}$のantichain $A$と$p\in\mathbb{P}$，$n<\omega$に対して，$q\leq_n p$で$|\set{a\in A:a\parallel q}|\leq\omega$なるものが取れる．
+\end{enumerate}
+\end{definition}
+\begin{definition}\label{def:induced-orders}
+$\langle \mathbb{P}_\xi:\xi\leq\alpha\rangle$をaxiom A forcing notionの可算台反復とする．
+$\xi<\alpha$ごとに，$\dot{\mathbb{Q}}_\xi$がaxiom A forcing notionであることを保証する順序列の$\mathbb{P}_\xi$-name $\langle \dot{\leq}^\xi_n:n<\omega\rangle$を取って固定する．
+
+$F\in[\alpha]^{<\omega}$，$n<\omega$に対して，$\mathbb{P}_\alpha$上の順序$\leq_{F,n}$が以下で定義される：
+\[
+p\leq_{F,n} q\iff p\leq q\land \forall \xi\in F(p|\xi\forces\text{``$p(\xi)\dot{\leq}^\xi_nq(\xi)$''})
+\]
+\end{definition}
+\begin{lemma}\label{th:fusion}
+定義\ref{def:induced-orders}と同じ仮定をおく．
+$\langle \langle p_n,F_n\rangle:n<\omega\rangle$がfusion sequence，すなわち，以下を満たすとする：
+\begin{enumerate}
+\item $F_n\subseteq F_{n+1}$
+\item $\bigcup_{n<\omega}F_n=\bigcup_{n<\omega}\mathrm{supt}(p_n)$
+\item $p_{n+1}\leq_{F_n,n}p_n$
+\end{enumerate}
+このとき，$q\in\mathbb{P}_\alpha$ s.t. $\mathrm{supt}(q)=\bigcup_{n<\omega}\mathrm{supt}(p_n)$で$\forall n<\omega(q\leq_{F_n,n}p_n)$なるものが取れる．
+\end{lemma}
+\begin{proof}
+$q\in\mathbb{P}_\alpha$を，$\mathrm{supt}(q|\beta)=\bigcup_{n<\omega}\mathrm{supt}(p_n|\beta)$かつ$\forall n<\omega(q|\beta\leq_{F_n\cap\beta,n}p_n|\beta)$を満たすように$\beta\leq \alpha$について再帰的に以下で構成する：
+\begin{enumerate}
+\item $\beta=0$のとき，明らか．
+\item $\beta=\gamma+1$のとき，帰納法の仮定より$q|\gamma\in\mathbb{P}_\gamma$かつ$\mathrm{supt}(q|\gamma)=\bigcup_{n<\omega}\mathrm{supt}(p_n|\gamma)$かつ$\forall n<\omega(q|\gamma\leq_{F_n\cap\beta,n}p_n|\gamma)$．
+\begin{enumerate}
+\item[Case I] $\gamma\notin\bigcup_{n<\omega}\mathrm{supt}(p_n)$ならば，$q|\gamma+1=q|\gamma^\frown 1|[\gamma,\gamma+1)$とすればこれは望む条件を満たす．
+\item[Case II] $\gamma\in \bigcup_{n<\omega}\mathrm{supt}(p_n)$ならば，$\gamma\in F_{n_0}$なる$n_0<\omega$が取れる．帰納法の仮定ならびにfusion sequenceの定義より，このとき任意の$n\geq n_0$に対して
+\[
+q|\gamma\leq p_{n+1}|\gamma\forces\text{``$p_{n+1}(\gamma)\dot{\leq}^\gamma_n p_n(\gamma)$''}
+\]
+\end{enumerate}
+より
+\[
+q|\gamma\forces\text{``$\be{\langle p_n(\gamma):n\geq n_0\rangle^*}{fusion sequence of $\dot{\mathbb{Q}}_\xi$}$''}
+\]
+
+であるから， $\dot{\mathbb{Q}}_\xi$がaxiom A forcing notionであることから，$\dot{r}$を
+\[
+q|\gamma\forces\text{``$\be{\dot{r}}{fusion of $\langle p_n(\gamma):n\geq n_0\rangle^*$}$''}
+\]
+と取ることができる．そこで$q|\gamma+1$を$q(\gamma)=\dot{r}$と定めれば，これは望む条件を満たす．
+\item $\be{\beta}{limit}$のとき，可算台反復であるのに注意して，帰納法の仮定より$q|\beta\in\mathbb{P}_\beta$．これが望む条件を満たすのは，帰納法の仮定よりただちに従う．
+\end{enumerate}
+\end{proof}
+\begin{lemma}\label{th:antichain}
+定義\ref{def:induced-orders}と同じ仮定をおく．任意の$\mathbb{P}_\alpha$のantichain $A$と$p\in\mathbb{P}$，$F\in[\alpha]^{<\omega}$，$n<\omega$に対して，$q\leq_{F,n} p$で$|\set{a\in A:a\parallel q}|\leq\omega$なるものが取れる．
+\end{lemma}
+\begin{proof}
+$\beta\leq\alpha$に関する帰納法によって次を示す：
+\begin{enumerate}
+\item $\mathbb{P}_\beta\forces\text{``$\dot{x}\in \check{V}$''}$ならば，任意の$p\in\mathbb{P}_\beta$と$F\in[\beta]^{<\omega}$，$n<\omega$に対して，$q\leq_{F,n}p$と$\be{X}{countable}$で$q\forces\text{``$\dot{x}\in X$''}$なるものが取れる．
+\item $\mathbb{P}_\beta\forces\text{``$\be{\dot{X}\subseteq\check{V}}{countable}$''}$ならば，任意の$p\in\mathbb{P}_\beta$と$F\in[\beta]^{<\omega}$，$n<\omega$に対して，$q\leq_{F,n}p$と$\be{X}{countable}$で$q\forces\text{``$\dot{X}\subseteq X$''}$なるものが取れる．
+\item $\gamma\leq\alpha$，$\mathbb{P}_\beta\forces\text{``$\dot{f}\in\dot{\mathbb{P}}_{\beta,\gamma}$''}$ならば，任意の$p\in\mathbb{P}_\beta$と$F\in[\beta]^{<\omega}$，$n<\omega$に対して，$q\leq_{F,n}p$と$q^\frown f\in\mathbb{P}_\gamma$で$q\forces\text{``$\dot{f}\equiv f$''}$なるものが取れる．
+\end{enumerate}
+\begin{phase}
+\item 初めに，固定した$\beta\leq\alpha$に対して，1$\implies$ 2,3であるのを示す．
+\begin{enumerate}
+\item[1$\implies$2:]$\langle \dot{y}_n:n<\omega\rangle$を$\mathbb{P}_\beta\forces\text{``$\dot{X}\subseteq\set{\dot{y}_n:n<\omega}^*$''}$なるものと取って固定する．$p\in\mathbb{P}_\beta$と$F\in[\beta]^{<\omega}$，$m<\omega$を任意に取る．
+
+$\langle \langle p_k,X_k,\langle\zeta^k_n:n<\omega\rangle,F_k\rangle:k\geq m\rangle$を，bookkeepingによって再帰的に以下で定義する：
+\begin{enumerate}
+\item[(i)] $p_m:=p$，$X_m=\varnothing$とする．$\mathrm{supt}(p_{m})$の列挙$\langle \zeta^{m}_n:n<\omega\rangle$を選ぶ．$F_{m}:=F$とおく．
+\item[(ii)] $p_{k+1}\leq_{F_k,k}p_k$と$\be{X_{k+1}}{countable}$を，(1)より$p_{k+1}\forces\text{``$\dot{y}_{k-m}\in X_{k+1}$''}$なるように取る．$\mathrm{supt}(p_{k+1})$の列挙$\langle \zeta^{k+1}_n:n<\omega\rangle$を選ぶ．
+
+$F_{k+1}\subseteq F_k$を，各$i\leq k+1$に対して$\mathrm{supt}(p_i)=\set{ \zeta^i_n:n<\omega}$のうち，まだ$F_n$に含まれていない最小の添え字のものを一つずつ加えたものとする．
+\end{enumerate}
+構成より$\langle\langle p_n,F_n\rangle:n\in\omega\setminus m\rangle$はfusion sequenceである．故にこのfusion $q$を取ることができて，このとき構成より$p\geq_{F,m} q\forces\text{``$\dot{X}\subseteq\bigcup_{k\in\omega\setminus m}X_k$''}$．故にこの$q$，$X=\bigcup_{k\in\omega\setminus m}X_k$が望むものである．
+
+\item[2$\implies$3:]$\gamma\leq\alpha$，$\mathbb{P}_\beta\forces\text{``$\dot{f}\in\dot{\mathbb{P}}_{\beta,\gamma}$''}$とする．$p\in\mathbb{P}_\beta$と$F\in[\beta]^{<\omega}$，$n<\omega$を任意に取る．
+
+$\mathbb{P}_\beta\forces\text{``$\be{\mathrm{supt}(\dot{f})}{countable}$''}$より，
+$q\leq_{F,n}p$と$\be{X\subseteq\gamma}{countable}$で$q\forces\text{``$\mathrm{supt}(\dot{f})\subseteq X$''}$なるものが取れる．
+
+$q^{\frown}f\in \mathbb{P}_\gamma$なる$f$を次で定義する：
+\begin{enumerate}
+\item[(i)] $\xi\notin X$ならば，$f|[\xi,\xi+1)=1|[\xi,\xi+1)$
+\item[(ii)] $\xi\in X$ならば，$q^{\frown} 1|[\beta,\xi)\forces\text{``$f(\xi)= (\dot{f}_{\dot{G}_\beta}(\xi))_{\dot{G}_{\xi}}\in\dot{\mathbb{Q}}_\xi$''}$
+\end{enumerate}
+可算台反復であるのに注意して，このとき$q^\frown f\in\mathbb{P}_\gamma$．定義より$q\forces\text{``$\dot{f}\equiv f$''}$である．
+
+%↑ここしっかり確認！！！！
+\end{enumerate}
+\item 1${}^{\circ}$を踏まえて，帰納法によって$\beta\leq\alpha$で1が成り立つのを示す．
+\begin{enumerate}
+\item[Case I] $\beta=\gamma+1$のとき，$\mathbb{P}_\beta\ni  p\forces\text{``$\dot{x}\in\check{V}$''}$ならば，$p|\gamma\forces\text{``$\dot{\mathbb{Q}}_\gamma\ni p(\gamma)\forces\text{``$\dot{x}_{\dot{G}_\gamma*\dot{H}_\gamma}\in\check{V}$''}$''}$である．$\dot{\mathbb{Q}}_\xi$はaxiom A forcing notionより，
+\[
+p|\gamma\forces\text{``$\be{\dot{X}\subseteq{\check{V}}}{countable}\land p(\gamma)\dot{\geq}^\gamma_n \dot{q}\forces\text{``$\dot{x}_{\dot{G}_\gamma*\dot{H}_\gamma}\in\dot{X}$''}$''}
+\]
+なる$\dot{X}$，$\dot{q}$が取れる．すると，帰納法の仮定より，$q'\leq_{F\cap\gamma,n} p|\gamma$と$\be{X}{countable}$で，以下を満たすものが取れる：
+\[
+q'\forces\text{``$\dot{X}\subseteq X\land p(\gamma)\dot{\geq}^\gamma_n \dot{q}\forces\text{``$\dot{x}_{\dot{G}_\gamma*\dot{H}_\gamma}\in\dot{X}$''}$''}
+\]
+よって，
+\[
+q'\forces\text{``$p(\gamma)\dot{\geq}^\gamma_n \dot{q}\forces\text{``$\dot{x}_{\dot{G}_\gamma*\dot{H}_\gamma}\in X$''}$''}
+\]
+このとき，$q:=q'^\frown \dot{q}\leq_{F,n}p$に対して，$q\forces\text{``$\dot{x}\in X$''}$となる．
+\item[Case II] $\be{\beta}{limit}$のとき，$F\subseteq\gamma<\beta$を取って固定する．
+$\mathbb{P}_\beta\ni  p\forces\text{``$\dot{x}\in\check{V}$''}$ならば，$p|\gamma\forces\text{``$p|[\gamma,\beta)\forces\text{``$\dot{x}_{\dot{G}_\gamma*\dot{G}_{\gamma,\beta}}\in\check{V}$''}$''}$である．したがって，$\dot{y},\dot{f}$で
+\[
+p|\gamma\forces\text{``$\dot{y}\in\check{V}\land p|[\gamma,\beta)\dot{\geq}_{\gamma,\beta}\dot{f}\forces\text{``$\dot{x}_{\dot{G}_\gamma*\dot{G}_{\gamma,\beta}}=\dot{y}$''}$''}
+\]
+なるものが取れる．帰納法の仮定より，$q'\leq_{F,n}p|\gamma$と$q'^\frown f\in\mathbb{P}_\beta$で$q\forces\text{``$\dot{f}\equiv f$''}$なるものが取れる．このとき
+
+\[
+q'\forces\text{``$\dot{y}\in\check{V}\land p|[\gamma,\beta)\dot{\geq}_{\gamma,\beta}f\forces\text{``$\dot{x}_{\dot{G}_\gamma*\dot{G}_{\gamma,\beta}}=\dot{y}$''}$''}
+\]
+さらに帰納法の仮定より，$q''\leq_{F,n}q'$と$\be{X}{countable}$が取れて，
+\[
+q''\forces\text{``$\dot{y}\in X\land p|[\gamma,\beta)\dot{\geq}_{\gamma,\beta}f\forces\text{``$\dot{x}_{\dot{G}_\gamma*\dot{G}_{\gamma,\beta)}}=\dot{y}$''}$''}
+\]
+以上より，$q''^{\frown}f\in\mathbb{P}_\beta$について
+\[
+p\geq_{F,n}q''^\frown f\forces\text{``$\dot{x}\in X$''}
+\]
+\end{enumerate}
+\end{phase}
+$\mathbb{P}_\alpha$のmaximal antichain $A$を任意に取って，$\dot{x}$を$\forall a\in A(a\forces\text{``$\dot{x}=a\in\check{V}$''})$なるように定める．このとき，任意の$p\in\mathbb{P}_\alpha$と$F\in[\beta]^{<\omega}$，$n<\omega$に対して，1より，$q\leq_{F,n}p$と$\be{X}{countable}$で$q\forces\text{``$\dot{x}\in X$''}$なるものが取れる．このとき$\set{a\in A:a\parallel q}\subseteq X$．これが望む主張であった．
+\end{proof}
+\begin{corollary}
+axiom A forcing notionsの可算台反復で得られるforcing posetは，$\omega_1$を保つ．
+\end{corollary}
+%↑分離的なの仮定しなくていいんだっけ？？？？？？？？？
+\section{axiom A forcingの可算台反復による保存}
+定義\ref{def:induced-orders}と同じ仮定をおく．また，$\mathbb{P}_0\forces\text{``$\be{\dot{\mathbb{Q}}_0}{atomless}$''}$として一般性は崩れない．$\langle \leq_{F,n}:F\in[\alpha]^{<\omega},n<\omega\rangle$を用いて，$\mathbb{P}_{\alpha}$がaxiom Aを満たすことのwitnessとなる$\langle \leq_n:n<\omega\rangle$を定義したい．
+\begin{definition}
+写像$f:X\to Y$がfinite-to-oneであるとは，$\forall y\in Y(|f^{-1}\set{y}|<\omega)$であることをいう．
+\end{definition}
+\begin{remark}
+$|\set{f\in{}^\omega\omega:\be{f}{finite-to-one}}|=2^\omega$である．
+\end{remark}
+
+$p\in\mathbb{P}_\alpha$ごとに，$f_p:\mathrm{supt(p)}\xrightarrow{\text{finite-to-one}} \omega$が決まっているとする．
+\begin{equation}
+p\leq_0 q:\iff p\leq_{\mathbb{P}_\alpha} q
+\end{equation}
+$n>0$に対して
+\begin{equation}
+p\leq_n q:\iff f_p\subseteq f_q\land f_p^{-1}n+1=f_q^{-1}n+1\land p\leq_{f_q^{-1}n+1,n}q
+\end{equation}
+\begin{enumerate}
+\item[$\checkmark$]$\leq_n$は推移的かつ反射的
+\item[$\checkmark$]$p\leq_{n+1}q\implies p\leq_n q$
+\end{enumerate}
+次の主張が成り立っていると仮定する：
+\begin{statement}\label{th:main}
+$q\in\mathbb{P}_\alpha$，$f:\mathrm{supt}(q)\xrightarrow{\text{finite-to-one}}\omega$ s.t. $f(0)=0$とする．このとき，$q'\in\mathbb{P}_\alpha$で，次を満たすものが取れる：
+\begin{equation}
+f_{q'}=f\land\forall p\in\mathbb{P}_{\alpha}\forall n<\omega(q\equiv_{F,n} q')
+\end{equation}
+\end{statement}
+\begin{enumerate}
+\item[$\checkmark$]任意のfusion sequenceに対してfusionが取れる．
+\begin{reason}
+fusion sequence $\langle p_n:n<\omega\rangle$を任意に取る．
+\[
+p_{n+1}\leq_n p_n\iff f_{p_{n+1}}\supseteq f_{p_n}\land f^{-1}_{p_{n+1}}n+1=f^{-1}_{p_{n}}n+1\land p_{n+1}\leq_{f_{p_{n}}^{-1}n+1,n} p_n
+\]
+$f:=\bigcup_{n<\omega}f_{p_n}$とすれば，$\dom(f)=\bigcup_{n<\omega}\mathrm{supt}(p_n)$かつ$f(0)=0\land\forall n<\omega(f^{-1}n+1=f_{p_n}^{-1}n+1)$．
+
+\[\bigcup_{n<\omega}f_{p_n}^{-1}k+1=\bigcup_{n<\omega}f^{-1}n+1=\dom(f)=\bigcup_{n<\omega}\mathrm{supt}(p_n)
+\]
+より，$\langle\langle p_n,f_{p_{n}}^{-1}n+1\rangle:n<\omega\rangle$はfusion sequenceである．よって，補題\ref{th:fusion}よりfusion $q\in\mathbb{P}_\alpha$ s.t. $\mathrm{supt}(q)=\dom(f)$が取れる．
+
+主張\ref{th:main}より，$q'\in\mathbb{P}_\alpha$で$f_{q'}=f\land\forall n<\omega(q'\leq_{f_{p_{n}}^{-1}n+1,n}p_n)$なるものが取れる．定義より，$q'$は$\langle p_n:n<\omega\rangle$のfusionである．
+\end{reason}
+\item[$\checkmark$]任意の$\mathbb{P}_\alpha$のantichain $A$と$p\in\mathbb{P}_\alpha$，$n<\omega$に対して，$q\leq_n p$で$|\set{a\in A:a\parallel q}|\leq\omega$なるものが取れる．
+\begin{reason}
+補題\ref{th:antichain}より，$q\leq_{f_{p}^{-1}n+1,n}p$で$|\set{a\in A:a\parallel q}|\leq\omega$なるものが取れる．$\mathrm{supt}(q)\subseteq \mathrm{supt}(p)$として一般性は崩れない．$f_p\subseteq f:\mathrm{supt}(q)\xrightarrow{\text{finite-to-one}}\omega$を$f^{-1}n+1=f_p^{-1}n+1$なるものと取る．主張\ref{th:main}より，$q'\in\mathbb{P}_\alpha$で$f_{q'}=f\land q'\equiv_{f_{p}^{-1}n+1,n} q$なるものが取れる．このとき$q'\leq_n p$かつ$|\set{a\in A:a\parallel q'}|\leq\omega$．
+\end{reason}
+\end{enumerate}
+このとき，$\mathbb{P}_\alpha$はaxiom Aを満たす．
+
+以上より，$\langle f_p:p\in\mathbb{P}_\alpha\rangle$を，主張\ref{th:main}を満たすように取れるのを示せば良いが，これは組み合わせ論的な議論によって結論できる：$q\in\mathbb{P}_\alpha$に対して，各項を同じ元を表すnameたちで取り替えることで，$f_q$が$\set{f\in{}^{\mathrm{supt}(q)}\omega:\be{f}{finite-to-one}\land 0\in\dom(f)\to f(0)=0}$全体を動くように定義すれば良い．取り替えが十分に取れるのは，$\dot{\mathbb{Q}}_0$がatomless forcing notionであることによる．
+
+以上より，主定理が得られる：
+\begin{theorem}[Koszmider]
+axiom A forcing notionsの可算台反復はaxiom A forcing posetである．
+\end{theorem}
+
+\begin{thebibliography}{Bau83}
+\bibitem{Bau83} J.~E. Baumgartner, Iterated forcing, in \textit{Surveys in set theory}, 1--59, London Math. Soc. Lecture Note Ser., 87, Cambridge Univ. Press, Cambridge, ; MR0823775
+
+\bibitem{Kos93} P. Koszmider, On coherent families of finite-to-one functions, J. Symbolic Logic \textbf{58} (1993), no.~1, 128--138; MR1217181
+\end{thebibliography}
+
