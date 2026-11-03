@@ -1966,7 +1966,6 @@ function buildPublicHTML(result) {
   <title>${escapeHTML(title)}</title>
   ${result.author ? `<meta name="author" content="${escapeHTML(result.author)}">` : ""}
   <link rel="stylesheet" href="${escapeHTML(SITE.stylesheetUrl)}">
-  <link rel="stylesheet" href="/materials/compiler/document.css">
   <script defer src="/materials/compiler/mathjax-config.js"></script>
   <script id="mathjax-loader" defer src="/MathJax-4.1.3/tex-chtml.js"></script>
   <script defer src="/materials/compiler/document-runtime.js"></script>
