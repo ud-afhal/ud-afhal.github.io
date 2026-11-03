@@ -3,504 +3,3165 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>資料エディター</title>
+  <title>Chicken-generic over Rice</title>
 
-  <link rel="stylesheet" href="/style.css">
-  <link rel="stylesheet" href="./compiler/document.css">
+  <!-- 変換処理・MathJax設定・ランタイムは mystyle.js に集約している。 -->
+  <script src="mystyle.js"></script>
+  <script>
+    window.MathJax = Mystyle.createMathJaxConfig();
+  </script>
 
-  <script defer src="./compiler/mathjax-config.js"></script>
+  <!-- src は mystyle.js の MATHJAX_URL と同じにする。 -->
   <script
     id="mathjax-loader"
     defer
     src="/MathJax-4.1.3/tex-chtml.js"
   ></script>
-  <script defer src="./compiler/document-runtime.js"></script>
 
-  <style>
-    .editor-toolbar {
+  <style id="public-styles">
+    :root {
+      --site-background: #f5eded;
+      --site-ink: #202020;
+      --site-border: #8d8585;
+      --site-link: #0000ee;
+      --site-visited: #a00000;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: auto;
+    }
+
+    body {
+      margin: 0;
+      background: var(--site-background);
+      color: var(--site-ink);
+      font-family: Arial, "Yu Gothic", "Meiryo", sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .site-header {
+      padding: 10px 16px 0;
+      border-bottom: 1px solid var(--site-border);
+    }
+
+    .site-brand {
+      display: inline-block;
+      margin: 0 0 8px;
+      color: var(--site-ink);
+      text-decoration: none;
+    }
+
+    .site-brand img {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+    }
+
+    .site-brand-text {
+      font-weight: 600;
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding: 7px 0 12px;
+    }
+
+    .site-nav a,
+    .site-footer a,
+    .paper a,
+    .document-heading a {
+      color: var(--site-link);
+      text-decoration: underline;
+    }
+
+    .site-nav a:visited,
+    .site-footer a:visited,
+    .paper a:visited,
+    .site-nav a:hover,
+    .site-footer a:hover,
+    .paper a:hover {
+      color: var(--site-visited);
+    }
+
+    .document-heading {
+      margin: 0;
+      padding: 18px 16px 0;
+    }
+
+    .document-heading h1 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .document-meta {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      border-bottom: 1px solid #8d8585;
-    }
-    .editor-toolbar a { margin-right: auto; }
-    .editor-toolbar img { max-width: 100%; height: auto; }
-    button, input, select { font: inherit; }
-    button { padding: 6px 10px; cursor: pointer; }
-    button:disabled { cursor: not-allowed; }
-    .workspace {
-      max-width: 1600px;
-      margin: 14px auto;
-      padding: 0 16px;
-    }
-    .workspace-controls {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
-    }
-    .workspace-controls input[type="text"] { width: 15em; }
-    .workspace-controls select { max-width: 100%; }
-    #status, #diagnostics {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
+      gap: 8px;
+      color: #555;
       font-size: 13px;
     }
-    #status[data-error="true"] { color: #a00000; }
+
+    .meta-separator {
+      padding: 0 2px;
+    }
+
+    .paper {
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      padding: 16px;
+      color: #202020;
+      font-family: Arial, "Yu Gothic", "Meiryo", sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .paper h1,
+    .paper h2,
+    .paper h3 {
+      padding: 0;
+      border: 0;
+      font-family: inherit;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .paper h1 {
+      font-size: 1.35em;
+    }
+
+    .paper h2 {
+      margin-top: 1.5em;
+      font-size: 1.2em;
+    }
+
+    .paper h3 {
+      margin-top: 1.3em;
+      font-size: 1.08em;
+    }
+
+    .paper p {
+      margin: .8em 0;
+    }
+
+    .paper ul,
+    .paper ol {
+      margin: .8em 0;
+      padding-left: 1.8em;
+    }
+
+    .paper li {
+      margin: .25em 0;
+    }
+
+    .paper .section-number {
+      margin-right: .15em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .paper .math-display {
+      max-width: 100%;
+      min-width: 0;
+      padding: .25em 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .paper .math-display mjx-container[display="true"] {
+      max-width: 100%;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      overflow-x: auto;
+      overflow-y: hidden;
+      text-align: left !important;
+    }
+
+    .paper .theorem-box {
+      position: relative;
+      min-width: 0;
+      margin: 1.15em 0;
+      padding: 9px 14px 10px 18px;
+      border: 0;
+      background: transparent;
+    }
+
+    .paper .theorem-box::before {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 4px;
+      background: var(--bar, #2563eb);
+      content: "";
+    }
+
+    .paper .box-title {
+      margin-bottom: .3em;
+      font-family: inherit;
+      font-size: 1em;
+      font-weight: 700;
+    }
+
+    .paper .box-title .number {
+      margin-left: .25em;
+      font-weight: 500;
+    }
+
+    .paper .theorem-box:not(.proof-box) > .box-title {
+      display: inline;
+      margin-right: .8em;
+      margin-bottom: 0;
+    }
+
+    .paper .theorem-box:not(.proof-box) > .theorem-content {
+      display: contents;
+    }
+
+    .paper .theorem-box:not(.proof-box)
+      > .theorem-content
+      > p:first-child {
+      display: inline;
+    }
+
+    .paper .proof-box {
+      --bar: rgba(0, 0, 0, .28);
+      padding-top: 7px;
+      padding-bottom: 8px;
+    }
+
+    .paper details.proof-box > summary {
+      display: flex;
+      align-items: baseline;
+      gap: .5em;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+
+    .paper details.proof-box > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .paper details.proof-box > summary::before {
+      display: inline-block;
+      flex: 0 0 auto;
+      font-size: .9em;
+      content: "▸";
+      transition: transform .15s ease;
+    }
+
+    .paper details.proof-box[open] > summary::before {
+      transform: rotate(90deg);
+    }
+
+    .paper .proof-content {
+      min-width: 0;
+      padding-top: .25em;
+    }
+
+    .paper .proof-end {
+      margin-top: .4em;
+      font-size: 1.4em;
+      line-height: 1;
+      text-align: right;
+    }
+
+    .paper .reason-box {
+      position: relative;
+      width: 100%;
+      min-width: 0;
+      margin: 1em 0;
+      padding: .15em 1em;
+    }
+
+    .paper .reason-paren {
+      position: absolute;
+      top: 0;
+      width: .75em;
+      height: 100%;
+      overflow: visible;
+      color: #4b5563;
+      pointer-events: none;
+    }
+
+    .paper .reason-paren--left {
+      left: 0;
+    }
+
+    .paper .reason-paren--right {
+      right: 0;
+    }
+
+    .paper .reason-inner {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      align-items: start;
+      column-gap: .65em;
+      min-width: 0;
+    }
+
+    .paper .reason-prefix {
+      display: inline-flex;
+      align-items: baseline;
+      gap: .3em;
+      white-space: nowrap;
+    }
+
+    .paper .reason-because {
+      font-weight: 600;
+    }
+
+    .paper .reason-toggle {
+      display: inline-block;
+      margin: 0;
+      padding: 0 .08em;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      line-height: inherit;
+      cursor: pointer;
+      transform: rotate(90deg);
+      transform-origin: center;
+      transition: transform .15s ease;
+    }
+
+    .paper .reason-toggle:focus-visible,
+    .paper details.proof-box > summary:focus-visible {
+      outline: 2px solid #314a67;
+      outline-offset: 3px;
+    }
+
+    .paper .reason-text {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .paper .reason-text > :first-child {
+      margin-top: 0;
+    }
+
+    .paper .reason-text > :last-child {
+      margin-bottom: 0;
+    }
+
+    .paper .reason-text[hidden] {
+      display: none !important;
+    }
+
+    .paper .reason-box.is-collapsed {
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .paper .reason-box.is-collapsed > .reason-inner {
+      grid-template-columns: max-content;
+      column-gap: 0;
+    }
+
+    .paper .reason-toggle[aria-expanded="false"] {
+      transform: rotate(0deg);
+    }
+
+    .paper .table-of-contents {
+      margin: 1.25em 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .paper .table-of-contents h2 {
+      margin: .1em 0 .4em;
+      font-size: 1.1em;
+    }
+
+    .paper .table-of-contents ol {
+      margin: .2em 0;
+      padding-left: 1.5em;
+    }
+
+    .paper .table-of-contents ol ol {
+      margin: .1em 0;
+    }
+
+    .paper ol.phase {
+      padding-left: 2.4em;
+      list-style: none;
+      counter-reset: phase;
+    }
+
+    .paper ol.phase > li {
+      position: relative;
+      margin: .35em 0;
+      counter-increment: phase;
+    }
+
+    .paper ol.phase > li::before {
+      position: absolute;
+      left: -2.2em;
+      content: counter(phase) "°";
+    }
+
+    .paper li.custom-item {
+      list-style: none;
+    }
+
+    .paper li.custom-item::before {
+      content: none;
+    }
+
+    .paper .item-label {
+      margin-right: .6em;
+    }
+
+    .paper .item-body {
+      display: contents;
+    }
+
+    .paper .custom-item > .item-body > p:first-child {
+      display: inline;
+    }
+
+    .paper .bibliography {
+      margin-top: 2.5em;
+    }
+
+    .paper .bibliography h2 {
+      padding-bottom: 0;
+      border: 0;
+    }
+
+    .site-footer {
+      margin-top: 32px;
+      padding: 14px 16px 24px;
+      border-top: 1px solid var(--site-border);
+      color: #202020;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .site-footer p {
+      margin: 4px 0;
+    }
+
+    .back-to-top {
+      margin-top: 1.5em;
+    }
+
+    @media (max-width: 600px) {
+      .site-header,
+      .document-heading,
+      .paper,
+      .site-footer {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .site-nav {
+        gap: 12px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .paper .reason-toggle,
+      .paper details.proof-box > summary::before {
+        transition: none;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+      }
+
+      .paper {
+        visibility: visible !important;
+      }
+
+      .site-nav a,
+      .site-footer a,
+      .paper a,
+      .document-heading a {
+        color: #000 !important;
+        text-decoration: none;
+      }
+
+      .paper details.proof-box {
+        break-inside: avoid;
+      }
+
+      .paper details.proof-box:not([open]) > .proof-content {
+        display: block !important;
+      }
+
+      .paper .reason-text[hidden] {
+        display: block !important;
+      }
+
+      .paper .reason-box.is-collapsed {
+        width: 100%;
+      }
+
+      .paper .reason-box.is-collapsed > .reason-inner {
+        grid-template-columns: max-content minmax(0, 1fr);
+        column-gap: .65em;
+      }
+
+      .paper .reason-toggle {
+        visibility: hidden;
+      }
+
+      .site-header,
+      .site-footer {
+        border-color: #888;
+      }
+    }
+  </style>
+
+  <!--
+    目次・参考文献・公開ページ本文幅の追加スタイル。
+    共通CSSの保存時に基本スタイルと結合して書き出す。
+    生成する公開用HTMLには埋め込まず、外部の共通CSSから適用する。
+  -->
+  <style id="publication-styles">
+    .paper .table-of-contents ol,
+    .paper .table-of-contents li {
+      list-style: none;
+      counter-increment: none;
+    }
+
+    .paper .table-of-contents > ol {
+      padding-left: 0;
+    }
+
+    .paper .table-of-contents ol ol {
+      padding-left: 1.5em;
+    }
+
+    .paper .table-of-contents li::marker {
+      content: "";
+    }
+
+    .paper .table-of-contents li::before {
+      content: none;
+    }
+
+    .paper .bibliography ol.bibliography-list {
+      margin: .8em 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .paper .bibliography .bibliography-list > li.bibliography-entry {
+      display: grid;
+      grid-template-columns:
+        minmax(0, min(var(--bib-label-width, 8ch), 30%))
+        minmax(0, 1fr);
+      align-items: baseline;
+      column-gap: .85em;
+      margin: .8em 0;
+      padding: 0;
+      list-style: none;
+      counter-increment: none;
+    }
+
+    .paper .bibliography .bibliography-entry::marker {
+      content: "";
+    }
+
+    .paper .bibliography .bibliography-entry::before {
+      content: none;
+    }
+
+    .paper .bibliography .bib-label {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .paper .bibliography .bib-content {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .paper .bibliography .bib-content > :first-child {
+      margin-top: 0;
+    }
+
+    .paper .bibliography .bib-content > :last-child {
+      margin-bottom: 0;
+    }
+
+    .paper .bibliography .bib-content > p:first-child {
+      display: inline;
+    }
+
+    .paper .bibliography .backref {
+      margin-left: .4em;
+    }
+
+    .public-page .public-document {
+      width: 100%;
+      max-width: 52rem;
+      min-width: 0;
+      margin: 0 auto;
+      background-color: #fff;
+    }
+
+    .public-page .public-document > .document-heading,
+    .public-page .public-document > .paper {
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      margin-left: 0;
+      margin-right: 0;
+      padding-left: clamp(16px, 4vw, 32px);
+      padding-right: clamp(16px, 4vw, 32px);
+    }
+
+    .public-page .public-document > .document-heading {
+      padding-top: 24px;
+      overflow-wrap: anywhere;
+    }
+
+    .public-page .public-document > .paper {
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .public-page .paper .math-display,
+    .public-page .paper mjx-container[display="true"] {
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .public-page .paper pre {
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .public-page .paper img,
+    .public-page .paper video {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 600px) {
+      .public-page .public-document > .document-heading,
+      .public-page .public-document > .paper {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+    }
+
+    @media print {
+      .public-page .public-document {
+        max-width: none;
+      }
+
+      .public-page .public-document > .document-heading,
+      .public-page .public-document > .paper {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  </style>
+
+  <style id="editor-styles">
+    .editor-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-bottom: 10px;
+      background: var(--site-background);
+    }
+
+    .editor-toolbar .editor-logo-link {
+      display: block;
+      margin-right: auto;
+      flex-shrink: 0;
+    }
+
+    .editor-toolbar .editor-logo {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+    }
+
+    .editor-button {
+      padding: 7px 11px;
+      border: 1px solid var(--site-border);
+      border-radius: 2px;
+      background: transparent;
+      color: var(--site-ink);
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .editor-button.primary {
+      border-color: #314a67;
+      background: #314a67;
+      color: #fff;
+    }
+
+    .editor-button:hover {
+      filter: brightness(.97);
+    }
+
+    .editor-button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      filter: none;
+    }
+
+    .editor-button:focus-visible,
+    .workspace-field input:focus-visible,
+    .workspace-field select:focus-visible,
+    .workspace-checkbox input:focus-visible,
+    #source:focus-visible {
+      outline: 2px solid #314a67;
+      outline-offset: 2px;
+    }
+
+    .editor-workspace,
+    .syntax-guide {
+      max-width: 1600px;
+      margin: 14px auto 0;
+      padding: 0 16px;
+    }
+
+    .workspace-fields {
+      display: flex;
+      align-items: end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .workspace-field {
+      display: flex;
+      flex: 1 1 240px;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      color: #555;
+      font-size: 12px;
+    }
+
+    .workspace-field input,
+    .workspace-field select {
+      width: 100%;
+      min-width: 0;
+      padding: 8px;
+      border: 1px solid var(--site-border);
+      border-radius: 0;
+      background: #fff;
+      color: var(--site-ink);
+      font: 14px Arial, "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    .workspace-drafts {
+      flex-basis: 360px;
+    }
+
+    .workspace-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 38px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .workspace-checkbox input {
+      width: 1em;
+      height: 1em;
+      margin: 0;
+    }
+
+    .workspace-statuses {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 20px;
+      margin-top: 8px;
+    }
+
+    .workspace-statuses p,
+    .workspace-operation,
+    .workspace-note {
+      margin: 4px 0;
+      color: #555;
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .workspace-operation:empty {
+      display: none;
+    }
+
+    .editor-workspace [data-state="ok"] {
+      color: #237a3b;
+    }
+
+    .editor-workspace [data-state="warning"] {
+      color: #9a6700;
+    }
+
+    .editor-workspace [data-state="error"] {
+      color: #a00000;
+    }
+
+    .workspace-recovery {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border: 1px solid var(--site-border);
+      background: #fff;
+    }
+
+    .workspace-recovery[hidden] {
+      display: none;
+    }
+
+    .workspace-recovery h2 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+
+    .workspace-recovery p {
+      margin: 6px 0 10px;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .workspace-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
     .layout {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       align-items: start;
       gap: 16px;
       max-width: 1600px;
-      margin: auto;
+      margin: 0 auto;
       padding: 16px;
     }
-    .panel { min-width: 0; border: 1px solid #8d8585; background: white; }
-    .panel > h2 {
+
+    .panel {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--site-border);
+      background: #fff;
+    }
+
+    .panel > .panel-title {
       margin: 0;
       padding: 10px 14px;
-      border-bottom: 1px solid #8d8585;
+      border-bottom: 1px solid var(--site-border);
+      background: var(--site-background);
       font-size: 14px;
+      font-weight: 600;
     }
+
     #source {
       display: block;
       width: 100%;
-      min-height: 75vh;
-      padding: 16px;
+      min-height: 78vh;
+      padding: 18px;
       border: 0;
-      resize: vertical;
-      font: 16px/1.65 ui-monospace, Consolas, monospace;
+      border-radius: 0;
+      color: #24292f;
+      background: #fff;
+      font: 16px/1.65 ui-monospace, SFMono-Regular, Consolas, monospace;
       tab-size: 2;
+      resize: vertical;
+      -webkit-text-size-adjust: 100%;
     }
-    #diagnostics { padding: 0 14px; }
-    #preview { min-height: 20em; }
-    .editor-guide { line-height: 1.7; }
-    :focus-visible { outline: 2px solid #314a67; outline-offset: 2px; }
+
+    #source[readonly] {
+      cursor: default;
+    }
+
+    .preview-wrap {
+      min-height: 60vh;
+      background: #fff;
+    }
+
+    .syntax-guide > details {
+      border: 1px solid var(--site-border);
+      background: transparent;
+    }
+
+    .syntax-guide > details > summary {
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .syntax-note {
+      margin: 10px 14px 14px;
+      color: #555;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .syntax-content {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0 14px 14px;
+    }
+
+    .syntax-group {
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid #c8bebe;
+    }
+
+    .syntax-group h3 {
+      margin: 0 0 7px;
+      font-size: 13px;
+    }
+
+    .syntax-group p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .syntax-group code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      overflow-wrap: anywhere;
+    }
+
+    .hint,
+    .diagnostics {
+      padding: 10px 14px;
+      border-top: 1px solid #d8d5cc;
+      color: #555;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .diagnostics:empty {
+      display: none;
+    }
+
+    .diagnostics p {
+      margin: 4px 0;
+    }
+
+    .diagnostics .warning {
+      color: #9a6700;
+    }
+
+    .diagnostics .ok {
+      color: #237a3b;
+    }
+
+    #preview {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: clamp(20px, 4vw, 48px) clamp(18px, 3vw, 32px);
+      background: transparent;
+      font-family:
+        Georgia,
+        "Yu Mincho",
+        "Hiragino Mincho ProN",
+        "YuMincho",
+        "MS PMincho",
+        serif;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    #preview h1,
+    #preview h2,
+    #preview h3 {
+      font-family: inherit;
+      line-height: 1.5;
+    }
+
+    #preview h1 {
+      padding-bottom: .25em;
+      border-bottom: 1px solid #bbb;
+      font-size: 1.55em;
+    }
+
+    #preview h2 {
+      margin-top: 1.6em;
+      font-size: 1.25em;
+    }
+
+    #preview p,
+    #preview ul,
+    #preview ol {
+      margin-top: .65em;
+      margin-bottom: .65em;
+    }
+
+    #preview a.reference {
+      color: #0000ee;
+      text-decoration: none;
+    }
+
+    #preview a.reference:hover {
+      text-decoration: underline;
+    }
+
+    #preview .citation,
+    #preview .backref {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    #preview .citation:hover,
+    #preview .backref:hover {
+      text-decoration: underline;
+    }
+
+    #preview .table-of-contents {
+      padding: 12px 18px;
+      border: 1px solid #ddd;
+    }
+
+    #preview .table-of-contents h2 {
+      margin: .1em 0 .4em;
+      font-size: 1.1em;
+    }
+
+    #preview .table-of-contents ol {
+      margin: .2em 0;
+    }
+
+    #preview .table-of-contents a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    #preview .table-of-contents a:hover {
+      text-decoration: underline;
+    }
+
+    #preview .bibliography h2 {
+      padding-bottom: .25em;
+      border-bottom: 1px solid #dadce0;
+    }
+
+    #preview .reason-text > :first-child {
+      margin-top: 0;
+    }
+
+    #preview .reason-text > :last-child {
+      margin-bottom: 0;
+    }
+
     @media (max-width: 900px) {
-      .layout { grid-template-columns: minmax(0, 1fr); }
-      #source { min-height: 40vh; }
+      .editor-toolbar {
+        position: static;
+      }
+
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .syntax-content {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #source {
+        min-height: 40vh;
+      }
+
+      #preview {
+        padding: 24px 18px;
+      }
+
+      .preview-wrap {
+        min-height: 0;
+      }
     }
+
+    @media (max-width: 600px) {
+      .editor-workspace {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .workspace-fields {
+        align-items: stretch;
+      }
+
+      .workspace-field {
+        flex-basis: 100%;
+      }
+
+      .workspace-statuses {
+        display: block;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .syntax-content {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
     @media print {
-      .editor-toolbar, .workspace, .source-panel,
-      .panel > h2, #diagnostics { display: none; }
-      .layout { display: block; padding: 0; }
-      .panel { border: 0; }
+      .editor-toolbar,
+      .editor-workspace,
+      .syntax-guide,
+      .editor-source-panel,
+      .panel > .panel-title,
+      .diagnostics {
+        display: none;
+      }
+
+      .layout {
+        display: block;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .panel {
+        overflow: visible;
+        border: 0;
+      }
+
+      #preview {
+        max-width: none;
+      }
     }
   </style>
 </head>
 
 <body class="editor-page" id="top">
-  <header class="editor-toolbar">
-    <a href="/index.html"><img src="/images/header.png" alt="ホーム"></a>
-    <button id="openSource" type="button">ソースを開く</button>
-    <button id="saveSource" type="button">ソースを保存</button>
-    <button id="copySource" type="button">ソースをコピー</button>
-    <button id="publicDownload" type="button">公開用HTMLを生成</button>
-    <input id="sourceFile" type="file" accept=".txt,.tex,text/plain" hidden>
+  <header class="site-header editor-toolbar">
+    <a class="site-brand editor-logo-link" href="/index.html">
+      <img
+        src="/images/header.png"
+        alt="ホーム"
+        class="editor-logo"
+      >
+    </a>
+
+    <button id="openSource" class="editor-button" type="button">
+      ソースを開く
+    </button>
+
+    <button id="saveSource" class="editor-button" type="button">
+      ソースを保存
+    </button>
+
+    <button id="copySource" class="editor-button" type="button">
+      ソースをコピー
+    </button>
+
+    <button id="publicDownload" class="editor-button primary" type="button">
+      公開用HTMLを生成
+    </button>
+
+    <button id="cssDownload" class="editor-button" type="button">
+      共通CSSを保存
+    </button>
+
+    <input
+      id="sourceFile"
+      type="file"
+      accept=".tex,.txt,text/plain,application/x-tex"
+      hidden
+    >
   </header>
 
-  <section class="workspace" aria-label="文書操作">
-    <div class="workspace-controls">
-      <label>
+  <section class="editor-workspace" aria-label="文書の保存とプレビュー設定">
+    <div class="workspace-fields">
+      <label class="workspace-field">
         ソースのファイル名
-        <input id="filename" type="text" value="note.txt" spellcheck="false">
+        <input
+          id="sourceFilename"
+          type="text"
+          value="note.tex"
+          autocomplete="off"
+          spellcheck="false"
+        >
       </label>
-      <label>
+
+      <label class="workspace-checkbox">
         <input id="autoPreview" type="checkbox" checked>
         自動プレビュー
       </label>
-      <button id="refreshPreview" type="button">プレビュー更新</button>
-      <label>
-        保存済み下書き
-        <select id="drafts">
-          <option value="">下書きを選択</option>
+
+      <label class="workspace-field workspace-drafts">
+        ブラウザー内の下書き
+        <select id="draftSelect">
+          <option value="">下書きがありません</option>
         </select>
       </label>
-      <button id="openDraft" type="button">下書きを開く</button>
+
+      <button
+        id="openDraft"
+        class="editor-button"
+        type="button"
+        disabled
+      >
+        下書きを開く
+      </button>
     </div>
 
-    <p id="status" role="status" aria-live="polite"></p>
+    <div class="workspace-statuses">
+      <p id="draftStatus" role="status" aria-live="polite">
+        下書きを確認しています。
+      </p>
 
-    <details class="editor-guide">
-      <summary>ソースの書式</summary>
-      <p>
-        文書情報は <code>\title{表題}</code>、
-        <code>\author{著者}</code>、
-        <code>\date{2026-11-03}</code> と記述します。
-        日付は実在する日付の YYYY-MM-DD 形式です。
-        表題が空なら「無題」、著者と日付が空なら非表示になります。
+      <p id="previewStatus" role="status" aria-live="polite">
+        プレビューを準備しています。
       </p>
-      <p>
-        section・subsection、定理系環境、proof・reason、箇条書き、
-        label・ref・eqref、cite・thebibliography、数式と独自マクロは
-        元のコンパイラーを使用します。完全なLaTeX処理系ではありません。
-      </p>
-      <p>
-        下書きはこのブラウザーに保存します。
-        ファイルを開く前や下書きを切り替える前には置き換えを確認します。
-        別タブの下書きを開いた場合は、独立した下書きとして保存します。
-      </p>
-    </details>
+    </div>
+
+    <p
+      id="operationStatus"
+      class="workspace-operation"
+      role="status"
+      aria-live="polite"
+    ></p>
+
+    <section
+      id="recoveryPanel"
+      class="workspace-recovery"
+      aria-labelledby="recoveryTitle"
+      hidden
+    >
+      <h2 id="recoveryTitle">下書きの復元</h2>
+      <p id="recoveryMessage"></p>
+
+      <div class="workspace-actions">
+        <button
+          id="restoreDraft"
+          class="editor-button primary"
+          type="button"
+        >
+          下書きを復元
+        </button>
+
+        <button
+          id="keepCurrent"
+          class="editor-button"
+          type="button"
+        >
+          HTML内の本文を使用
+        </button>
+      </div>
+    </section>
+
+    <p class="workspace-note">
+      公開ページの表題・著者・更新日は、ソースの
+      <code>\title{...}</code>、<code>\author{...}</code>、
+      <code>\date{YYYY-MM-DD}</code>から読み取ります。
+      <code>\title</code>がなければ「無題」、
+      <code>\author</code>がなければサイト既定の著者を使用し、
+      <code>\date</code>がなければ更新日は表示しません。
+      最初のsectionは表題として使用しません。
+      ヘッダー・フッター・リンク先などのサイト設定は、
+      <code>mystyle.js</code>の既定値を使用します。
+    </p>
+
+    <p class="workspace-note">
+      自動保存は、このブラウザー内に置く復旧用の下書きです。
+      独立したバックアップとして、ソースファイルも保存してください。
+      下書きの復元方法を選択するまでは、自動保存を開始しません。
+      ローカルHTMLを直接開いた場合、ブラウザー内保存の挙動は環境に依存します。
+      自動プレビューをオフにすると更新を停止し、オンにすると再開します。
+      公開用HTMLは、自動プレビューの状態にかかわらず最新の入力から生成します。
+    </p>
   </section>
 
+  <aside class="syntax-guide" aria-label="対応しているLaTeX記法">
+    <details id="syntaxDisclosure" open>
+      <summary>対応しているLaTeX記法一覧</summary>
+
+      <div class="syntax-content">
+        <section class="syntax-group">
+          <h3>参照・番号付け</h3>
+          <p>
+            <code>\label{key}</code>、
+            <code>\ref{key}</code>、
+            <code>\eqref{key}</code><br>
+            定理番号はsectionごとにリセットします。
+            数式はAMS形式で番号付けします。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>定理・証明・理由</h3>
+          <p>
+            <code>definition</code>、<code>theorem</code>、
+            <code>proposition</code>、<code>lemma</code>、
+            <code>corollary</code>、<code>fact</code>、
+            <code>remark</code>、<code>statement</code>、
+            <code>proof</code>、<code>reason</code><br>
+            定理系環境とproofは角括弧による補足表題にも対応します。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>表題・見出し・段落</h3>
+          <p>
+            <code>\title{...}</code>、
+            <code>\author{...}</code>、
+            <code>\date{...}</code>、
+            <code>\section{...}</code>、
+            <code>\subsection{...}</code>、
+            <code>\tableofcontents</code><br>
+            表題・著者・更新日はソースから読み取り、sectionとは独立しています。
+            空行で段落を分け、<code>\\</code>で明示的に改行します。
+            <code>\noindent</code>、<code>\smallskip</code>、
+            <code>\medskip</code>、<code>\bigskip</code>は簡易対応です。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>箇条書きと入れ子</h3>
+          <p>
+            <code>itemize</code>、<code>enumerate</code>、
+            <code>phase</code>と<code>\item</code><br>
+            <code>\item[ラベル]</code>にも対応します。
+            定理・証明・理由・箇条書きは、同種環境を含めて入れ子にできます。
+            目次では見出し番号だけを表示し、リスト自身の番号は表示しません。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>文字装飾・リンク</h3>
+          <p>
+            <code>\textbf{...}</code>、<code>\emph{...}</code>、
+            <code>\textit{...}</code>、<code>\texttt{...}</code><br>
+            <code>\url{...}</code>、<code>\href{URL}{表示文字}</code><br>
+            文字装飾の引数内でも対応コマンドを入れ子にできます。
+            エスケープされていない<code>%</code>以降は行末コメントです。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>数式</h3>
+          <p>
+            <code>$...$</code>、<code>\(...\)</code>、
+            <code>$$...$$</code>、<code>\[...\]</code><br>
+            <code>equation</code>、<code>align</code>、
+            <code>gather</code>、<code>multline</code>、
+            <code>flalign</code>、<code>alignat</code>とその星付き環境。
+            数式内の<code>aligned</code>や<code>cases</code>はMathJaxに渡します。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>独自コマンド</h3>
+          <p>
+            <code>\be</code>、<code>\proves</code>、
+            <code>\forces</code>、<code>\PA</code>、
+            <code>\BST</code>、<code>\ZF</code>、
+            <code>\ZFC</code>、<code>\Con</code>、
+            <code>\MA</code>、<code>\HF</code>、
+            <code>\bval</code>、<code>\set</code>、
+            <code>\power</code>、<code>\Def</code>、
+            <code>\val</code>、<code>\prm</code>、
+            <code>\img</code>、<code>\dom</code>、
+            <code>\ran</code>、<code>\inj</code>、
+            <code>\surj</code>、<code>\bij</code>、
+            <code>\iso</code>、<code>\ee</code>、
+            <code>\ON</code>、<code>\ot</code>、
+            <code>\cf</code>、<code>\len</code>、
+            <code>\club</code>、<code>\nonstat</code>、
+            <code>\inn</code>、<code>\obj</code>、
+            <code>\mathbbl</code>、<code>\bbepsilon</code>
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>参考文献：AMSalpha型の表示</h3>
+          <p>
+            <code>\cite{key}</code>、
+            <code>\cite[注記]{key}</code><br>
+            <code>\begin{thebibliography}{Kun80}</code>と
+            <code>\bibitem[Kun80]{key}</code>を使用すると、
+            本文と文献一覧の双方に角括弧付きのラベルを表示します。
+            複数引用は<code>[Kun80, Jec03]</code>、
+            注記付き引用は<code>[Kun80, p. 10]</code>の形です。
+            表示ラベルが未指定の場合は文献キーを表示し、診断に通知します。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>開閉状態と対応範囲</h3>
+          <p>
+            証明・理由は初期状態で開き、プレビュー更新時は状態を保持します。
+            一意のラベルを付けると、移動や編集後も対応を特定できます。
+            TikZ、bussproofs、任意のマクロ定義などには対応していません。
+          </p>
+        </section>
+      </div>
+
+      <p class="syntax-note">
+        これはブラウザー内の簡易変換であり、完全なLaTeX・BibTeX処理系ではありません。
+        AMSalphaのラベルは、明示的に指定したものを使用します。
+        自由記述の文献本文から著者・年を推測したり、
+        amsalpha.bstによる文献書式の生成や並べ替えを実行したりはしません。
+        厳密なAMSalphaの文献を使用する場合は、BibTeXで生成したラベル・順序・文献本文を使用してください。
+        MathJax本体と、設定に応じた拡張・フォントが読み込める必要があります。
+        ソース保存・読み込みはUTF-8を対象とします。
+      </p>
+    </details>
+  </aside>
+
   <main class="layout">
-    <section class="panel source-panel">
-      <h2>LaTeX風ソース</h2>
-      <textarea id="source" spellcheck="false" aria-label="ソース">\title{無題}
-\author{Ud.afhal}
-\date{}
+    <section class="panel editor-source-panel">
+      <h2 class="panel-title">LaTeX風ソース</h2>
 
-\section{はじめに}
+      <textarea
+        id="source"
+        spellcheck="false"
+        aria-label="LaTeX source"
+      >\section{huge cardinalの基本的性質}
 
-ここに本文を記述します。
-</textarea>
+\begin{definition}
+順序数$\kappa$が$n$-huge cardinalであるとは，次を満たす$j$を持つことをいう：
+\begin{itemize}
+\item $j:V\ee_\kappa M$
+\item $M^{j^n(\kappa)}\subseteq M$
+\end{itemize}
+\end{definition}
+\begin{remark}
+よく知られるKunenの結果より，$\omega$-huge cardinalは存在しない．ここで，順序数$\kappa$が$\omega$-huge carinalであるとは，$j:V\ee_\kappa M$で$M^{\sup_{n&lt;\omega}j^n(\kappa)}\subseteq M$を満たすものを持つことをいう．
+\end{remark}
+\begin{definition}
+$\mathcal{U}\subseteq \power(\power(\lambda))$が$\power(\lambda)$の正規フィルターであるとは，次を満たすことをいう：
+\begin{itemize}
+\item $\alpha&lt;\lambda$に対して$\set{x\in \power(\lambda):\alpha\in x}\in\mathcal{F}$
+\item $\langle X_\alpha:\alpha&lt;\lambda\rangle\in {}^\lambda\mathcal{F}$に対して$\bigtriangleup_{\alpha&lt;\lambda}X_\alpha=\set{x\in\power(\lambda):\forall \alpha\in x(x\in X_\alpha)}\in \mathcal{F}$
+\end{itemize}
+\end{definition}
+\begin{remark}
+$&lt;\lambda$-完備性
+\end{remark}
+定理 \ref{thm:reflexive} を参照。
+
+\begin{proof}
+各 $x\in A$ について $x\in A$ であるから、部分集合の定義より結論を得る。
+\end{proof}
+
+\begin{proposition}
+$\dom(f)$ と $\ran(f)$ はそれぞれ $f$ の定義域と値域を表す。
+\end{proposition}
+
+\begin{phase}
+\item まず仮定を確認する。
+\item 次に必要な包含関係を示す。
+\item 以上から結論が従う。
+\end{phase}
+
+\begin{remark}
+ここは注意環境の例。数式は $\bval{\varphi}$ のように記述できる。以下の式は式番号と参照の例である。
+\begin{equation}\label{eq:subset}
+A\subseteq B \implies \power(A)\subseteq \power(B)
+\end{equation}
+式 \eqref{eq:subset} を参照。
+\end{remark}
+
+\begin{reason}
+$A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $A\subseteq C$。
+\end{reason}</textarea>
+
+      <div class="hint">
+        自動プレビューは、入力が止まってから約800ミリ秒後に更新します。
+        IME変換中は新しいプレビュー更新を開始しません。
+        証明・理由の開閉状態は更新時に引き継ぎます。
+        別の文書を開いたときとページの再読み込み時は、すべて開きます。
+        本文の保存・コピーには、プレビュー更新前の入力内容も含まれます。
+        プレビューの本文は16px、行間は1.8です。
+      </div>
     </section>
 
     <section class="panel">
-      <h2>HTMLプレビュー</h2>
-      <div id="preview"></div>
-      <p id="diagnostics" aria-live="polite"></p>
+      <h2 class="panel-title">HTMLプレビュー</h2>
+
+      <div class="preview-wrap">
+        <article class="paper" id="preview"></article>
+      </div>
+
+      <div
+        id="diagnostics"
+        class="diagnostics"
+        aria-live="polite"
+      ></div>
     </section>
   </main>
 
-  <script type="module">
-    import {
-      compileDocument,
-      renderDocument,
-      buildPublicHTML
-    } from "./compiler/compiler.mjs";
+  <script id="editor-app">
+    (() => {
+      "use strict";
 
-    const $ = (id) => document.getElementById(id);
-    const source = $("source");
-    const preview = $("preview");
-    const filename = $("filename");
-    const prefix = "mystyleEditor:source-only:v2:";
-    const pointer = prefix + "last";
-    let draftId = crypto.randomUUID();
-    let toggles = [];
-    let composing = false;
-    let previewTimer;
-    let saveTimer;
-    let rendering = false;
-    let pending = false;
-    let epoch = 0;
-    let persisted = null;
+      const {
+        compileDocument,
+        buildPage,
+        createRuntime,
+        escapeHTML
+      } = Mystyle;
 
-    function status(message, error = false) {
-      $("status").textContent = message;
-      $("status").dataset.error = String(error);
-    }
+      const runtime = createRuntime();
 
-    function normalizedName(value) {
-      let name = String(value).trim()
-        .replace(/[\\/:*?"<>|\u0000-\u001f\u007f]/g, "_");
-      if (!name || /^\.+$/.test(name)) name = "note.txt";
-      if (!/\.(txt|tex)$/i.test(name)) name += ".txt";
-      return name;
-    }
+      const sourceElement = document.getElementById("source");
+      const previewElement = document.getElementById("preview");
+      const diagnosticsElement = document.getElementById("diagnostics");
 
-    function snapshot() {
-      return {
-        source: source.value,
-        name: normalizedName(filename.value)
-      };
-    }
+      // 「共通CSSを保存」で書き出すスタイルシート。
+      const publicStylesheet = ["public-styles", "publication-styles"]
+        .map((id) => document.getElementById(id).textContent.trim())
+        .join("\n\n");
 
-    function identity(value = snapshot()) {
-      return JSON.stringify(value);
-    }
+      let previousToggles = [];
 
-    function download(name, content, type) {
-      const url = URL.createObjectURL(new Blob([content], { type }));
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = name;
-      document.body.append(link);
-      link.click();
-      link.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }
+      // ================================================================
+      // 基本ユーティリティ
+      // ================================================================
 
-    function listDrafts() {
-      const selected = $("drafts").value;
-      const records = [];
-      try {
-        for (let index = 0; index < localStorage.length; index++) {
-          const key = localStorage.key(index);
-          if (!key?.startsWith(prefix + "draft:")) continue;
-          try {
-            const record = JSON.parse(localStorage.getItem(key));
-            if (
-              typeof record?.source === "string" &&
-              typeof record?.name === "string" &&
-              typeof record?.id === "string" &&
-              Number.isFinite(record.updatedAt)
-            ) records.push(record);
-          } catch {
-            // 壊れたデータは上書きも削除もしない。
-          }
-        }
-      } catch {
-        status("ブラウザー内の下書き一覧を読み取れません。", true);
+      function downloadText(filename, content, mimeType) {
+        const blob = new Blob([content], {
+          type: mimeType
+        });
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = filename;
+
+        document.body.append(link);
+        link.click();
+        link.remove();
+
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
 
-      $("drafts").replaceChildren(new Option("下書きを選択", ""));
-      records.sort((a, b) => b.updatedAt - a.updatedAt);
-      for (const record of records) {
-        const label = `${record.name} — ${
-          new Date(record.updatedAt).toLocaleString("ja-JP")
-        }`;
-        $("drafts").add(new Option(label, record.id));
-      }
-      if (records.some((record) => record.id === selected)) {
-        $("drafts").value = selected;
-      }
-    }
-
-    function saveDraft() {
-      clearTimeout(saveTimer);
-      const current = snapshot();
-      if (persisted === identity(current)) return true;
-
-      try {
-        const record = {
-          ...current,
-          id: draftId,
-          updatedAt: Date.now()
-        };
-        localStorage.setItem(
-          prefix + "draft:" + draftId,
-          JSON.stringify(record)
-        );
-        persisted = identity(current);
-        try {
-          localStorage.setItem(pointer, draftId);
-        } catch {
-          // 本文保存と選択情報の保存は区別する。
-        }
-        listDrafts();
-        return true;
-      } catch {
-        status(
-          "下書きを保存できませんでした。「ソースを保存」で保存してください。",
-          true
-        );
-        return false;
-      }
-    }
-
-    async function renderPreview() {
-      if (rendering || composing || !pending) return;
-      pending = false;
-      rendering = true;
-
-      const text = source.value;
-      const version = epoch;
-
-      try {
-        const result = compileDocument(text, toggles);
-        toggles = result.toggles;
-        const available = await globalThis.MystyleRuntime.render(
-          preview,
-          renderDocument(result)
-        );
-
-        if (version === epoch && text === source.value) {
-          $("diagnostics").textContent = result.issues.length
-            ? result.issues.join("\n")
-            : "構造・参照・引用に明らかな不整合は検出されませんでした。";
-
-          status(
-            available
-              ? "プレビューを更新しました。"
-              : "本文は更新しましたが、MathJaxを読み込めませんでした。",
-            !available
-          );
-        }
-      } catch (error) {
-        if (version === epoch) {
-          $("diagnostics").textContent = error.message;
-          status("変換できませんでした。直前のプレビューを保持しています。", true);
-        }
-      } finally {
-        rendering = false;
-        if (pending && !composing) void renderPreview();
-      }
-    }
-
-    function requestPreview(force = false) {
-      clearTimeout(previewTimer);
-      pending = false;
-      if (composing || (!force && !$("autoPreview").checked)) return;
-
-      previewTimer = setTimeout(() => {
-        pending = true;
-        void renderPreview();
-      }, force ? 0 : 800);
-    }
-
-    function changed() {
-      epoch++;
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(saveDraft, 500);
-      requestPreview();
-    }
-
-    function replaceSource(record) {
-      clearTimeout(saveTimer);
-      clearTimeout(previewTimer);
-      pending = false;
-      epoch++;
-      draftId = crypto.randomUUID();
-      persisted = null;
-      source.value = record.source;
-      filename.value = normalizedName(record.name);
-      toggles = [];
-
-      // 旧文書の開閉状態を新文書に引き継がない。
-      const reset = globalThis.MystyleRuntime.render(preview, "");
-      saveDraft();
-      reset.catch(() => {}).finally(() => requestPreview(true));
-    }
-
-    function allowReplacement() {
-      const saved = saveDraft();
-      return confirm(
-        saved
-          ? "現在の内容は下書きに保存しました。別の文書に切り替えますか？"
-          : "現在の内容を下書きに保存できませんでした。保存せずに切り替えますか？"
-      );
-    }
-
-    source.addEventListener("input", changed);
-    source.addEventListener("compositionstart", () => {
-      composing = true;
-      clearTimeout(previewTimer);
-      pending = false;
-    });
-    source.addEventListener("compositionend", () => {
-      composing = false;
-      changed();
-    });
-    filename.addEventListener("input", () => {
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(saveDraft, 500);
-    });
-
-    $("autoPreview").addEventListener("change", () => requestPreview());
-    $("refreshPreview").addEventListener("click", () => requestPreview(true));
-    $("openSource").addEventListener("click", () => $("sourceFile").click());
-
-    $("sourceFile").addEventListener("change", async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-      try {
-        const buffer = await file.arrayBuffer();
-        const text = new TextDecoder("utf-8", { fatal: true }).decode(buffer);
-        if (composing) {
-          status("IME変換を確定してから開いてください。", true);
+      function showDiagnostics(issues) {
+        if (issues.length === 0) {
+          diagnosticsElement.innerHTML = `
+            <p class="ok">
+              構造・ラベル・参照・引用キーに明らかな不整合は検出されませんでした。
+              TeX全体や数学的内容を検証するものではありません。
+            </p>
+          `;
           return;
         }
-        if (allowReplacement()) {
-          replaceSource({
-            source: text.replace(/\r\n?/g, "\n"),
-            name: file.name
-          });
+
+        diagnosticsElement.innerHTML = `
+          <strong>確認が必要な箇所 (${issues.length})</strong>
+          ${issues.map((issue) => {
+            return `<p class="warning">${escapeHTML(issue)}</p>`;
+          }).join("\n")}
+        `;
+      }
+
+      // ================================================================
+      // ワークスペースの状態
+      // ================================================================
+
+      const AUTOSAVE_DELAY = 500;
+      const AUTOSAVE_MAX_WAIT = 5000;
+      const PREVIEW_DELAY = 800;
+
+      const WORKSPACE_NAMESPACE =
+        "mystyleEditorWorkspace:v1:" +
+        encodeURIComponent(window.location.pathname);
+
+      const DRAFT_PREFIX = WORKSPACE_NAMESPACE + ":draft:";
+      const ACTIVE_DOCUMENT_KEY = WORKSPACE_NAMESPACE + ":active";
+
+      const ui = Object.freeze({
+        filename: document.getElementById("sourceFilename"),
+        autoPreview: document.getElementById("autoPreview"),
+        fileInput: document.getElementById("sourceFile"),
+        openSource: document.getElementById("openSource"),
+        saveSource: document.getElementById("saveSource"),
+        copySource: document.getElementById("copySource"),
+        draftSelect: document.getElementById("draftSelect"),
+        openDraft: document.getElementById("openDraft"),
+        draftStatus: document.getElementById("draftStatus"),
+        previewStatus: document.getElementById("previewStatus"),
+        operationStatus: document.getElementById("operationStatus"),
+        recoveryPanel: document.getElementById("recoveryPanel"),
+        recoveryTitle: document.getElementById("recoveryTitle"),
+        recoveryMessage: document.getElementById("recoveryMessage"),
+        restoreDraft: document.getElementById("restoreDraft"),
+        keepCurrent: document.getElementById("keepCurrent")
+      });
+
+      const initialSource = sourceElement.value;
+      const initialFilename = normalizeFilename(ui.filename.value);
+      const tabId = createIdentifier("tab");
+
+      const draftCatalog = new Map();
+
+      const draftState = {
+        ready: false,
+        id: "",
+        revision: null,
+        saved: null,
+        recovery: null,
+        error: "",
+        pointerWarning: ""
+      };
+
+      const previewState = {
+        epoch: 0,
+        timer: null,
+        pending: null,
+        running: false,
+        currentJob: null,
+        lastRendered: null,
+        error: ""
+      };
+
+      let openedSnapshot = {
+        source: initialSource,
+        name: initialFilename
+      };
+
+      let composing = false;
+      let switchingSource = false;
+      let saveTimer = null;
+      let saveMaxTimer = null;
+      let saveInFlight = null;
+      let unloadGuardAttached = false;
+
+      // ================================================================
+      // ワークスペースの基本操作
+      // ================================================================
+
+      function createIdentifier(prefix) {
+        if (globalThis.crypto?.randomUUID) {
+          return prefix + "-" + globalThis.crypto.randomUUID();
         }
-      } catch (error) {
-        status("UTF-8のソースを読み込めませんでした: " + error.message, true);
-      } finally {
-        event.target.value = "";
-      }
-    });
 
-    $("saveSource").addEventListener("click", () => {
-      const current = snapshot();
-      filename.value = current.name;
-      download(current.name, current.source, "text/plain;charset=utf-8");
-      saveDraft();
-    });
-
-    $("copySource").addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(source.value);
-        status("ソースをコピーしました。");
-      } catch {
-        source.focus();
-        source.select();
-        status("全文を選択しました。手動でコピーしてください。", true);
-      }
-    });
-
-    $("publicDownload").addEventListener("click", () => {
-      try {
-        // プレビューの状態ではなく、クリック時点のソースをコンパイルする。
-        const result = compileDocument(source.value);
-        download(
-          normalizedName(filename.value).replace(/\.(txt|tex)$/i, ".html"),
-          buildPublicHTML(result),
-          "text/html;charset=utf-8"
+        return (
+          prefix +
+          "-" +
+          Date.now().toString(36) +
+          "-" +
+          Math.random().toString(36).slice(2) +
+          "-" +
+          Math.random().toString(36).slice(2)
         );
-        $("diagnostics").textContent = result.issues.join("\n");
-        status("公開用HTMLのダウンロードを開始しました。");
-      } catch (error) {
-        status(error.message, true);
       }
-    });
 
-    $("openDraft").addEventListener("click", () => {
-      if (composing || !$("drafts").value) return;
-      try {
-        const record = JSON.parse(localStorage.getItem(
-          prefix + "draft:" + $("drafts").value
-        ));
-        if (typeof record?.source !== "string" ||
-            typeof record?.name !== "string") {
-          throw new Error("下書きが見つからないか、形式が不正です。");
+      function normalizeFilename(value) {
+        let name = String(value ?? "")
+          .trim()
+          .replace(/[\\/:*?"<>|\u0000-\u001f\u007f]/g, "_");
+
+        if (!name || /^\.+$/.test(name)) {
+          name = "note.tex";
         }
-        if (allowReplacement()) replaceSource(record);
-      } catch (error) {
-        status(error.message, true);
-      }
-    });
 
-    window.addEventListener("storage", (event) => {
-      if (event.key === null || event.key.startsWith(prefix)) listDrafts();
-    });
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) saveDraft();
-    });
-    window.addEventListener("pagehide", saveDraft);
-    window.addEventListener("beforeunload", (event) => {
-      if (!saveDraft()) {
-        event.preventDefault();
-        event.returnValue = "";
-      }
-    });
+        if (!/\.(?:tex|txt)$/i.test(name)) {
+          name += ".tex";
+        }
 
-    listDrafts();
-    try {
-      const lastId = localStorage.getItem(pointer);
-      const previous = lastId
-        ? JSON.parse(localStorage.getItem(prefix + "draft:" + lastId))
-        : null;
-      if (
-        typeof previous?.source === "string" &&
-        typeof previous?.name === "string" &&
-        confirm(`前回の下書き「${previous.name}」を復元しますか？`)
-      ) {
-        replaceSource(previous);
-      } else {
-        saveDraft();
-        requestPreview(true);
+        return name;
       }
-    } catch {
-      status("下書きを復元できません。ソースファイルから開けます。", true);
-      requestPreview(true);
-    }
+
+      function currentSnapshot() {
+        return {
+          source: sourceElement.value,
+          name: normalizeFilename(ui.filename.value)
+        };
+      }
+
+      function sameContents(record, snapshot = currentSnapshot()) {
+        return Boolean(
+          record &&
+          record.source === snapshot.source &&
+          record.name === snapshot.name
+        );
+      }
+
+      function formatSavedTime(timestamp) {
+        return new Date(timestamp).toLocaleString("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        });
+      }
+
+      function setStatus(element, text, state = "") {
+        if (element.textContent !== text) {
+          element.textContent = text;
+        }
+
+        element.dataset.state = state;
+      }
+
+      function setOperationStatus(text, state = "") {
+        setStatus(ui.operationStatus, text, state);
+      }
+
+      function hasUnsavedDraft() {
+        return draftState.ready && !sameContents(draftState.saved);
+      }
+
+      function needsUnloadProtection() {
+        return Boolean(
+          draftState.ready &&
+          (
+            hasUnsavedDraft() ||
+            draftState.recovery?.kind === "conflict" ||
+            draftState.error
+          )
+        );
+      }
+
+      function beforeUnload(event) {
+        void flushDraft();
+
+        if (needsUnloadProtection()) {
+          event.preventDefault();
+          event.returnValue = "";
+        }
+      }
+
+      function updateUnloadGuard() {
+        const required = needsUnloadProtection();
+
+        if (required === unloadGuardAttached) {
+          return;
+        }
+
+        unloadGuardAttached = required;
+
+        if (required) {
+          window.addEventListener("beforeunload", beforeUnload);
+        } else {
+          window.removeEventListener("beforeunload", beforeUnload);
+        }
+      }
+
+      function updateControls() {
+        const locked =
+          switchingSource ||
+          !draftState.ready ||
+          draftState.recovery?.kind === "startup";
+
+        sourceElement.readOnly = locked;
+        ui.filename.disabled = locked;
+        ui.openSource.disabled = locked;
+        ui.fileInput.disabled = locked;
+        ui.draftSelect.disabled = locked;
+
+        ui.openDraft.disabled =
+          locked ||
+          !draftCatalog.has(ui.draftSelect.value) ||
+          ui.draftSelect.value === draftState.id;
+
+        ui.restoreDraft.disabled =
+          switchingSource ||
+          !draftState.recovery?.record;
+
+        ui.keepCurrent.disabled = switchingSource;
+      }
+
+      function updateDraftStatus() {
+        if (draftState.recovery?.kind === "startup") {
+          setStatus(
+            ui.draftStatus,
+            "下書きの復元方法を選択するまで、自動保存と本文編集を停止しています。",
+            "warning"
+          );
+        } else if (draftState.recovery?.kind === "conflict") {
+          setStatus(
+            ui.draftStatus,
+            "別タブとの競合を検出したため、自動保存を停止しています。",
+            "warning"
+          );
+        } else if (draftState.error) {
+          setStatus(
+            ui.draftStatus,
+            "下書きを保存・確認できません：" +
+              draftState.error +
+              " ソースファイルでも保存してください。",
+            "error"
+          );
+        } else if (saveInFlight) {
+          setStatus(
+            ui.draftStatus,
+            "下書きを保存しています。"
+          );
+        } else if (hasUnsavedDraft()) {
+          setStatus(
+            ui.draftStatus,
+            "下書きの保存待ちです。"
+          );
+        } else if (draftState.saved) {
+          const warning = draftState.pointerWarning
+            ? " " + draftState.pointerWarning
+            : "";
+
+          setStatus(
+            ui.draftStatus,
+            "ブラウザー内に下書き保存済み：" +
+              formatSavedTime(draftState.saved.updatedAt) +
+              warning,
+            draftState.pointerWarning ? "warning" : "ok"
+          );
+        } else {
+          setStatus(
+            ui.draftStatus,
+            "下書きはまだ保存されていません。"
+          );
+        }
+
+        updateUnloadGuard();
+      }
+
+      // ================================================================
+      // 下書きストレージ
+      // ================================================================
+
+      function draftStorageKey(id) {
+        return DRAFT_PREFIX + id;
+      }
+
+      function parseDraft(raw, expectedId) {
+        if (raw === null) {
+          return null;
+        }
+
+        const record = JSON.parse(raw);
+
+        if (
+          !record ||
+          record.version !== 1 ||
+          record.id !== expectedId ||
+          typeof record.name !== "string" ||
+          typeof record.source !== "string" ||
+          typeof record.revision !== "string" ||
+          typeof record.writer !== "string" ||
+          !Number.isFinite(record.updatedAt)
+        ) {
+          throw new Error(
+            "下書きデータの形式を確認してください。"
+          );
+        }
+
+        return record;
+      }
+
+      function readDraft(id) {
+        if (!id) {
+          return null;
+        }
+
+        return parseDraft(
+          localStorage.getItem(draftStorageKey(id)),
+          id
+        );
+      }
+
+      function makeDraftRecord(id, snapshot) {
+        return {
+          version: 1,
+          id,
+          name: snapshot.name,
+            source: snapshot.source,
+          updatedAt: Date.now(),
+          revision: createIdentifier("revision"),
+          writer: tabId
+        };
+      }
+
+      function refreshDraftSelect(preferredId) {
+        const previousSelection =
+          preferredId ??
+          ui.draftSelect.value ??
+          draftState.id;
+
+        const records = Array.from(draftCatalog.values())
+          .sort((left, right) => right.updatedAt - left.updatedAt);
+
+        ui.draftSelect.replaceChildren();
+
+        const placeholder = document.createElement("option");
+
+        placeholder.value = "";
+        placeholder.textContent = records.length
+          ? "保存済みの下書きを選択"
+          : "下書きがありません";
+
+        ui.draftSelect.append(placeholder);
+
+        for (const record of records) {
+          const option = document.createElement("option");
+
+          option.value = record.id;
+
+          option.textContent =
+            record.name +
+            " — " +
+            formatSavedTime(record.updatedAt) +
+            (record.id === draftState.id ? "（現在）" : "");
+
+          ui.draftSelect.append(option);
+        }
+
+        if (draftCatalog.has(previousSelection)) {
+          ui.draftSelect.value = previousSelection;
+        } else if (draftCatalog.has(draftState.id)) {
+          ui.draftSelect.value = draftState.id;
+        } else {
+          ui.draftSelect.value = "";
+        }
+
+        updateControls();
+      }
+
+      function indexDraft(record) {
+        draftCatalog.set(record.id, {
+          id: record.id,
+          name: record.name,
+          updatedAt: record.updatedAt
+        });
+
+        refreshDraftSelect();
+      }
+
+      function scanDraftCatalog() {
+        draftCatalog.clear();
+
+        let unreadable = 0;
+
+        for (let index = 0; index < localStorage.length; index++) {
+          const key = localStorage.key(index);
+
+          if (!key?.startsWith(DRAFT_PREFIX)) {
+            continue;
+          }
+
+          const id = key.slice(DRAFT_PREFIX.length);
+
+          try {
+            const record = readDraft(id);
+
+            if (record) {
+              draftCatalog.set(record.id, {
+                id: record.id,
+                name: record.name,
+                updatedAt: record.updatedAt
+              });
+            }
+          } catch {
+            unreadable++;
+          }
+        }
+
+        refreshDraftSelect();
+
+        if (unreadable > 0) {
+          setOperationStatus(
+            `${unreadable}件の下書きを読み取れませんでした。` +
+            "元の保存データは削除していません。",
+            "warning"
+          );
+        }
+      }
+
+      function rememberedDocumentId() {
+        try {
+          const id = sessionStorage.getItem(ACTIVE_DOCUMENT_KEY);
+
+          if (id) {
+            return id;
+          }
+        } catch {
+          // タブ単位の保存が使えない場合はlocalStorageを参照する。
+        }
+
+        try {
+          return localStorage.getItem(ACTIVE_DOCUMENT_KEY) || "";
+        } catch {
+          return "";
+        }
+      }
+
+      function rememberActiveDocument(id) {
+        let localPointerSaved = false;
+
+        try {
+          sessionStorage.setItem(ACTIVE_DOCUMENT_KEY, id);
+        } catch {
+          // 本文の保存成否とは分離する。
+        }
+
+        try {
+          localStorage.setItem(ACTIVE_DOCUMENT_KEY, id);
+          localPointerSaved = true;
+        } catch {
+          // 下書き本体が保存済みなら一覧から開ける。
+        }
+
+        draftState.pointerWarning = localPointerSaved
+          ? ""
+          : "前回文書の選択情報は保存できませんでした。";
+      }
+
+      function markPersisted(record) {
+        draftState.revision = record.revision;
+        draftState.saved = record;
+        draftState.error = "";
+
+        indexDraft(record);
+        rememberActiveDocument(record.id);
+      }
+
+      function cancelDraftTimers() {
+        window.clearTimeout(saveTimer);
+        window.clearTimeout(saveMaxTimer);
+
+        saveTimer = null;
+        saveMaxTimer = null;
+      }
+
+      function showRecovery(kind, id, record) {
+        cancelDraftTimers();
+
+        draftState.recovery = {
+          kind,
+          id,
+          record
+        };
+
+        ui.recoveryPanel.hidden = false;
+
+        if (kind === "startup") {
+          ui.recoveryTitle.textContent = "前回の下書きがあります";
+
+          ui.recoveryMessage.textContent = record
+            ? (
+              `${record.name}（${formatSavedTime(record.updatedAt)}）は、` +
+              "HTML内の初期文書と異なります。" +
+              "復元するか、HTML内の本文を別の文書として使用するかを選択してください。" +
+              "どちらを選んでも、既存の下書きを無条件には上書きしません。"
+            )
+            : (
+              "確認していた下書きが削除されたか、読み取れなくなりました。" +
+              "HTML内の本文を使用できます。"
+            );
+
+          ui.restoreDraft.textContent = "下書きを復元";
+          ui.keepCurrent.textContent = "HTML内の本文を使用";
+        } else {
+          ui.recoveryTitle.textContent = "別タブの変更を検出しました";
+
+          ui.recoveryMessage.textContent = record
+            ? (
+              `${record.name}の別の保存内容` +
+              `（${formatSavedTime(record.updatedAt)}）があります。` +
+              "現在の入力はそのまま保持しています。" +
+              "別タブの下書きを開くか、現在の文書を別の下書きとして保存してください。"
+            )
+            : (
+              "この文書の下書きが別タブで削除されたか、保存状態が変わりました。" +
+              "現在の文書を別の下書きとして保存できます。"
+            );
+
+          ui.restoreDraft.textContent = "別タブの下書きを開く";
+          ui.keepCurrent.textContent = "現在の本文を別の下書きにする";
+        }
+
+        updateControls();
+        updateDraftStatus();
+      }
+
+      function clearRecovery() {
+        draftState.recovery = null;
+        ui.recoveryPanel.hidden = true;
+        updateControls();
+      }
+
+      function writeCurrentDraft(expectedId) {
+        if (
+          !draftState.ready ||
+          draftState.recovery ||
+          draftState.id !== expectedId
+        ) {
+          return false;
+        }
+
+        const snapshot = currentSnapshot();
+        const remote = readDraft(expectedId);
+        const remoteRevision = remote?.revision ?? null;
+
+        if (remoteRevision !== draftState.revision) {
+          if (sameContents(remote, snapshot)) {
+            markPersisted(remote);
+            return true;
+          }
+
+          showRecovery("conflict", expectedId, remote);
+          return false;
+        }
+
+        if (sameContents(remote, snapshot)) {
+          markPersisted(remote);
+          return true;
+        }
+
+        const record = makeDraftRecord(expectedId, snapshot);
+
+        localStorage.setItem(
+          draftStorageKey(expectedId),
+          JSON.stringify(record)
+        );
+
+        const verified = readDraft(expectedId);
+
+        if (verified?.revision !== record.revision) {
+          showRecovery("conflict", expectedId, verified);
+          return false;
+        }
+
+        markPersisted(record);
+        return true;
+      }
+
+      function flushDraft() {
+        cancelDraftTimers();
+
+        if (saveInFlight) {
+          return saveInFlight;
+        }
+
+        if (!draftState.ready || draftState.recovery) {
+          updateDraftStatus();
+          return Promise.resolve(false);
+        }
+
+        const expectedId = draftState.id;
+
+        saveInFlight = Promise.resolve()
+          .then(async () => {
+            if (navigator.locks?.request) {
+              return navigator.locks.request(
+                WORKSPACE_NAMESPACE + ":lock:" + expectedId,
+                () => writeCurrentDraft(expectedId)
+              );
+            }
+
+            return writeCurrentDraft(expectedId);
+          })
+          .catch((error) => {
+            console.warn("下書き保存に失敗しました。", error);
+
+            if (draftState.id === expectedId) {
+              draftState.error =
+                "ブラウザーの保存制限、空き容量、または保存データを確認してください。";
+            }
+
+            return false;
+          })
+          .finally(() => {
+            saveInFlight = null;
+            updateDraftStatus();
+
+            if (
+              hasUnsavedDraft() &&
+              !switchingSource &&
+              !draftState.recovery &&
+              !draftState.error
+            ) {
+              scheduleDraftSave();
+            }
+          });
+
+        updateDraftStatus();
+        return saveInFlight;
+      }
+
+      function scheduleDraftSave() {
+        if (
+          !draftState.ready ||
+          draftState.recovery ||
+          switchingSource
+        ) {
+          updateDraftStatus();
+          return;
+        }
+
+        if (!hasUnsavedDraft()) {
+          cancelDraftTimers();
+          updateDraftStatus();
+          return;
+        }
+
+        window.clearTimeout(saveTimer);
+
+        saveTimer = window.setTimeout(
+          () => void flushDraft(),
+          AUTOSAVE_DELAY
+        );
+
+        if (saveMaxTimer === null) {
+          saveMaxTimer = window.setTimeout(
+            () => void flushDraft(),
+            AUTOSAVE_MAX_WAIT
+          );
+        }
+
+        updateDraftStatus();
+      }
+
+      function persistIndependentDraft(snapshot) {
+        let id;
+
+        do {
+          id = createIdentifier("doc");
+        } while (
+          localStorage.getItem(draftStorageKey(id)) !== null
+        );
+
+        const record = makeDraftRecord(id, snapshot);
+
+        localStorage.setItem(
+          draftStorageKey(id),
+          JSON.stringify(record)
+        );
+
+        const verified = readDraft(id);
+
+        if (verified?.revision !== record.revision) {
+          throw new Error(
+            "退避用の下書きを確認できませんでした。"
+          );
+        }
+
+        indexDraft(record);
+        return record;
+      }
+
+      function synchronizeCurrentDraft() {
+        const recovery = draftState.recovery;
+
+        if (recovery?.kind === "startup") {
+          try {
+            showRecovery(
+              "startup",
+              recovery.id,
+              readDraft(recovery.id)
+            );
+          } catch {
+            showRecovery("startup", recovery.id, null);
+          }
+
+          return;
+        }
+
+        if (!draftState.ready || !draftState.id) {
+          return;
+        }
+
+        try {
+          const remote = readDraft(draftState.id);
+          const remoteRevision = remote?.revision ?? null;
+
+          if (remoteRevision === draftState.revision) {
+            return;
+          }
+
+          if (sameContents(remote)) {
+            clearRecovery();
+            markPersisted(remote);
+            updateDraftStatus();
+          } else {
+            showRecovery("conflict", draftState.id, remote);
+          }
+        } catch {
+          draftState.error =
+            "保存済みの下書きを読み取れませんでした。元データは上書きしていません。";
+
+          updateDraftStatus();
+        }
+      }
+
+      // ================================================================
+      // 自動プレビュー
+      // ================================================================
+
+      function cancelPreviewTimer() {
+        window.clearTimeout(previewState.timer);
+        previewState.timer = null;
+      }
+
+      function updatePreviewStatus() {
+        if (previewState.running) {
+          const changed =
+            previewState.currentJob?.epoch !== previewState.epoch ||
+            previewState.currentJob?.source !== sourceElement.value;
+
+          setStatus(
+            ui.previewStatus,
+            changed
+              ? "プレビュー更新中です。後からの変更は別途反映します。"
+              : "プレビューを更新しています。"
+          );
+
+          return;
+        }
+
+        if (composing) {
+          setStatus(
+            ui.previewStatus,
+            ui.autoPreview.checked
+              ? "IME変換終了後にプレビューを更新します。"
+              : "自動プレビューは停止中です。"
+          );
+
+          return;
+        }
+
+        if (previewState.pending || previewState.timer !== null) {
+          setStatus(
+            ui.previewStatus,
+            "プレビュー更新待ちです。"
+          );
+
+          return;
+        }
+
+        if (previewState.error) {
+          setStatus(
+            ui.previewStatus,
+            previewState.error,
+            "error"
+          );
+
+          return;
+        }
+
+        const last = previewState.lastRendered;
+
+        if (
+          last &&
+          last.epoch === previewState.epoch &&
+          last.source === sourceElement.value
+        ) {
+          const suspended = ui.autoPreview.checked
+            ? ""
+            : " 自動プレビューは停止中です。";
+
+          setStatus(
+            ui.previewStatus,
+            (
+              last.available
+                ? `プレビュー更新済み（${last.elapsed} ms）。`
+                : "本文は反映済みですが、MathJaxを読み込めませんでした。"
+            ) + suspended,
+            last.available ? "ok" : "warning"
+          );
+
+          return;
+        }
+
+        setStatus(
+          ui.previewStatus,
+          ui.autoPreview.checked
+            ? "本文に未反映の変更があります。"
+            : "自動プレビューは停止中です。オンにすると更新を再開します。"
+        );
+      }
+
+      function requestPreview({ initial = false } = {}) {
+        cancelPreviewTimer();
+
+        previewState.pending = null;
+        previewState.error = "";
+
+        if (composing) {
+          updatePreviewStatus();
+          return;
+        }
+
+        if (!ui.autoPreview.checked && !initial) {
+          updatePreviewStatus();
+          return;
+        }
+
+        const enqueue = () => {
+          previewState.timer = null;
+
+          if (composing || (!ui.autoPreview.checked && !initial)) {
+            updatePreviewStatus();
+            return;
+          }
+
+          previewState.pending = {
+            source: sourceElement.value,
+            epoch: previewState.epoch
+          };
+
+          void runPendingPreview();
+        };
+
+        if (initial) {
+          // 初回表示・文書切り替え時の初期描画。手動更新UIは設けない。
+          enqueue();
+        } else {
+          previewState.timer = window.setTimeout(
+            enqueue,
+            PREVIEW_DELAY
+          );
+        }
+
+        updatePreviewStatus();
+      }
+
+      async function runPendingPreview() {
+        if (
+          previewState.running ||
+          composing ||
+          !previewState.pending
+        ) {
+          return;
+        }
+
+        const job = previewState.pending;
+        previewState.pending = null;
+
+        if (job.epoch !== previewState.epoch) {
+          updatePreviewStatus();
+          return;
+        }
+
+        const last = previewState.lastRendered;
+
+        if (
+          last &&
+          last.epoch === job.epoch &&
+          last.source === job.source
+        ) {
+          updatePreviewStatus();
+          return;
+        }
+
+        previewState.running = true;
+        previewState.currentJob = job;
+        previewState.error = "";
+
+        updatePreviewStatus();
+
+        const started = performance.now();
+        let result = null;
+
+        try {
+          result = compileDocument(
+            job.source,
+            previousToggles
+          );
+
+          previousToggles = result.toggles;
+
+          const available = await runtime.render(
+            previewElement,
+            result.html
+          );
+
+          if (job.epoch === previewState.epoch) {
+            previewState.lastRendered = {
+              source: job.source,
+              epoch: job.epoch,
+              available,
+              elapsed: Math.round(performance.now() - started)
+            };
+
+            showDiagnostics(
+              available
+                ? result.issues
+                : [
+                  ...result.issues,
+                  "MathJaxを読み込めませんでした。ローダーの配置・相対パス、および拡張やフォントの読み込み先を確認してください。"
+                ]
+            );
+          }
+        } catch (error) {
+          console.error(error);
+
+          if (job.epoch === previewState.epoch) {
+            previewState.lastRendered = null;
+
+            previewState.error =
+              "プレビュー更新に失敗しました。本文の保存・コピーは利用できます。";
+
+            showDiagnostics([
+              ...(result?.issues || []),
+              result
+                ? "数式の描画に失敗しました。数式の記法とMathJax関連ファイルを確認してください。"
+                : "変換処理に失敗しました。環境の対応関係と入力内容を確認してください。"
+            ]);
+          }
+        } finally {
+          previewState.running = false;
+          previewState.currentJob = null;
+
+          updatePreviewStatus();
+
+          if (previewState.pending && !composing) {
+            window.setTimeout(() => {
+              void runPendingPreview();
+            }, 0);
+          }
+        }
+      }
+
+      function resetPreviewForDocument() {
+        cancelPreviewTimer();
+
+        previewState.epoch++;
+        previewState.pending = null;
+        previewState.lastRendered = null;
+        previewState.error = "";
+
+        previousToggles = [];
+
+        requestPreview({
+          initial: true
+        });
+      }
+
+      // ================================================================
+      // 文書の切り替え・復元
+      // ================================================================
+
+      function setSourceValues(snapshot) {
+        if (sourceElement.value !== snapshot.source) {
+          sourceElement.value = snapshot.source;
+        }
+
+        ui.filename.value = normalizeFilename(snapshot.name);
+        openedSnapshot = currentSnapshot();
+      }
+
+      function activateNewDocument(snapshot) {
+        cancelDraftTimers();
+
+        draftState.ready = true;
+        draftState.id = createIdentifier("doc");
+        draftState.revision = null;
+        draftState.saved = null;
+        draftState.error = "";
+        draftState.pointerWarning = "";
+
+        clearRecovery();
+        setSourceValues(snapshot);
+        refreshDraftSelect("");
+        updateControls();
+        updateDraftStatus();
+
+        resetPreviewForDocument();
+        void flushDraft();
+      }
+
+      function activateStoredDocument(record) {
+        cancelDraftTimers();
+
+        draftState.ready = true;
+        draftState.id = record.id;
+        draftState.error = "";
+        draftState.pointerWarning = "";
+
+        clearRecovery();
+
+        setSourceValues({
+          source: record.source,
+          name: record.name
+        });
+
+        markPersisted(record);
+        refreshDraftSelect(record.id);
+        updateControls();
+        updateDraftStatus();
+
+        resetPreviewForDocument();
+      }
+
+      async function withSourceSwitch(task) {
+        if (switchingSource) {
+          return;
+        }
+
+        if (composing) {
+          setOperationStatus(
+            "IME変換を確定してから、文書を切り替えてください。",
+            "warning"
+          );
+
+          return;
+        }
+
+        switchingSource = true;
+        cancelDraftTimers();
+        updateControls();
+
+        try {
+          if (saveInFlight) {
+            await saveInFlight;
+          }
+
+          await task();
+        } catch (error) {
+          console.error(error);
+
+          setOperationStatus(
+            error instanceof Error
+              ? error.message
+              : "文書の切り替えに失敗しました。",
+            "error"
+          );
+        } finally {
+          switchingSource = false;
+
+          updateControls();
+          updateDraftStatus();
+
+          if (
+            hasUnsavedDraft() &&
+            !draftState.recovery &&
+            !draftState.error
+          ) {
+            scheduleDraftSave();
+          }
+        }
+      }
+
+      async function protectBeforeReplacement(target) {
+        const snapshot = currentSnapshot();
+
+        if (sameContents(target, snapshot)) {
+          return true;
+        }
+
+        const editedSinceOpen = !sameContents(
+          openedSnapshot,
+          snapshot
+        );
+
+        if (
+          editedSinceOpen &&
+          !window.confirm(
+            "現在の文書には変更があります。" +
+            "内容を下書きに残してから、別の文書に切り替えますか？"
+          )
+        ) {
+          return false;
+        }
+
+        if (!draftState.recovery) {
+          const saved = await flushDraft();
+
+          if (saved && sameContents(draftState.saved, snapshot)) {
+            return true;
+          }
+        }
+
+        try {
+          persistIndependentDraft({
+            source: snapshot.source,
+            name: snapshot.name.replace(
+              /(\.(?:tex|txt))$/i,
+              "-切替前$1"
+            )
+          });
+
+          return true;
+        } catch (error) {
+          console.warn(
+            "切り替え前の退避に失敗しました。",
+            error
+          );
+
+          return window.confirm(
+            "切り替え前の内容をブラウザー内に退避できませんでした。" +
+            "必要であればキャンセルして「ソースを保存」を実行してください。" +
+            "退避せずに本文を置き換えますか？"
+          );
+        }
+      }
+
+      async function restorePendingDraft() {
+        const pending = draftState.recovery;
+
+        if (!pending?.id) {
+          return;
+        }
+
+        await withSourceSwitch(async () => {
+          const target = readDraft(pending.id);
+
+          if (!target) {
+            throw new Error(
+              "対象の下書きが見つかりません。現在の本文は変更していません。"
+            );
+          }
+
+          if (
+            pending.kind !== "startup" &&
+            !(await protectBeforeReplacement(target))
+          ) {
+            return;
+          }
+
+          const latest = readDraft(pending.id);
+
+          if (!latest) {
+            throw new Error(
+              "対象の下書きが削除されました。現在の本文は変更していません。"
+            );
+          }
+
+          activateStoredDocument(latest);
+
+          setOperationStatus(
+            `下書き「${latest.name}」を開きました。`,
+            "ok"
+          );
+        });
+      }
+
+      async function keepCurrentAsNewDraft() {
+        await withSourceSwitch(async () => {
+          const snapshot = currentSnapshot();
+
+          activateNewDocument(snapshot);
+
+          const saved = await flushDraft();
+
+          setOperationStatus(
+            saved
+              ? "現在の文書を、別の下書きとして保存しました。"
+              : "現在の文書は維持しています。下書きの保存状態を確認してください。",
+            saved ? "ok" : "warning"
+          );
+        });
+      }
+
+      async function openSelectedDraft() {
+        const id = ui.draftSelect.value;
+
+        if (!id || id === draftState.id) {
+          return;
+        }
+
+        await withSourceSwitch(async () => {
+          const target = readDraft(id);
+
+          if (!target) {
+            throw new Error(
+              "選択した下書きが見つかりません。"
+            );
+          }
+
+          if (!(await protectBeforeReplacement(target))) {
+            return;
+          }
+
+          const latest = readDraft(id);
+
+          if (!latest) {
+            throw new Error(
+              "対象の下書きが削除されました。現在の本文は変更していません。"
+            );
+          }
+
+          activateStoredDocument(latest);
+
+          setOperationStatus(
+            `下書き「${latest.name}」を開きました。`,
+            "ok"
+          );
+        });
+      }
+
+      async function openSourceFile(file) {
+        await withSourceSwitch(async () => {
+          setOperationStatus(
+            "ソースファイルを読み込んでいます。"
+          );
+
+          let text;
+
+          try {
+            const buffer = await file.arrayBuffer();
+
+            text = new TextDecoder("utf-8", {
+              fatal: true
+            }).decode(buffer);
+          } catch {
+            throw new Error(
+              "UTF-8のテキストとして読み込めませんでした。" +
+              "ファイルの文字コードと内容を確認してください。"
+            );
+          }
+
+          const snapshot = {
+            source: text.replace(/\r\n?/g, "\n"),
+            name: normalizeFilename(file.name)
+          };
+
+          if (!(await protectBeforeReplacement(snapshot))) {
+            setOperationStatus(
+              "ソースの読み込みを取り消しました。"
+            );
+
+            return;
+          }
+
+          activateNewDocument(snapshot);
+
+          setOperationStatus(
+            `ソース「${snapshot.name}」を読み込みました。`,
+            "ok"
+          );
+        });
+      }
+
+      // ================================================================
+      // ソース保存・コピー
+      // ================================================================
+
+      function saveSourceFile() {
+        const snapshot = currentSnapshot();
+
+        ui.filename.value = snapshot.name;
+
+        try {
+          downloadText(
+            snapshot.name,
+            snapshot.source,
+            "text/plain;charset=utf-8"
+          );
+
+          setOperationStatus(
+            `「${snapshot.name}」のダウンロードを開始しました。` +
+            "ファイル保存の完了はブラウザー側で確認してください。",
+            "ok"
+          );
+        } catch (error) {
+          console.error(error);
+
+          setOperationStatus(
+            "ソースのダウンロードを開始できませんでした。",
+            "error"
+          );
+        }
+
+        void flushDraft();
+      }
+
+      async function copySourceText() {
+        const text = sourceElement.value;
+
+        try {
+          if (!navigator.clipboard?.writeText) {
+            throw new Error(
+              "Clipboard APIを利用できません。"
+            );
+          }
+
+          await navigator.clipboard.writeText(text);
+
+          setOperationStatus(
+            "ボタンを押した時点のソース全文をコピーしました。",
+            "ok"
+          );
+        } catch {
+          sourceElement.focus({
+            preventScroll: true
+          });
+
+          sourceElement.select();
+
+          setOperationStatus(
+            "自動コピーを利用できないため、入力欄の現在の全文を選択しました。" +
+            "Ctrl+C（Macは⌘C）、またはブラウザーのコピー操作を使用してください。",
+            "warning"
+          );
+        }
+      }
+
+      // ================================================================
+      // 初期化・イベント登録
+      // ================================================================
+
+      function initializeWorkspace() {
+        try {
+          scanDraftCatalog();
+        } catch {
+          setOperationStatus(
+            "ブラウザー内の下書き保存を利用できない可能性があります。" +
+            "ソースファイルへの保存は別途利用できます。",
+            "warning"
+          );
+        }
+
+        let saved = null;
+        const rememberedId = rememberedDocumentId();
+
+        if (rememberedId) {
+          try {
+            saved = readDraft(rememberedId);
+          } catch {
+            setOperationStatus(
+              "前回の下書きを読み取れませんでした。" +
+              "保存データは削除せず、HTML内の本文を別の文書として開きます。",
+              "warning"
+            );
+          }
+        }
+
+        const initialSnapshot = {
+          source: initialSource,
+          name: initialFilename
+        };
+
+        if (saved && sameContents(saved, initialSnapshot)) {
+          activateStoredDocument(saved);
+        } else if (saved) {
+          draftState.ready = false;
+
+          showRecovery("startup", saved.id, saved);
+          resetPreviewForDocument();
+        } else {
+          activateNewDocument(initialSnapshot);
+        }
+
+        updateControls();
+        updateDraftStatus();
+        updatePreviewStatus();
+      }
+
+      sourceElement.addEventListener("input", () => {
+        scheduleDraftSave();
+        requestPreview();
+      });
+
+      sourceElement.addEventListener("compositionstart", () => {
+        composing = true;
+        cancelPreviewTimer();
+        previewState.pending = null;
+        updatePreviewStatus();
+      });
+
+      sourceElement.addEventListener("compositionend", () => {
+        composing = false;
+        scheduleDraftSave();
+        requestPreview();
+      });
+
+      ui.filename.addEventListener("input", scheduleDraftSave);
+
+      ui.filename.addEventListener("change", () => {
+        ui.filename.value = normalizeFilename(ui.filename.value);
+        scheduleDraftSave();
+      });
+
+      ui.autoPreview.addEventListener("change", () => {
+        cancelPreviewTimer();
+        previewState.pending = null;
+
+        if (ui.autoPreview.checked) {
+          requestPreview();
+        } else {
+          updatePreviewStatus();
+        }
+      });
+
+      ui.openSource.addEventListener("click", () => {
+        ui.fileInput.click();
+      });
+
+      ui.fileInput.addEventListener("change", () => {
+        const file = ui.fileInput.files?.[0];
+        ui.fileInput.value = "";
+
+        if (file) {
+          void openSourceFile(file);
+        }
+      });
+
+      ui.saveSource.addEventListener("click", saveSourceFile);
+
+      ui.copySource.addEventListener("click", () => {
+        void copySourceText();
+      });
+
+      ui.draftSelect.addEventListener("change", updateControls);
+
+      ui.openDraft.addEventListener("click", () => {
+        void openSelectedDraft();
+      });
+
+      ui.restoreDraft.addEventListener("click", () => {
+        void restorePendingDraft();
+      });
+
+      ui.keepCurrent.addEventListener("click", () => {
+        void keepCurrentAsNewDraft();
+      });
+
+      document
+        .getElementById("publicDownload")
+        .addEventListener("click", () => {
+          try {
+            const filename = normalizeFilename(
+              ui.filename.value
+            ).replace(/\.(?:tex|txt)$/i, ".html");
+
+            downloadText(
+              filename,
+              buildPage(sourceElement.value).html,
+              "text/html;charset=utf-8"
+            );
+
+            setOperationStatus(
+              `公開用HTML「${filename}」のダウンロードを開始しました。` +
+              "プレビューの更新状態にかかわらず、最新の入力を使用しています。",
+              "ok"
+            );
+          } catch (error) {
+            console.error(error);
+
+            setOperationStatus(
+              "公開用HTMLを生成できませんでした。入力内容を確認してください。",
+              "error"
+            );
+          }
+        });
+
+      document
+        .getElementById("cssDownload")
+        .addEventListener("click", () => {
+          try {
+            downloadText(
+              "style.css",
+              publicStylesheet + "\n",
+              "text/css;charset=utf-8"
+            );
+
+            setOperationStatus(
+              "共通CSSのダウンロードを開始しました。",
+              "ok"
+            );
+          } catch (error) {
+            console.error(error);
+
+            setOperationStatus(
+              "共通CSSを保存できませんでした。",
+              "error"
+            );
+          }
+        });
+
+      document.addEventListener("keydown", (event) => {
+        if (
+          (event.ctrlKey || event.metaKey) &&
+          !event.altKey &&
+          event.key.toLowerCase() === "s"
+        ) {
+          event.preventDefault();
+          saveSourceFile();
+        }
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+          void flushDraft();
+        } else {
+          synchronizeCurrentDraft();
+        }
+      });
+
+      window.addEventListener("pagehide", () => {
+        void flushDraft();
+      });
+
+      window.addEventListener("focus", () => {
+        synchronizeCurrentDraft();
+      });
+
+      window.addEventListener("pageshow", (event) => {
+        if (event.persisted) {
+          synchronizeCurrentDraft();
+          requestPreview();
+        }
+      });
+
+      window.addEventListener("storage", (event) => {
+        if (
+          event.key !== null &&
+          !event.key.startsWith(DRAFT_PREFIX)
+        ) {
+          return;
+        }
+
+        try {
+          if (event.key === null) {
+            scanDraftCatalog();
+          } else {
+            const id = event.key.slice(DRAFT_PREFIX.length);
+            const record = readDraft(id);
+
+            if (record) {
+              indexDraft(record);
+            } else {
+              draftCatalog.delete(id);
+              refreshDraftSelect();
+            }
+          }
+
+          synchronizeCurrentDraft();
+        } catch {
+          setOperationStatus(
+            "別タブの下書き変更を読み取れませんでした。" +
+            "現在の入力内容は保持しています。",
+            "warning"
+          );
+
+          synchronizeCurrentDraft();
+        }
+      });
+
+      initializeWorkspace();
+    })();
   </script>
 </body>
 </html>
