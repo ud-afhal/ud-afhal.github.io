@@ -18,7 +18,7 @@ window.MathJax = {
           bval: ["\\left\\unicode{x27E6} #1 \\right\\unicode{x27E7}", 1],
           be: ["#1:\\text{#2}", 2],
           proves: "\\vdash",
-          forces: ["\\Vdash\\text{``$ #1 $''}", 1],
+          forces: "\\Vdash",
           PA: "\\mathrm{PA}",
           BST: "\\mathrm{BST}",
           ZF: "\\mathrm{ZF}",
