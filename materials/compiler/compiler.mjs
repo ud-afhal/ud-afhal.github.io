@@ -1909,7 +1909,7 @@ function createContext(source) {
 // 旧エディターのサイト設定初期値。
 // 著者と更新日はサイト設定ではなく、ソースのメタデータを使用する。
 const SITE = Object.freeze({
-  siteName: "",
+  siteName: "Chicken-generic over Rice",
   headerImageUrl: "/images/header.png",
   stylesheetUrl: "/style.css",
   homeUrl: "/index.html",
@@ -1952,8 +1952,8 @@ function buildPublicHTML(result) {
     [SITE.homeUrl, "ホーム"],
     [SITE.materialsUrl, "資料"],
     [SITE.updatesUrl, "更新履歴"],
-    [SITE.aboutUrl, "サイト紹介"],
-    [SITE.linksUrl, "リンク集"]
+    [SITE.aboutUrl, "このサイトについて"],
+    [SITE.linksUrl, "リンク"]
   ].map(([url, label]) =>
     `<a href="${escapeHTML(url)}">${label}</a>`
   ).join("\n");
