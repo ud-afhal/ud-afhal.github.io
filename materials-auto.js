@@ -3,7 +3,7 @@
  * MATERIALS_AUTO_DATA の行は scripts/update-materials.js が txt から生成します。直接編集しないでください。
  * 対象データは materials/notes、materials/presentations、materials/drafts 内の .txt のみです。
  */
-const MATERIALS_AUTO_DATA = [{"title":"テスト","date":"2026-11-03","categoryKey":"drafts","category":"執筆中（正確性を保証しません）","url":"materials/drafts/tset.html"},{"title":"GCHを強制するクラス強制法","date":"2026-10-30","categoryKey":"notes","category":"勉強ノート","url":"materials/notes/GCH-forcing.html"},{"title":"axiom A forcingの可算台反復に関する発表ノート","date":"2026-10-27","categoryKey":"presentations","category":"発表ノート","url":"materials/presentations/axiomA.html"},{"title":"PFAの無矛盾性　発表原稿","date":"2026-09-11","categoryKey":"presentations","category":"発表ノート","url":"materials/presentations/PFA-festival.html"}];
+const MATERIALS_AUTO_DATA = [{"title":"GCHを強制するクラス強制法","date":"2026-10-30","categoryKey":"notes","category":"勉強ノート","url":"materials/notes/GCH-forcing.html"},{"title":"axiom A forcingの可算台反復に関する発表ノート","date":"2026-10-27","categoryKey":"presentations","category":"発表ノート","url":"materials/presentations/axiomA.html"},{"title":"PFAの無矛盾性　発表原稿","date":"2026-09-11","categoryKey":"presentations","category":"発表ノート","url":"materials/presentations/PFA-festival.html"},{"title":"2huge_and_hyperhuge","date":null,"categoryKey":"drafts","category":"執筆中（正確性を保証しません）","url":"materials/drafts/2huge_and_hyperhuge.html"},{"title":"hyperhuge_and_solid_bedrock","date":null,"categoryKey":"drafts","category":"執筆中（正確性を保証しません）","url":"materials/drafts/hyperhuge_and_solid_bedrock.html"}];
 
 (() => {
   "use strict";
