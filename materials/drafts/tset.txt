@@ -1,7 +1,0 @@
-\title{テスト}
-\author{Ud.afhal}
-\date{2026-11-03}
-
-\section{はじめに}
-
-ここに本文を記述します。

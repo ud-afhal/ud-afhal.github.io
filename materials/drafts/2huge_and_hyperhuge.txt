@@ -1,0 +1,160 @@
+\title{2huge_and_hyperhuge}
+\section{$2$-huge cardinalとhyper- huge cardinal}
+
+\begin{definition}
+順序数$\kappa$が$n$-huge cardinalであるとは，次を満たす$j$を持つことをいう：
+\begin{itemize}
+\item $j:V\ee_\kappa M$
+\item $M^{j^n(\kappa)}\subseteq M$
+\end{itemize}
+\end{definition}
+\begin{remark}
+よく知られるKunenの結果より，$\omega$-huge cardinalは存在しない．ここで，順序数$\kappa$が$\omega$-huge carinalであるとは，$j:V\ee_\kappa M$で$M^{\sup_{n<\omega}j^n(\kappa)}\subseteq M$を満たすものを持つことをいう．
+\end{remark}
+\begin{definition}
+$\mathcal{U}\subseteq \power(\power(\lambda))$が$\power(\lambda)$の正規フィルターであるとは，次を満たすことをいう：
+\begin{itemize}
+\item $\alpha<\lambda$に対して$\set{x\in \power(\lambda):\alpha\in x}\in\mathcal{F}$
+\item $\langle X_\alpha:\alpha<\lambda\rangle\in {}^\lambda\mathcal{F}$に対して$\bigtriangleup_{\alpha<\lambda}X_\alpha=\set{x\in\power(\lambda):\forall \alpha\in x(x\in X_\alpha)}\in \mathcal{F}$
+\end{itemize}
+\end{definition}
+\begin{remark}
+$\power(\lambda)$の正規フィルター$\mathcal{F}$に対して，Fodorの補題が成り立つ．すなわち，$f:\power(\lambda)\to \lambda$がある$\mathcal{F}$-stationary set上で選択関数となっていれば，ある$\mathcal{F}$-stationary set上である$\alpha<\lambda$に対する定数関数になっている．
+\end{remark}
+\begin{remark}
+$\power(\lambda)$の正規超フィルターで単項であるものは $\mathcal{U}=\set{X\subseteq\power(\lambda):\lambda\in X}$に限る．
+\end{remark}
+
+\begin{lemma}
+$\kappa>\omega$に対して次は同値：
+\begin{enumerate}
+\item $\be{\kappa}{$n$-huge}$
+\item ある$\lambda>\kappa$と
+$\power(\lambda)$の非単項$\kappa$-完備正規超フィルター$\mathcal{U}$が存在して，ある$\kappa=\lambda_0<\lambda_1<\cdots<\lambda_n=\lambda$に対して以下が成り立つ：
+\[
+\set{x\in\power(\lambda):\bigwedge_{i<n}\ot(x\cap \lambda_{i+1})=\lambda_i}\in \mathcal{U}
+\]
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+$2\implies1$：
+$j_{\mathcal{U}}:V\ee M_{\mathcal{U}}$が$\kappa$に関する$n$-huge embeddingであるのを示す．
+
+$\checkmark$ $\kappa\leq\mathrm{crit}(j_{\mathcal{U}})$
+\begin{reason}
+$\mathcal{U}$の$\kappa$-完備性より従う．
+\end{reason}
+
+$\checkmark$ $[\mathrm{id}]=j_{\mathcal{U}}\img \lambda$．特に$M_{\mathcal{U}}^{\lambda}\subseteq M_{\mathcal{U}}$．
+\begin{reason}
+$\mathcal{U}$の正規性より従う．「特に」の部分は$j_{\mathcal{U}}\img\lambda\in M_{\mathcal{U}}$より一般論から従う．
+\end{reason}
+
+$\checkmark$ $j_{\mathcal{U}}^n(\kappa)=\lambda$．特に$\mathrm{crit}(j_{\mathcal{U}})=\kappa$．
+\begin{reason}
+$\mathcal{U}$の仮定から$M\models\bigwedge_{i<n}\mathrm{ot}(j_{\mathcal{U}}\img\lambda\cap j_{\mathcal{U}}(\lambda_{i+1}))=j_{\mathcal{U}}(\lambda_i)$
+より$\bigwedge_{i<n}\lambda_{i+1}=j_{\mathcal{U}}(\lambda_i)$．よって$i<n$に対して$j_{\mathcal{U}} ^i(\kappa)=\lambda_i$となる．
+\end{reason}
+
+$1\implies 2$：$j:V\ee_\kappa M$を$n$-huge embeddingとする．$\lambda:=j^n(\kappa)$に対して，$\power(\lambda)$の非単項$\kappa$-完備正規超フィルター$\mathcal{U}$を
+\[
+\mathcal{U}=\set{X\subseteq \power(\lambda):j\img \lambda\in j(X)}
+\]
+によって定める．すると，$i<n$に対して$\lambda_i:=j^i(\kappa)$と定めれば，
+\[
+\set{x\in\power(\lambda):\bigwedge_{i<n}\ot(x\cap \lambda_{i+1})=\lambda_i}\in \mathcal{U}
+\iff
+j\img\lambda\in j(\set{x\in\power(\lambda):\bigwedge_{i<n}\ot(x\cap \lambda_{i+1})=\lambda_i})
+\iff
+\bigwedge_{i<n}\ot(j\img\lambda\cap j(\lambda_{i+1}))=j(\lambda_i)
+\iff
+\bigwedge_{i<n}\ot(j\img j^n(\lambda)\cap j(j^{i+1}(\kappa)))=j^{i+1}(\kappa)
+\iff
+\top
+\]
+となるから，これが望むものである．
+\end{proof}
+\begin{definition}
+$\omega<\kappa\leq\lambda<\kappa'\leq\lambda'$に対して，$(\kappa,\lambda)\to(\kappa',\lambda')$を次の主張とする：
+\begin{itemize}
+\item $j:V\ee_\kappa M$
+\item $\kappa\leq \lambda<j(\kappa)$
+\item $M^{j(\lambda)}\subseteq M$
+\item $(j(\kappa),j(\lambda))=(\kappa',\lambda')$
+\end{itemize}
+$\kappa$がhyper-huge cardinalであるとは，任意の$\lambda\geq\kappa$に対して$\exists\kappa'\exists\lambda'[(\kappa,\lambda)\to(\kappa',\lambda')]$となることをいう．
+\end{definition}
+\begin{lemma}
+$\omega<\kappa\leq\lambda<\kappa'\leq\lambda'$に対して次は同値：
+\begin{enumerate}
+\item $(\kappa,\lambda)\to (\kappa',\lambda')$
+\item $\power(\lambda')$上の非単項正規超フィルター$\mathcal{U}$で，次を満たすものが存在：
+\[
+\set{x\in\power(\lambda'):x\cap\kappa\in \kappa\land\ot(x\cap \kappa')=\kappa\land \ot(x)=\lambda}\in \mathcal{U}
+\]
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+$1\implies 2$は$\mathcal{U}=\set{X\subseteq\power(\lambda'):j\img\lambda'\in j(X)}$と取れば良い．
+
+$2\implies 1$は$\mathcal{U}$の正規性から
+$[\mathrm{id}]=j_{\mathcal{U}}\img\lambda'$に注意すれば明らか．
+\end{proof}
+\begin{remark}
+$\ZFC$の推移的モデル$M$に対して，$V_{\lambda'+3}\subseteq M$かつ$(\kappa,\lambda)\to(\kappa',\lambda')$ならば，$M\models (\kappa,\lambda)\to(\kappa',\lambda')$．
+\end{remark}
+\begin{theorem}
+
+$\be{\kappa}{$2$-huge cardinal}$に対して，
+\[
+V_\kappa\models\ZFC+ \text{``Thre are proper class many hyper-huge cardinals''}
+\]
+特に，
+\[
+\ZFC+\exists \text{$2$-huge}\proves \Con(\ZFC+\exists \text{hyper-huge})
+\]
+\end{theorem}
+\begin{proof}
+$\be{\kappa}{$2$-huge}$，$\be{j:V\ee_\kappa M}{$2$-huge embedding}$を固定する．
+
+$V_{j(\kappa)}\models \ZFC+\be{\kappa}{hyper-huge}$を示せば，$M_{j(\kappa)}=V_{j(\kappa)}\models \be{\kappa}{hyper-huge}$より$V_\kappa\models\ZFC+\text{``Thre are proper class many hyper-huge cardinals''}$となって望む結論が得られる．
+
+$\checkmark$ $\be{j(\kappa),j(j(\kappa))}{inaccessible}$．特に，$V_{j(\kappa)}\models \ZFC$．
+\begin{reason}
+$\be{\kappa}{inaccessible}$より$M\models\be{j(\kappa)}{inaccessible}$より，$M^{j(\kappa)}\subseteq M$より$\be{j(\kappa)}{inaccessible}$．同様に，$M^{j(j(\kappa))}\subseteq M$に注意して$\be{j(j(\kappa))}{inaccessible}$．
+\end{reason}
+
+$\checkmark$ $\be{\kappa}{$j(\kappa)$-supercompact}$かつ$\be{j(\kappa)}{$j(j(\kappa))$-supercompact}$．
+\begin{reason}
+前半は定義から明らか．後半は，$\be{\kappa}{$j(\kappa)$-supercompact}$より$M\models\be{j(\kappa)}{$j(j(\kappa))$-supercompact}$であるから，$|\power_{j(\kappa)}j(j(\kappa))|=j(j(\kappa))$かつ$M^{j(j(\kappa))}\subseteq M$に注意して，明らか．
+\end{reason}
+
+$\be{k:V\ee_{j(\kappa)} N}{$j(j(\kappa))$-supercompact embedding}$を固定する．
+
+任意の$\kappa\leq\lambda<j(\kappa)\leq j(\lambda)<j(j(\kappa))$に対して，定義より$(\kappa,\lambda)\to(j(\kappa),j(\lambda))$であるから，
+\[
+\exists \kappa',\lambda'<j(j(\kappa))[(\kappa,\lambda)\to(\kappa',\lambda')]
+\]
+より，$N^{j(j(\kappa))}\subseteq N$に注意して
+\[
+N\models\exists \kappa',\lambda'<j(j(\kappa))[(\kappa,\lambda)\to(\kappa',\lambda')]
+\]
+より特に
+\[
+N\models\exists \kappa',\lambda'<k(j(\kappa))[(\kappa,\lambda)\to(\kappa',\lambda')]
+\]
+より
+\[
+\exists \kappa',\lambda'<j(\kappa)[(\kappa,\lambda)\to(\kappa',\lambda')]
+\]
+となる．故に$V_{j(\kappa)}\models \exists \kappa',\lambda'[
+(\kappa,\lambda)\to(\kappa',\lambda')]$．
+
+以上より$V_{j(\kappa)}\models \be{\kappa}{hyper-huge}$となる．
+\end{proof}
+
+\begin{thebibliography}{9}
+\bibitem{Usuba} T. Usuba, The downward directed grounds hypothesis and very large cardinals, J. Math. Log. \textbf{17} (2017), no.~2, 1750009, 24 pp.; MR3730565
+\bibitem{Kanamori} A. Kanamori, \textit{The higher infinite}, second edition Paperback reprint of the 2003 edition, 
+Springer Monographs in Mathematics, Springer, Berlin, 2009; MR2731169
+\end{thebibliography}
