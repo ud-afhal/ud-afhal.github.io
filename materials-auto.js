@@ -1,10 +1,9 @@
 /*
  * 資料一覧の表示処理。
- * MATERIALS_AUTO_DATA の行は scripts/update-materials.js が txt から生成します。直接編集しないでください。
+ * MATERIALS_AUTO_DATA は scripts/compile.js がTXTから生成し、
+ * 公開用 _site/materials-auto.js の先頭に付加します。
  * 対象データは materials/notes、materials/presentations、materials/drafts 内の .txt のみです。
  */
-const MATERIALS_AUTO_DATA = [{"title":"GCHを強制するクラス強制法","date":"2026-10-30","categoryKey":"notes","category":"勉強ノート","url":"materials/notes/GCH-forcing.html"},{"title":"axiom A forcingの可算台反復に関する発表ノート","date":"2026-10-27","categoryKey":"presentations","category":"発表ノート","url":"materials/presentations/axiomA.html"},{"title":"PFAの無矛盾性　発表原稿","date":"2026-09-11","categoryKey":"presentations","category":"発表ノート","url":"materials/presentations/PFA-festival.html"},{"title":"2huge_and_hyperhuge","date":null,"categoryKey":"drafts","category":"執筆中（正確性を保証しません）","url":"materials/drafts/2huge_and_hyperhuge.html"},{"title":"hyperhuge_and_solid_bedrock","date":null,"categoryKey":"drafts","category":"執筆中（正確性を保証しません）","url":"materials/drafts/hyperhuge_and_solid_bedrock.html"}];
-
 (() => {
   "use strict";
 
@@ -36,25 +35,24 @@ const MATERIALS_AUTO_DATA = [{"title":"GCHを強制するクラス強制法","da
     return li;
   }
 
-// トップページ: draftsを除き、更新日の新しい資料を最大5件表示。
-function renderRecentUpdates() {
-  const target = document.getElementById("auto-recent-updates");
-  if (!target) return;
-  target.replaceChildren();
+  // トップページ: draftsを除き、更新日の新しい資料を最大5件表示。
+  function renderRecentUpdates() {
+    const target = document.getElementById("auto-recent-updates");
+    if (!target) return;
+    target.replaceChildren();
 
-  const items = MATERIALS_AUTO_DATA
-    .filter(item => item.categoryKey !== "drafts");
+    const items = MATERIALS_AUTO_DATA
+      .filter(item => item.categoryKey !== "drafts");
 
-  items.slice(0, 5).forEach(item => {
-    target.appendChild(makeListItem(item, true));
-  });
-
-  if (items.length === 0) {
-    const li = document.createElement("li");
-    li.textContent = "資料はまだ登録されていません。";
-    target.appendChild(li);
+    items.slice(0, 5).forEach(item => {
+      target.appendChild(makeListItem(item, true));
+    });
+    if (items.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "資料はまだ登録されていません。";
+      target.appendChild(li);
+    }
   }
-}
 
   // トップページ: 各カテゴリから新しい資料を最大3件表示。
   function renderHomeMaterials() {
@@ -65,7 +63,6 @@ function renderRecentUpdates() {
     categoryOrder.forEach(key => {
       const items = MATERIALS_AUTO_DATA.filter(item => item.categoryKey === key);
       if (items.length === 0) return;
-
       const section = document.createElement("section");
       const heading = document.createElement("h3");
       const categoryLink = document.createElement("a");
@@ -73,7 +70,6 @@ function renderRecentUpdates() {
       categoryLink.textContent = categoryNames[key];
       heading.appendChild(categoryLink);
       section.appendChild(heading);
-
       const list = document.createElement("ul");
       items.slice(0, 3).forEach(item => list.appendChild(makeListItem(item, false)));
       section.appendChild(list);
@@ -86,7 +82,6 @@ function renderRecentUpdates() {
     const target = document.getElementById("auto-materials-list");
     if (!target) return;
     target.replaceChildren();
-
     categoryOrder.forEach(key => {
       // 資料一覧は更新日ではなく、タイトルの五十音順で表示する。
       const items = MATERIALS_AUTO_DATA
@@ -99,7 +94,6 @@ function renderRecentUpdates() {
       const heading = document.createElement("h2");
       heading.textContent = categoryNames[key];
       section.appendChild(heading);
-
       const list = document.createElement("ul");
       items.forEach(item => list.appendChild(makeListItem(item, false)));
       section.appendChild(list);

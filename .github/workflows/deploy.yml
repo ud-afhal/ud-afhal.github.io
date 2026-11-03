@@ -10,40 +10,31 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+# リポジトリの読み取りだけを許可する。
+# Pagesへの公開権限はdeployジョブにだけ与える。
 permissions:
-  contents: write   # materials-auto.js のコミット用
-  pages: write
-  id-token: write
+  contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      # 1. txt から資料一覧のソース(materials-auto.js)を更新する
-      - name: Update materials list
-        run: node scripts/update-materials.js
-
-      # 2. 変更があればソースにコミットする(botのpushでは再実行されない)
-      - name: Commit materials-auto.js
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add materials-auto.js
-          if ! git diff --cached --quiet; then
-            git commit -m "Update materials list"
-            git push
-          fi
-
-      # 3. 更新後のソースと txt から、公開用フォルダ _site を作る
+      # TXTから資料一覧とHTMLを生成する。リポジトリには書き戻さない。
       - name: Build _site
         run: node scripts/compile.js
 

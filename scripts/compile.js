@@ -2,9 +2,9 @@
 
 // 公開用フォルダ _site を作る。
 //   1. リポジトリの静的ファイルを _site にコピーする
-//   2. materials/{notes,presentations,drafts} の .txt を HTML に変換し、
-//      _site の同じ位置・同じ名前の .html として書き出す
-// 変換結果はリポジトリ側には書き出さない。
+//   2. TXTから資料一覧(materials-auto.js)を生成する
+//   3. materials/{notes,presentations,drafts} の .txt を HTML に変換する
+// 生成物はすべて _site に出力し、リポジトリ側には書き戻さない。
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -18,12 +18,12 @@ const {
   report
 } = require("./common.js");
 
-const { buildPage } = require("../materials/mystyle.js");
+const { buildPage, compileDocument } = require("../materials/mystyle.js");
 
 const OUTPUT = path.join(ROOT, "_site");
-
-// _site にコピーしないトップレベルの名前(ドット始まりも除く)。
 const EXCLUDED = new Set(["_site", "node_modules", "scripts", "README.md"]);
+const DATA_LINE = /^const MATERIALS_AUTO_DATA = .*;$/m;
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 function copyStaticFiles() {
   const sourceDirectories = CATEGORIES.map((category) => {
@@ -51,6 +51,85 @@ function copyStaticFiles() {
   }
 }
 
+// TXTから資料一覧のデータを作る。
+function readItem({ category, file, relative }) {
+  const { meta } = compileDocument(readUtf8(file));
+
+  let title = meta.title?.text;
+  if (!title) {
+    title = path.basename(relative).replace(TEXT_FILE, "");
+    report("warning", relative, "\\title がないため、ファイル名を表題にします。");
+  }
+
+  let date = meta.date?.text || null;
+  if (date !== null && !ISO_DATE.test(date)) {
+    report(
+      "warning",
+      relative,
+      `\\date「${date}」は YYYY-MM-DD ではないため、日付なしとして扱います。`
+    );
+    date = null;
+  }
+
+  const url = relative
+    .replace(TEXT_FILE, ".html")
+    .split("/")
+    .map(encodeURIComponent)
+    .join("/");
+
+  return {
+    title,
+    date,
+    categoryKey: category.key,
+    category: category.name,
+    url
+  };
+}
+
+// 日付の新しい順。日付なしは末尾。同日はURL順で固定する。
+function compareItems(a, b) {
+  if (a.date !== b.date) {
+    if (a.date === null) return 1;
+    if (b.date === null) return -1;
+    return a.date < b.date ? 1 : -1;
+  }
+
+  return a.url < b.url ? -1 : 1;
+}
+
+// 既存の表示処理を残し、データ部分だけを今回のTXTから作り直す。
+function buildMaterialsList() {
+  const items = [];
+  let failed = 0;
+
+  for (const source of collectSources()) {
+    try {
+      items.push(readItem(source));
+    } catch (error) {
+      failed++;
+      report("error", source.relative, error.message);
+    }
+  }
+
+  if (failed) {
+    throw new Error(
+      `${failed}件のTXTを資料一覧に反映できませんでした。公開を中止します。`
+    );
+  }
+
+  items.sort(compareItems);
+
+  const sourceFile = path.join(ROOT, "materials-auto.js");
+  const source = readUtf8(sourceFile);
+  // 表示処理だけを取り出す。古いデータ行が残っていても取り除く。
+  const renderer = source.replace(DATA_LINE, "");
+  const output = path.join(OUTPUT, "materials-auto.js");
+  const dataLine = `const MATERIALS_AUTO_DATA = ${JSON.stringify(items)};`;
+
+  fs.writeFileSync(output, `${dataLine}\n${renderer}`, "utf8");
+  console.log(`資料一覧を生成しました（${items.length}件）。`);
+}
+
 function compileSources() {
   const sources = collectSources();
   let failed = 0;
@@ -67,7 +146,6 @@ function compileSources() {
       fs.writeFileSync(output, html, "utf8");
 
       console.log(`${relative} -> ${path.relative(ROOT, output)}`);
-
       for (const issue of issues) {
         report("warning", relative, issue);
       }
@@ -84,4 +162,5 @@ function compileSources() {
 }
 
 copyStaticFiles();
+buildMaterialsList();
 compileSources();
