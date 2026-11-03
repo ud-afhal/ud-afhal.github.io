@@ -1983,8 +1983,10 @@ function buildPublicHTML(result) {
   </header>
   <main class="public-document" id="public-document">
     ${renderDocument(result)}
-    <p><a href="#top">ページの先頭へ</a></p>
-    <p><a href="/materials.html">資料一覧へ戻る</a></p>
+    <p class="back-to-top">
+    <a href="#top">ページ先頭に戻る</a>
+    </p>
+    <p><a href="/materials.html">資料一覧に戻る</a></p>
   </main>
   <footer class="site-footer">
     <p>© ${escapeHTML(SITE.copyrightYear)} ${escapeHTML(SITE.copyrightHolder)}</p>
