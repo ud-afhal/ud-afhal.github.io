@@ -2592,6 +2592,234 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       // 自動プレビュー
       // ================================================================
 
+      // ================================================================
+      // プレビューの差分描画
+      // ================================================================
+      //
+      // プレビュー直下のブロック（段落・見出し・定理・数式など）ごとに、
+      // 前回の変換結果と比較し、変化したブロックだけを差し替えて
+      // MathJaxで組版する。行番号属性(data-src-*)だけの違いは変化とみなさず、
+      // 既存の要素の属性を書き換える。
+
+      const blockKeys = new WeakMap();
+      let patchEpoch = -1;
+
+      function blockKey(element) {
+        return element.outerHTML.replace(
+          / data-src-(?:line|end)="\d+"/g,
+          ""
+        );
+      }
+
+      function parseBlocks(html) {
+        const template = document.createElement("template");
+        template.innerHTML = html;
+        return Array.from(template.content.children);
+      }
+
+      function rememberBlocks(blocks, keys) {
+        const current = Array.from(previewElement.children);
+
+        if (current.length !== blocks.length) {
+          // 対応が取れなければ、次回も全体を描画する。
+          patchEpoch = -1;
+          return;
+        }
+
+        current.forEach((element, index) => {
+          blockKeys.set(element, keys[index]);
+        });
+      }
+
+      function sourceMarked(element) {
+        return [
+          element,
+          ...element.querySelectorAll("[data-src-line]")
+        ].filter((node) => node.hasAttribute("data-src-line"));
+      }
+
+      function syncSourceAttributes(oldBlock, newBlock) {
+        const oldNodes = sourceMarked(oldBlock);
+        const newNodes = sourceMarked(newBlock);
+
+        if (oldNodes.length !== newNodes.length) {
+          return;
+        }
+
+        oldNodes.forEach((node, index) => {
+          const source = newNodes[index];
+
+          node.dataset.srcLine = source.dataset.srcLine;
+
+          if (source.dataset.srcEnd) {
+            node.dataset.srcEnd = source.dataset.srcEnd;
+          } else {
+            delete node.dataset.srcEnd;
+          }
+        });
+      }
+
+      function toggleNodes(blocks) {
+        return blocks.flatMap((block) => [
+          ...(block.matches(runtime.toggleSelector) ? [block] : []),
+          ...block.querySelectorAll(runtime.toggleSelector)
+        ]);
+      }
+
+      function firstEquationStart(blocks) {
+        for (const block of blocks) {
+          const math = block.matches(".math-display[data-eq-start]")
+            ? block
+            : block.querySelector(".math-display[data-eq-start]");
+
+          if (math) {
+            return Number(math.dataset.eqStart) || 0;
+          }
+        }
+
+        return 0;
+      }
+
+      async function renderPreview(html, epoch) {
+        const blocks = parseBlocks(html);
+        const keys = blocks.map(blockKey);
+        const current = Array.from(previewElement.children);
+
+        const patchable =
+          Boolean(window.MathJax?.typesetPromise) &&
+          epoch === patchEpoch &&
+          current.length > 0 &&
+          current.every((element) => blockKeys.has(element)) &&
+          // 数式内の \ref・\eqref は MathJax のラベル表に依存するため全体を組版する。
+          !/\\(?:eq|auto|page)?ref\s*\{/.test(html);
+
+        if (!patchable) {
+          const available = await runtime.render(previewElement, html);
+
+          patchEpoch = epoch;
+          rememberBlocks(blocks, keys);
+
+          return {
+            available,
+            changed: blocks.length,
+            total: blocks.length
+          };
+        }
+
+        return runtime.whenReady(async (mathJax) => {
+          if (!mathJax) {
+            const states = runtime.snapshot(previewElement);
+
+            previewElement.innerHTML = html;
+            runtime.restore(previewElement, states);
+            patchEpoch = -1;
+
+            return {
+              available: false,
+              changed: blocks.length,
+              total: blocks.length
+            };
+          }
+
+          let prefix = 0;
+
+          while (
+            prefix < current.length &&
+            prefix < blocks.length &&
+            blockKeys.get(current[prefix]) === keys[prefix]
+          ) {
+            prefix++;
+          }
+
+          let suffix = 0;
+
+          while (
+            suffix < current.length - prefix &&
+            suffix < blocks.length - prefix &&
+            blockKeys.get(current[current.length - 1 - suffix]) ===
+              keys[blocks.length - 1 - suffix]
+          ) {
+            suffix++;
+          }
+
+          for (let index = 0; index < prefix; index++) {
+            syncSourceAttributes(current[index], blocks[index]);
+          }
+
+          for (let offset = 1; offset <= suffix; offset++) {
+            syncSourceAttributes(
+              current[current.length - offset],
+              blocks[blocks.length - offset]
+            );
+          }
+
+          const removed = current.slice(prefix, current.length - suffix);
+          const added = blocks.slice(prefix, blocks.length - suffix);
+
+          if (removed.length === 0 && added.length === 0) {
+            return {
+              available: true,
+              changed: 0,
+              total: blocks.length
+            };
+          }
+
+          const states = runtime.snapshot(previewElement);
+          const anchor = suffix > 0 ? current[current.length - suffix] : null;
+
+          if (removed.length > 0) {
+            mathJax.typesetClear(removed);
+            removed.forEach((element) => element.remove());
+          }
+
+          const fragment = document.createDocumentFragment();
+
+          added.forEach((element, index) => {
+            blockKeys.set(element, keys[prefix + index]);
+            element.style.visibility = "hidden";
+            fragment.append(element);
+          });
+
+          previewElement.insertBefore(fragment, anchor);
+
+          // 折り畳まれた中身も正しく組版できるよう、組版中は一時的に開く。
+          const toggles = toggleNodes(added);
+
+          for (const toggle of toggles) {
+            runtime.setExpanded(toggle, true);
+          }
+
+          try {
+            if (added.length > 0) {
+              mathJax.texReset(firstEquationStart(added));
+              await mathJax.typesetPromise(added);
+            }
+          } finally {
+            for (const toggle of toggles) {
+              const key = toggle.dataset.toggleKey;
+              runtime.setExpanded(
+                toggle,
+                states.has(key) ? states.get(key) : true
+              );
+            }
+
+            for (const element of added) {
+              element.style.removeProperty("visibility");
+
+              if (element.getAttribute("style") === "") {
+                element.removeAttribute("style");
+              }
+            }
+          }
+
+          return {
+            available: true,
+            changed: added.length,
+            total: blocks.length
+          };
+        });
+      }
+
       function cancelPreviewTimer() {
         window.clearTimeout(previewState.timer);
         previewState.timer = null;
@@ -2658,7 +2886,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
             ui.previewStatus,
             (
               last.available
-                ? `プレビュー更新済み（${last.elapsed} ms）。`
+                ? `プレビュー更新済み（${last.elapsed} ms、` +
+                  `${last.changed ?? last.total}/${last.total}ブロックを再描画）。`
                 : "本文は反映済みですが、MathJaxを読み込めませんでした。"
             ) + suspended,
             last.available ? "ok" : "warning"
@@ -2768,17 +2997,21 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
           previousToggles = result.toggles;
 
-          const available = await runtime.render(
-            previewElement,
-            result.html
+          const rendered = await renderPreview(
+            result.html,
+            job.epoch
           );
+
+          const available = rendered.available;
 
           if (job.epoch === previewState.epoch) {
             previewState.lastRendered = {
               source: job.source,
               epoch: job.epoch,
               available,
-              elapsed: Math.round(performance.now() - started)
+              elapsed: Math.round(performance.now() - started),
+              changed: rendered.changed,
+              total: rendered.total
             };
 
             showDiagnostics(

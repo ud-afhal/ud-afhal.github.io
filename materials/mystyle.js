@@ -491,7 +491,12 @@
       typeset,
       snapshot,
       restore,
-      revealHash
+      revealHash,
+      // エディターの差分描画用。
+      whenReady: schedule,
+      isExpanded,
+      setExpanded,
+      toggleSelector: TOGGLE_SELECTOR
     };
   }
 
@@ -1462,6 +1467,9 @@
         /^(?:equation|align|alignat|flalign|gather|multline)$/.test(
           node.environment
         );
+
+      // この数式より前の自動番号の個数。差分描画で MathJax の式番号を合わせる。
+      node.equationStart = equation;
 
       for (const row of rows) {
         if (!row.trim()) {
@@ -2478,7 +2486,11 @@
         output.push(renderHeading(node, context));
       } else if (node.type === "math") {
         output.push(`
-          <div class="math-display"${mathSourceAttributes(node, context)}>
+          <div class="math-display"${mathSourceAttributes(node, context)}${
+            context.sourceMap
+              ? ` data-eq-start="${node.equationStart ?? 0}"`
+              : ""
+          }>
             ${labelAnchors(node.labels)}
             ${escapeHTML(node.tex)}
           </div>
