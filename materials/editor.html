@@ -903,6 +903,164 @@
       cursor: default;
     }
 
+    /* ---------- 検索・置換とソース位置の強調表示 ---------- */
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 6px 10px 6px 14px;
+      border-bottom: 1px solid var(--site-border);
+      background: var(--site-background);
+    }
+
+    .panel-header > .panel-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .panel-header-button {
+      padding: 3px 9px;
+      font-size: 13px;
+    }
+
+    .find-bar {
+      display: grid;
+      gap: 6px;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--site-border);
+      background: #faf7f7;
+      font-size: 13px;
+    }
+
+    .find-bar[hidden] {
+      display: none;
+    }
+
+    .find-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .find-row input[type="text"] {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding: 5px 7px;
+      border: 1px solid var(--site-border);
+      border-radius: 0;
+      background: #fff;
+      color: var(--site-ink);
+      font: 14px ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .find-row input[type="text"][aria-invalid="true"] {
+      border-color: #a00000;
+      outline-color: #a00000;
+    }
+
+    .find-row .editor-button {
+      flex: 0 0 auto;
+      padding: 4px 9px;
+      font-size: 13px;
+    }
+
+    .find-count {
+      flex: 0 0 auto;
+      min-width: 5.5em;
+      color: #555;
+      font-size: 12px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .find-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 14px;
+      color: #444;
+      font-size: 12px;
+    }
+
+    .find-options label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .find-message {
+      margin: 0;
+      color: #555;
+      font-size: 12px;
+    }
+
+    .find-message:empty {
+      display: none;
+    }
+
+    .find-message[data-state="error"] {
+      color: #a00000;
+    }
+
+    .find-message[data-state="ok"] {
+      color: #237a3b;
+    }
+
+    .source-editor {
+      position: relative;
+      background: #fff;
+    }
+
+    .source-editor > #source {
+      position: relative;
+      z-index: 1;
+      background: transparent;
+    }
+
+    .source-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      margin: 0;
+      padding: 18px;
+      color: transparent;
+      font: 16px/1.65 ui-monospace, SFMono-Regular, Consolas, monospace;
+      tab-size: 2;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      pointer-events: none;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .source-backdrop[hidden] {
+      display: none;
+    }
+
+    .source-backdrop mark {
+      border-radius: 2px;
+      background: rgba(250, 204, 21, .45);
+      color: transparent;
+    }
+
+    .source-backdrop mark.is-current {
+      background: rgba(249, 115, 22, .55);
+    }
+
+    .source-backdrop mark.is-flash {
+      background: rgba(49, 74, 103, .22);
+      box-shadow: 0 0 0 2px rgba(49, 74, 103, .22);
+    }
+
+    #preview [data-src-line] {
+      cursor: default;
+    }
+
     .preview-wrap {
       min-height: 60vh;
       background: #fff;
@@ -1437,8 +1595,103 @@
 
   <main class="layout">
     <section class="panel editor-source-panel">
-      <h2 class="panel-title">LaTeX風ソース</h2>
+      <div class="panel-header">
+        <h2 class="panel-title">LaTeX風ソース</h2>
 
+        <button
+          id="openFind"
+          class="editor-button panel-header-button"
+          type="button"
+          title="検索・置換（Ctrl+F / Ctrl+H）"
+          aria-controls="findBar"
+          aria-expanded="false"
+        >
+          検索・置換
+        </button>
+      </div>
+
+      <div
+        id="findBar"
+        class="find-bar"
+        role="search"
+        aria-label="ソースの検索と置換"
+        hidden
+      >
+        <div class="find-row">
+          <input
+            id="findInput"
+            type="text"
+            placeholder="検索"
+            aria-label="検索する文字列"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <span id="findCount" class="find-count" aria-live="polite"></span>
+          <button
+            id="findPrev"
+            class="editor-button"
+            type="button"
+            title="前を検索（Shift+Enter）"
+            aria-label="前を検索"
+          >↑</button>
+          <button
+            id="findNext"
+            class="editor-button"
+            type="button"
+            title="次を検索（Enter）"
+            aria-label="次を検索"
+          >↓</button>
+          <button
+            id="findClose"
+            class="editor-button"
+            type="button"
+            title="閉じる（Esc）"
+            aria-label="検索・置換を閉じる"
+          >×</button>
+        </div>
+
+        <div class="find-row">
+          <input
+            id="replaceInput"
+            type="text"
+            placeholder="置換後の文字列"
+            aria-label="置換後の文字列"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button
+            id="replaceOne"
+            class="editor-button"
+            type="button"
+            title="現在の一致を置換して次へ（置換欄でEnter）"
+          >置換</button>
+          <button
+            id="replaceAll"
+            class="editor-button"
+            type="button"
+          >すべて置換</button>
+        </div>
+
+        <div class="find-options">
+          <label>
+            <input id="findCase" type="checkbox">
+            大文字・小文字を区別
+          </label>
+          <label title="前後が英数字でない位置だけに一致させます。\set と \setminus の区別などに使えます。">
+            <input id="findWord" type="checkbox">
+            単語単位（英数字の境界）
+          </label>
+          <label title="JavaScriptの正規表現。置換欄では $1、$&lt;name&gt;、$&amp; が使えます。">
+            <input id="findRegex" type="checkbox">
+            正規表現
+          </label>
+        </div>
+
+        <p id="findMessage" class="find-message" aria-live="polite"></p>
+      </div>
+
+      <div class="source-editor">
+      <div id="sourceBackdrop" class="source-backdrop" aria-hidden="true" hidden></div>
       <textarea
         id="source"
         spellcheck="false"
@@ -1492,6 +1745,7 @@ A\subseteq B \implies \power(A)\subseteq \power(B)
 \begin{reason}
 $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $A\subseteq C$。
 \end{reason}</textarea>
+      </div>
 
       <div class="hint">
         自動プレビューは、入力が止まってから約800ミリ秒後に更新します。
@@ -1500,6 +1754,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         別の文書を開いたときとページの再読み込み時は、すべて開きます。
         本文の保存・コピーには、プレビュー更新前の入力内容も含まれます。
         プレビューの本文は16px、行間は1.8です。
+        プレビューをダブルクリックすると、対応するソースの位置へ移動します。
+        ソース上でCtrl+F（Macは⌘F）を押すと検索、Ctrl+H（Macは⌘⌥F）を押すと置換を開きます。
       </div>
     </section>
 
@@ -2486,7 +2742,10 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         try {
           result = compileDocument(
             job.source,
-            previousToggles
+            previousToggles,
+            {
+              sourceMap: true
+            }
           );
 
           previousToggles = result.toggles;
@@ -3158,6 +3417,1060 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
           synchronizeCurrentDraft();
         }
+      });
+
+      // ================================================================
+      // ソースの強調表示レイヤー
+      // ================================================================
+      //
+      // textarea は文字ごとの装飾ができないため、同じ書式で折り返す
+      // 背景用の要素を重ね、一致箇所やジャンプ先に <mark> を描く。
+
+      const backdropElement = document.getElementById("sourceBackdrop");
+
+      const highlightState = {
+        flash: null,
+        flashTimer: null,
+        frame: 0
+      };
+
+      function scrollbarWidth() {
+        return Math.max(
+          0,
+          sourceElement.offsetWidth - sourceElement.clientWidth
+        );
+      }
+
+      function syncBackdropScroll() {
+        if (!backdropElement.hidden) {
+          backdropElement.scrollTop = sourceElement.scrollTop;
+          backdropElement.scrollLeft = sourceElement.scrollLeft;
+        }
+      }
+
+      function highlightRanges() {
+        const ranges = [];
+
+        if (findState.open) {
+          const limit = Math.min(findState.matches.length, 5000);
+
+          for (let index = 0; index < limit; index++) {
+            const match = findState.matches[index];
+
+            ranges.push({
+              start: match.start,
+              end: match.end,
+              className: index === findState.current ? "is-current" : ""
+            });
+          }
+
+          // 範囲外の現在位置も必ず描く。
+          if (findState.current >= limit) {
+            const match = findState.matches[findState.current];
+
+            ranges.push({
+              start: match.start,
+              end: match.end,
+              className: "is-current"
+            });
+          }
+        }
+
+        const flash = highlightState.flash;
+
+        if (flash) {
+          const kept = ranges.filter((range) => {
+            return range.end <= flash.start || range.start >= flash.end;
+          });
+
+          kept.push({
+            start: flash.start,
+            end: flash.end,
+            className: "is-flash"
+          });
+
+          return kept.sort((left, right) => left.start - right.start);
+        }
+
+        return ranges.sort((left, right) => left.start - right.start);
+      }
+
+      function renderBackdrop() {
+        cancelAnimationFrame(highlightState.frame);
+        highlightState.frame = 0;
+
+        const ranges = highlightRanges();
+
+        if (ranges.length === 0) {
+          backdropElement.hidden = true;
+          backdropElement.replaceChildren();
+          return;
+        }
+
+        const text = sourceElement.value;
+        const style = getComputedStyle(sourceElement);
+        let html = "";
+        let cursor = 0;
+
+        for (const range of ranges) {
+          if (range.start < cursor) {
+            continue;
+          }
+
+          html += escapeHTML(text.slice(cursor, range.start));
+
+          const inner = text.slice(range.start, range.end);
+
+          // 空範囲でも位置を測れるよう、幅のない文字を入れる。
+          html +=
+            `<mark class="${range.className}">` +
+            (inner ? escapeHTML(inner) : "​") +
+            "</mark>";
+
+          cursor = range.end;
+        }
+
+        html += escapeHTML(text.slice(cursor)) + "\n ";
+
+        backdropElement.style.paddingTop = style.paddingTop;
+        backdropElement.style.paddingBottom = style.paddingBottom;
+        backdropElement.style.paddingLeft = style.paddingLeft;
+        backdropElement.style.paddingRight =
+          `calc(${style.paddingRight} + ${scrollbarWidth()}px)`;
+
+        backdropElement.innerHTML = html;
+        backdropElement.hidden = false;
+
+        syncBackdropScroll();
+      }
+
+      function scheduleBackdrop() {
+        if (highlightState.frame) {
+          return;
+        }
+
+        highlightState.frame = requestAnimationFrame(() => {
+          highlightState.frame = 0;
+          renderBackdrop();
+        });
+      }
+
+      // 指定した <mark> がtextareaとページの両方で見える位置までスクロールする。
+      function revealMark(selector) {
+        const mark = backdropElement.querySelector(selector);
+
+        if (!mark) {
+          return;
+        }
+
+        const top = mark.offsetTop;
+        const bottom = top + mark.offsetHeight;
+        const viewTop = sourceElement.scrollTop;
+        const viewBottom = viewTop + sourceElement.clientHeight;
+
+        if (top < viewTop + 24 || bottom > viewBottom - 24) {
+          sourceElement.scrollTop = Math.max(
+            0,
+            top - sourceElement.clientHeight / 3
+          );
+        }
+
+        syncBackdropScroll();
+
+        const rect = mark.getBoundingClientRect();
+        const toolbar = document.querySelector(".editor-toolbar");
+
+        const toolbarBottom =
+          toolbar && getComputedStyle(toolbar).position === "sticky"
+            ? toolbar.getBoundingClientRect().bottom
+            : 0;
+
+        if (
+          rect.top < toolbarBottom + 8 ||
+          rect.bottom > window.innerHeight - 8
+        ) {
+          window.scrollBy({
+            top: rect.top - (window.innerHeight + toolbarBottom) / 2,
+            behavior: "auto"
+          });
+        }
+      }
+
+      function flashRange(start, end) {
+        window.clearTimeout(highlightState.flashTimer);
+
+        highlightState.flash = {
+          start,
+          end
+        };
+
+        renderBackdrop();
+        revealMark("mark.is-flash");
+
+        highlightState.flashTimer = window.setTimeout(() => {
+          highlightState.flash = null;
+          renderBackdrop();
+        }, 1600);
+      }
+
+      sourceElement.addEventListener("scroll", syncBackdropScroll);
+
+      window.addEventListener("resize", () => {
+        if (!backdropElement.hidden) {
+          scheduleBackdrop();
+        }
+      });
+
+      if (typeof ResizeObserver === "function") {
+        // textarea の手動リサイズ・スクロールバーの出現に追従する。
+        new ResizeObserver(() => {
+          if (!backdropElement.hidden) {
+            scheduleBackdrop();
+          }
+        }).observe(sourceElement);
+      }
+
+      // ================================================================
+      // 検索・置換
+      // ================================================================
+
+      const find = Object.freeze({
+        bar: document.getElementById("findBar"),
+        open: document.getElementById("openFind"),
+        input: document.getElementById("findInput"),
+        replace: document.getElementById("replaceInput"),
+        count: document.getElementById("findCount"),
+        prev: document.getElementById("findPrev"),
+        next: document.getElementById("findNext"),
+        close: document.getElementById("findClose"),
+        replaceOne: document.getElementById("replaceOne"),
+        replaceAll: document.getElementById("replaceAll"),
+        matchCase: document.getElementById("findCase"),
+        wholeWord: document.getElementById("findWord"),
+        regex: document.getElementById("findRegex"),
+        message: document.getElementById("findMessage")
+      });
+
+      const MAX_FIND_MATCHES = 20000;
+
+      const findState = {
+        open: false,
+        regex: null,
+        matches: [],
+        current: -1,
+        truncated: false
+      };
+
+      function escapeRegExp(text) {
+        return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+
+      function setFindMessage(text, state = "") {
+        find.message.textContent = text;
+        find.message.dataset.state = state;
+      }
+
+      function buildFindRegex() {
+        const query = find.input.value;
+
+        find.input.removeAttribute("aria-invalid");
+
+        if (!query) {
+          return null;
+        }
+
+        let pattern = find.regex.checked
+          ? query
+          : escapeRegExp(query);
+
+        if (find.wholeWord.checked) {
+          pattern = `(?<![A-Za-z0-9])(?:${pattern})(?![A-Za-z0-9])`;
+        }
+
+        const flags =
+          "g" +
+          (find.matchCase.checked ? "" : "i") +
+          (find.regex.checked ? "m" : "");
+
+        try {
+          return new RegExp(pattern, flags);
+        } catch (error) {
+          find.input.setAttribute("aria-invalid", "true");
+          setFindMessage("正規表現を確認してください：" + error.message, "error");
+          return null;
+        }
+      }
+
+      function collectMatches(regex, text) {
+        const matches = [];
+        let truncated = false;
+        let match;
+
+        regex.lastIndex = 0;
+
+        while ((match = regex.exec(text)) !== null) {
+          if (match[0].length === 0) {
+            // 空文字列への一致は選択できないため数えない。
+            regex.lastIndex++;
+            continue;
+          }
+
+          matches.push({
+            start: match.index,
+            end: match.index + match[0].length
+          });
+
+          if (matches.length >= MAX_FIND_MATCHES) {
+            truncated = true;
+            break;
+          }
+        }
+
+        return {
+          matches,
+          truncated
+        };
+      }
+
+      function matchAtSelection() {
+        const start = sourceElement.selectionStart;
+        const end = sourceElement.selectionEnd;
+
+        return findState.matches.findIndex((match) => {
+          return match.start === start && match.end === end;
+        });
+      }
+
+      function updateFindCount() {
+        const total = findState.matches.length;
+        const suffix = findState.truncated ? "+" : "";
+
+        if (!find.input.value) {
+          find.count.textContent = "";
+        } else if (total === 0) {
+          find.count.textContent = findState.regex ? "0件" : "";
+        } else if (findState.current >= 0) {
+          find.count.textContent =
+            `${findState.current + 1} / ${total}${suffix}`;
+        } else {
+          find.count.textContent = `${total}${suffix}件`;
+        }
+
+        const editable = !sourceElement.readOnly;
+        const hasMatches = total > 0;
+
+        find.prev.disabled = !hasMatches;
+        find.next.disabled = !hasMatches;
+        find.replaceOne.disabled = !hasMatches || !editable;
+        find.replaceAll.disabled = !findState.regex || !editable;
+      }
+
+      function refreshFind({ keepMessage = false } = {}) {
+        if (!findState.open) {
+          return;
+        }
+
+        if (!keepMessage) {
+          setFindMessage("");
+        }
+
+        findState.regex = buildFindRegex();
+
+        if (findState.regex) {
+          const result = collectMatches(
+            findState.regex,
+            sourceElement.value
+          );
+
+          findState.matches = result.matches;
+          findState.truncated = result.truncated;
+        } else {
+          findState.matches = [];
+          findState.truncated = false;
+        }
+
+        findState.current = matchAtSelection();
+
+        updateFindCount();
+        renderBackdrop();
+      }
+
+      function selectMatch(index) {
+        const match = findState.matches[index];
+
+        if (!match) {
+          return;
+        }
+
+        findState.current = index;
+
+        // フォーカスは検索欄に残したまま、textarea の選択範囲だけ動かす。
+        sourceElement.setSelectionRange(match.start, match.end);
+
+        updateFindCount();
+        renderBackdrop();
+        revealMark("mark.is-current");
+      }
+
+      function findFrom(position, direction) {
+        const matches = findState.matches;
+
+        if (matches.length === 0) {
+          return -1;
+        }
+
+        if (direction > 0) {
+          const index = matches.findIndex((match) => {
+            return match.start >= position;
+          });
+
+          return index === -1 ? 0 : index;
+        }
+
+        for (let index = matches.length - 1; index >= 0; index--) {
+          if (matches[index].start < position) {
+            return index;
+          }
+        }
+
+        return matches.length - 1;
+      }
+
+      function gotoMatch(direction) {
+        refreshFind({
+          keepMessage: true
+        });
+
+        if (findState.matches.length === 0) {
+          return;
+        }
+
+        const current = matchAtSelection();
+
+        const position = direction > 0
+          ? (
+            current >= 0
+              ? sourceElement.selectionEnd
+              : sourceElement.selectionStart
+          )
+          : sourceElement.selectionStart;
+
+        selectMatch(findFrom(position, direction));
+      }
+
+      // $1、$<name>、$&、$`、$'、$$ を String.prototype.replace と同様に展開する。
+      function expandReplacement(template, captures, index, input, groups) {
+        return template.replace(
+          /\$(\$|&|`|'|\d{1,2}|<([^>]*)>)/g,
+          (whole, token, name) => {
+            if (token === "$") {
+              return "$";
+            }
+
+            if (token === "&") {
+              return captures[0];
+            }
+
+            if (token === "`") {
+              return input.slice(0, index);
+            }
+
+            if (token === "'") {
+              return input.slice(index + captures[0].length);
+            }
+
+            if (name !== undefined) {
+              return groups ? (groups[name] ?? "") : whole;
+            }
+
+            const count = captures.length - 1;
+            const twoDigits = Number(token);
+
+            if (token.length === 2 && twoDigits >= 1 && twoDigits <= count) {
+              return captures[twoDigits] ?? "";
+            }
+
+            const oneDigit = Number(token[0]);
+
+            if (oneDigit >= 1 && oneDigit <= count) {
+              return (captures[oneDigit] ?? "") + token.slice(1);
+            }
+
+            return whole;
+          }
+        );
+      }
+
+      function replacementFor(regex, text, start) {
+        const template = find.replace.value;
+
+        if (!find.regex.checked) {
+          return template;
+        }
+
+        const sticky = new RegExp(
+          regex.source,
+          regex.flags.replace("g", "") + "y"
+        );
+
+        sticky.lastIndex = start;
+
+        const match = sticky.exec(text);
+
+        if (!match) {
+          return null;
+        }
+
+        return expandReplacement(
+          template,
+          Array.from(match),
+          match.index,
+          text,
+          match.groups
+        );
+      }
+
+      // Ctrl+Z で戻せるよう、可能ならブラウザーの編集操作として書き換える。
+      function replaceSourceRange(start, end, text) {
+        const active = document.activeElement;
+        const scrollTop = sourceElement.scrollTop;
+        const expected =
+          sourceElement.value.slice(0, start) +
+          text +
+          sourceElement.value.slice(end);
+
+        sourceElement.focus({
+          preventScroll: true
+        });
+
+        sourceElement.setSelectionRange(start, end);
+
+        let applied = false;
+
+        try {
+          applied = text
+            ? document.execCommand("insertText", false, text)
+            : document.execCommand("delete", false);
+        } catch {
+          applied = false;
+        }
+
+        if (!applied || sourceElement.value !== expected) {
+          if (sourceElement.value !== expected) {
+            sourceElement.value = expected;
+          }
+
+          sourceElement.setSelectionRange(
+            start + text.length,
+            start + text.length
+          );
+
+          sourceElement.dispatchEvent(new Event("input", {
+            bubbles: true
+          }));
+        }
+
+        sourceElement.scrollTop = scrollTop;
+
+        if (active && active !== sourceElement && active.focus) {
+          active.focus({
+            preventScroll: true
+          });
+        }
+      }
+
+      function canEditForReplace() {
+        if (sourceElement.readOnly) {
+          setFindMessage(
+            "本文の編集が停止中のため置換できません。下書きの復元方法を選択してください。",
+            "error"
+          );
+
+          return false;
+        }
+
+        if (composing) {
+          setFindMessage("IME変換を確定してから置換してください。", "error");
+          return false;
+        }
+
+        return true;
+      }
+
+      function replaceCurrent() {
+        refreshFind();
+
+        if (!findState.regex || !canEditForReplace()) {
+          return;
+        }
+
+        const current = matchAtSelection();
+
+        if (current < 0) {
+          // まだ一致を選択していなければ、まず次の一致へ移動する。
+          gotoMatch(1);
+          return;
+        }
+
+        const match = findState.matches[current];
+        const text = sourceElement.value;
+        const replacement = replacementFor(findState.regex, text, match.start);
+
+        if (replacement === null) {
+          return;
+        }
+
+        replaceSourceRange(match.start, match.end, replacement);
+
+        sourceElement.setSelectionRange(
+          match.start + replacement.length,
+          match.start + replacement.length
+        );
+
+        refreshFind();
+
+        if (findState.matches.length > 0) {
+          selectMatch(
+            findFrom(match.start + replacement.length, 1)
+          );
+        }
+
+        setFindMessage("1件置換しました。", "ok");
+      }
+
+      function replaceEverything() {
+        refreshFind();
+
+        const regex = findState.regex;
+
+        if (!regex || !canEditForReplace()) {
+          return;
+        }
+
+        const text = sourceElement.value;
+        const template = find.replace.value;
+        let count = 0;
+
+        regex.lastIndex = 0;
+
+        const replaced = text.replace(regex, (...args) => {
+          const groups =
+            typeof args.at(-1) === "object" ? args.pop() : undefined;
+          const input = args.pop();
+          const index = args.pop();
+
+          count++;
+
+          return find.regex.checked
+            ? expandReplacement(template, args, index, input, groups)
+            : template;
+        });
+
+        if (count === 0 || replaced === text) {
+          setFindMessage(
+            count === 0
+              ? "一致する箇所がありません。"
+              : "置換しても本文は変わりませんでした。"
+          );
+          return;
+        }
+
+        const caret = Math.min(sourceElement.selectionStart, replaced.length);
+
+        // 先頭と末尾の共通部分を除いた最小範囲だけを書き換える（Undo 1回で戻せる）。
+        let prefix = 0;
+
+        while (
+          prefix < text.length &&
+          prefix < replaced.length &&
+          text[prefix] === replaced[prefix]
+        ) {
+          prefix++;
+        }
+
+        let suffix = 0;
+
+        while (
+          suffix < text.length - prefix &&
+          suffix < replaced.length - prefix &&
+          text[text.length - 1 - suffix] ===
+            replaced[replaced.length - 1 - suffix]
+        ) {
+          suffix++;
+        }
+
+        replaceSourceRange(
+          prefix,
+          text.length - suffix,
+          replaced.slice(prefix, replaced.length - suffix)
+        );
+
+        sourceElement.setSelectionRange(caret, caret);
+        refreshFind();
+
+        setFindMessage(
+          `${count}件置換しました。Ctrl+Z（Macは⌘Z）で元に戻せます。`,
+          "ok"
+        );
+      }
+
+      function openFindBar({ focusReplace = false } = {}) {
+        const wasOpen = findState.open;
+
+        findState.open = true;
+        find.bar.hidden = false;
+        find.open.setAttribute("aria-expanded", "true");
+
+        const selected = sourceElement.value.slice(
+          sourceElement.selectionStart,
+          sourceElement.selectionEnd
+        );
+
+        if (
+          selected &&
+          !selected.includes("\n") &&
+          selected.length <= 200 &&
+          document.activeElement === sourceElement
+        ) {
+          find.input.value = find.regex.checked
+            ? escapeRegExp(selected)
+            : selected;
+        }
+
+        const target = focusReplace && find.input.value
+          ? find.replace
+          : find.input;
+
+        target.focus();
+        target.select();
+
+        refreshFind({
+          keepMessage: wasOpen
+        });
+      }
+
+      function closeFindBar({ focusSource = true } = {}) {
+        findState.open = false;
+        findState.matches = [];
+        findState.current = -1;
+
+        find.bar.hidden = true;
+        find.open.setAttribute("aria-expanded", "false");
+        setFindMessage("");
+        renderBackdrop();
+
+        if (focusSource) {
+          sourceElement.focus({
+            preventScroll: true
+          });
+        }
+      }
+
+      find.open.addEventListener("click", () => {
+        if (findState.open) {
+          closeFindBar();
+        } else {
+          openFindBar();
+        }
+      });
+
+      find.input.addEventListener("input", () => {
+        refreshFind();
+
+        // 入力しながら、カーソル位置以降の最初の一致へ移動する。
+        if (findState.matches.length > 0) {
+          selectMatch(findFrom(sourceElement.selectionStart, 1));
+        }
+      });
+
+      for (const option of [find.matchCase, find.wholeWord, find.regex]) {
+        option.addEventListener("change", () => refreshFind());
+      }
+
+      find.next.addEventListener("click", () => gotoMatch(1));
+      find.prev.addEventListener("click", () => gotoMatch(-1));
+      find.close.addEventListener("click", () => closeFindBar());
+      find.replaceOne.addEventListener("click", replaceCurrent);
+      find.replaceAll.addEventListener("click", replaceEverything);
+
+      find.bar.addEventListener("keydown", (event) => {
+        if (event.isComposing || event.keyCode === 229) {
+          return;
+        }
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeFindBar();
+          return;
+        }
+
+        if (event.key !== "Enter") {
+          return;
+        }
+
+        if (event.target === find.input) {
+          event.preventDefault();
+          gotoMatch(event.shiftKey ? -1 : 1);
+        } else if (event.target === find.replace) {
+          event.preventDefault();
+
+          if (event.ctrlKey || event.metaKey) {
+            replaceEverything();
+          } else {
+            replaceCurrent();
+          }
+        }
+      });
+
+      sourceElement.addEventListener("input", () => {
+        if (findState.open) {
+          // 本文が変わったら一致位置を数え直す（描画はフレーム単位）。
+          findState.regex = buildFindRegex();
+
+          if (findState.regex) {
+            const result = collectMatches(
+              findState.regex,
+              sourceElement.value
+            );
+
+            findState.matches = result.matches;
+            findState.truncated = result.truncated;
+          } else {
+            findState.matches = [];
+          }
+
+          findState.current = matchAtSelection();
+          updateFindCount();
+        }
+
+        if (highlightState.flash) {
+          window.clearTimeout(highlightState.flashTimer);
+          highlightState.flash = null;
+        }
+
+        if (!backdropElement.hidden || findState.open) {
+          scheduleBackdrop();
+        }
+      });
+
+      sourceElement.addEventListener("select", () => {
+        if (findState.open) {
+          const current = matchAtSelection();
+
+          if (current !== findState.current) {
+            findState.current = current;
+            updateFindCount();
+            scheduleBackdrop();
+          }
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        const modifier = event.ctrlKey || event.metaKey;
+
+        if (!modifier || event.shiftKey) {
+          return;
+        }
+
+        const key = event.key.toLowerCase();
+
+        const inEditor =
+          document.activeElement === sourceElement ||
+          find.bar.contains(document.activeElement);
+
+        if (!inEditor) {
+          // プレビュー側ではブラウザー標準のページ内検索を使う。
+          return;
+        }
+
+        // Windows/Linux: Ctrl+H、Mac: ⌘⌥F で置換、Ctrl/⌘+F で検索。
+        const wantsReplace =
+          (key === "h" && event.ctrlKey && !event.altKey) ||
+          (key === "f" && event.altKey) ||
+          event.code === "KeyF" && event.altKey;
+
+        if (wantsReplace) {
+          event.preventDefault();
+          openFindBar({
+            focusReplace: true
+          });
+        } else if (key === "f" && !event.altKey) {
+          event.preventDefault();
+          openFindBar();
+        } else if (key === "g" && !event.altKey && findState.open) {
+          event.preventDefault();
+          gotoMatch(1);
+        }
+      });
+
+      // ================================================================
+      // プレビュー → ソース
+      // ================================================================
+
+      function lineStartOffset(text, line) {
+        let offset = 0;
+
+        for (let current = 1; current < line; current++) {
+          const next = text.indexOf("\n", offset);
+
+          if (next === -1) {
+            return text.length;
+          }
+
+          offset = next + 1;
+        }
+
+        return offset;
+      }
+
+      function lineEndOffset(text, offset) {
+        const end = text.indexOf("\n", offset);
+        return end === -1 ? text.length : end;
+      }
+
+      // ダブルクリックで選択された語が、ブロック内で何番目の出現かを数える。
+      function occurrenceIndex(block, word, selection) {
+        if (!selection || selection.rangeCount === 0) {
+          return 0;
+        }
+
+        try {
+          const before = document.createRange();
+          const range = selection.getRangeAt(0);
+
+          before.selectNodeContents(block);
+          before.setEnd(range.startContainer, range.startOffset);
+
+          const fragment = before.cloneContents();
+
+          // MathJax の内部テキストは数えない。
+          fragment
+            .querySelectorAll("mjx-container, mjx-assistive-mml, .box-title, summary")
+            .forEach((element) => element.remove());
+
+          const text = fragment.textContent;
+          let count = 0;
+          let position = text.indexOf(word);
+
+          while (position !== -1) {
+            count++;
+            position = text.indexOf(word, position + word.length);
+          }
+
+          return count;
+        } catch {
+          return 0;
+        }
+      }
+
+      function jumpToSource(line, endLine, word, occurrence) {
+        const text = sourceElement.value;
+        const totalLines = text.split("\n").length;
+        const startLine = Math.min(Math.max(1, line), totalLines);
+        const lastLine = Math.min(Math.max(startLine, endLine), totalLines);
+
+        const rangeStart = lineStartOffset(text, startLine);
+        const rangeEnd = lineEndOffset(
+          text,
+          lineStartOffset(text, lastLine)
+        );
+
+        let start = rangeStart;
+        let end = lineEndOffset(text, rangeStart);
+        let matchedWord = false;
+
+        if (word) {
+          const region = text.slice(rangeStart, rangeEnd);
+          const positions = [];
+          let position = region.indexOf(word);
+
+          while (position !== -1) {
+            positions.push(position);
+            position = region.indexOf(word, position + word.length);
+          }
+
+          if (positions.length > 0) {
+            const chosen = positions[Math.min(occurrence, positions.length - 1)];
+
+            start = rangeStart + chosen;
+            end = start + word.length;
+            matchedWord = true;
+          }
+        }
+
+        sourceElement.focus({
+          preventScroll: true
+        });
+
+        if (matchedWord) {
+          sourceElement.setSelectionRange(start, end);
+        } else {
+          sourceElement.setSelectionRange(start, start);
+        }
+
+        flashRange(start, end);
+
+        const stale =
+          previewState.lastRendered?.source !== text ||
+          previewState.running ||
+          previewState.pending ||
+          previewState.timer !== null;
+
+        if (stale) {
+          setOperationStatus(
+            `ソースの${startLine}行目へ移動しました。` +
+            "プレビューが最新の入力を反映していないため、位置がずれることがあります。",
+            "warning"
+          );
+        } else {
+          setOperationStatus(
+            lastLine > startLine
+              ? `ソースの${startLine}〜${lastLine}行目に対応します。`
+              : `ソースの${startLine}行目へ移動しました。`,
+            "ok"
+          );
+        }
+      }
+
+      previewElement.addEventListener("dblclick", (event) => {
+        const target = event.target instanceof Element
+          ? event.target
+          : event.target?.parentElement;
+
+        if (!target || target.closest("a, button, input, textarea, select")) {
+          return;
+        }
+
+        const block = target.closest("[data-src-line]");
+
+        if (!block || !previewElement.contains(block)) {
+          return;
+        }
+
+        const line = Number(block.dataset.srcLine);
+        const endLine = Number(block.dataset.srcEnd || line);
+
+        if (!Number.isFinite(line)) {
+          return;
+        }
+
+        const inMath = Boolean(target.closest("mjx-container"));
+        const selection = window.getSelection();
+
+        let word = inMath
+          ? ""
+          : (selection?.toString() || "").trim();
+
+        // 改行を含む・長すぎる選択は語として扱わない。
+        if (word.includes("\n") || word.length > 80) {
+          word = "";
+        }
+
+        const occurrence = word
+          ? occurrenceIndex(block, word, selection)
+          : 0;
+
+        jumpToSource(line, endLine, word, occurrence);
       });
 
       initializeWorkspace();

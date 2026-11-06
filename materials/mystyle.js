@@ -785,7 +785,124 @@
         author: null,
         date: null
       },
-      protectedSource: ""
+      protectedSource: "",
+      // ソース位置の対応（エディターのプレビュー専用）。
+      // 公開用HTMLでは無効のままにし、data-src-* 属性を出力しない。
+      sourceMap: false,
+      sourceOffsets: null,
+      lineStarts: null
+    };
+  }
+
+  // ================================================================
+  // ソース位置の対応（プレビュー → ソース）
+  // ================================================================
+
+  function computeLineStarts(text) {
+    const starts = [0];
+
+    for (let index = 0; index < text.length; index++) {
+      if (text[index] === "\n") {
+        starts.push(index + 1);
+      }
+    }
+
+    return starts;
+  }
+
+  // protectedSource 上の位置を、元ソースの行番号（1始まり）に変換する。
+  // normalizeSource は行内のコメントを削るだけで行構成を変えないため、
+  // 正規化後の行番号は元ソースの行番号と一致する。
+  function sourceLineAt(context, position) {
+    if (!context.sourceMap || !Number.isFinite(position)) {
+      return null;
+    }
+
+    const offsets = context.sourceOffsets;
+    const clamped = Math.max(0, Math.min(position, offsets.length - 1));
+    const offset = offsets.length ? offsets[clamped] : 0;
+    const starts = context.lineStarts;
+
+    let low = 0;
+    let high = starts.length - 1;
+
+    while (low < high) {
+      const middle = (low + high + 1) >> 1;
+
+      if (starts[middle] <= offset) {
+        low = middle;
+      } else {
+        high = middle - 1;
+      }
+    }
+
+    return low + 1;
+  }
+
+  function sourceAttributes(context, start, end = null) {
+    const line = sourceLineAt(context, start);
+
+    if (line === null) {
+      return "";
+    }
+
+    const endLine = end === null ? null : sourceLineAt(context, end);
+
+    return endLine !== null && endLine > line
+      ? ` data-src-line="${line}" data-src-end="${endLine}"`
+      : ` data-src-line="${line}"`;
+  }
+
+  function mathSourceAttributes(node, context) {
+    const line = sourceLineAt(context, node.start);
+
+    if (line === null) {
+      return "";
+    }
+
+    const endLine = line + (node.tex.match(/\n/g) || []).length;
+
+    return endLine > line
+      ? ` data-src-line="${line}" data-src-end="${endLine}"`
+      : ` data-src-line="${line}"`;
+  }
+
+  // 正規表現による置き換えを、各文字の元位置を保ったまま行う。
+  function replaceTracked(text, positions, pattern, replacement) {
+    let output = "";
+    const mapped = [];
+    let cursor = 0;
+
+    pattern.lastIndex = 0;
+
+    let match;
+
+    while ((match = pattern.exec(text)) !== null) {
+      for (let index = cursor; index < match.index; index++) {
+        mapped.push(positions[index]);
+      }
+
+      output += text.slice(cursor, match.index);
+      output += replacement;
+
+      for (let index = 0; index < replacement.length; index++) {
+        mapped.push(positions[match.index]);
+      }
+
+      cursor = match.index + match[0].length;
+
+      if (match[0].length === 0) {
+        pattern.lastIndex++;
+      }
+    }
+
+    for (let index = cursor; index < text.length; index++) {
+      mapped.push(positions[index]);
+    }
+
+    return {
+      text: output + text.slice(cursor),
+      positions: mapped
     };
   }
 
@@ -859,6 +976,17 @@
     let cursor = 0;
     let match;
 
+    // output の各文字が、正規化後ソースのどの位置に由来するか。
+    const offsets = context.sourceMap ? [] : null;
+
+    function copyOffsets(from, to) {
+      if (offsets) {
+        for (let index = from; index < to; index++) {
+          offsets.push(index);
+        }
+      }
+    }
+
     while ((match = pattern.exec(source)) !== null) {
       if (isEscaped(source, match.index)) {
         continue;
@@ -912,17 +1040,35 @@
         environment,
         body: source.slice(pattern.lastIndex, closing.start),
         tex: source.slice(match.index, closing.end),
-        labels: []
+        labels: [],
+        sourceStart: match.index
       };
 
       const index = context.tokens.push(node) - 1;
       const marker = tokenMarker(context, index);
+      const inserted = display ? `\n${marker}\n` : marker;
 
       output += source.slice(cursor, match.index);
-      output += display ? `\n${marker}\n` : marker;
+      copyOffsets(cursor, match.index);
+
+      output += inserted;
+
+      if (offsets) {
+        for (let offset = 0; offset < inserted.length; offset++) {
+          offsets.push(match.index);
+        }
+      }
 
       cursor = closing.end;
       pattern.lastIndex = closing.end;
+    }
+
+    copyOffsets(cursor, source.length);
+
+    if (offsets) {
+      // 末尾位置の参照用。
+      offsets.push(source.length);
+      context.sourceOffsets = offsets;
     }
 
     return output + source.slice(cursor);
@@ -993,16 +1139,22 @@
 
       if (node.type === "text" && previous?.type === "text") {
         previous.value += node.value;
+        previous.pieces.push(...node.pieces);
       } else {
         target.push(node);
       }
     }
 
-    function appendText(value) {
+    function appendText(value, start) {
       if (value) {
         append({
           type: "text",
-          value
+          value,
+          // protectedSource 上の連続区間。段落の位置特定に使う。
+          pieces: [{
+            start,
+            length: value.length
+          }]
         });
       }
     }
@@ -1030,7 +1182,8 @@
           continue;
         }
 
-        appendText(source.slice(cursor, match.index));
+        appendText(source.slice(cursor, match.index), cursor);
+        node.start = match.index;
         append(node);
 
         cursor = pattern.lastIndex;
@@ -1041,7 +1194,7 @@
         continue;
       }
 
-      appendText(source.slice(cursor, match.index));
+      appendText(source.slice(cursor, match.index), cursor);
 
       const command = match[2];
       let end = pattern.lastIndex;
@@ -1054,7 +1207,7 @@
             `\\${command} の環境名を確認してください。`
           );
 
-          appendText(match[0]);
+          appendText(match[0], match.index);
         } else {
           const name = group.value.trim();
           end = group.end;
@@ -1121,7 +1274,7 @@
                 `環境「${name}」の終了に対応する開始がありません。`
               );
 
-              appendText(source.slice(match.index, end));
+              appendText(source.slice(match.index, end), match.index);
             } else {
               for (
                 let unclosed = stack.length - 1;
@@ -1159,7 +1312,7 @@
             `\\${command} の引数を確認してください。`
           );
 
-          appendText(source.slice(match.index, end));
+          appendText(source.slice(match.index, end), match.index);
         } else {
           end = group.end;
 
@@ -1171,7 +1324,8 @@
               level: command === "section" ? 1 : 2,
               title: group.value,
               starred,
-              labels: []
+              labels: [],
+              start: match.index
             });
           }
         }
@@ -1183,7 +1337,7 @@
             "\\label の引数を確認してください。"
           );
 
-          appendText(match[0]);
+          appendText(match[0], match.index);
         } else {
           end = group.end;
 
@@ -1232,14 +1386,15 @@
             `\\${command} の配置または引数を確認してください。`
           );
 
-          appendText(source.slice(match.index, end));
+          appendText(source.slice(match.index, end), match.index);
         } else {
           const item = {
             type: command === "item" ? "item" : "bibitem",
             key,
             headingNote: note?.value.trim() || "",
             children: [],
-            labels: []
+            labels: [],
+            start: match.index
           };
 
           frame.node.items.push(item);
@@ -1255,7 +1410,7 @@
       pattern.lastIndex = end;
     }
 
-    appendText(source.slice(cursor));
+    appendText(source.slice(cursor), cursor);
 
     for (let index = 1; index < stack.length; index++) {
       context.issues.push(
@@ -1868,7 +2023,11 @@
   // ブロック変換
   // ================================================================
 
-  function renderParagraphs(text, context) {
+  function renderParagraphs(text, context, positions = null) {
+    if (context.sourceMap && positions) {
+      return renderMappedParagraphs(text, context, positions);
+    }
+
     const cleaned = text
       .replace(/\\(?:smallskip|medskip|bigskip|par)\b/g, "\n\n")
       .replace(/\\noindent\b/g, "")
@@ -1893,6 +2052,63 @@
       .join("\n");
   }
 
+  // renderParagraphs と同じ分割を行い、各段落に元ソースの行範囲を付ける。
+  function renderMappedParagraphs(text, context, positions) {
+    let tracked = replaceTracked(
+      text,
+      positions,
+      /\\(?:smallskip|medskip|bigskip|par)\b/g,
+      "\n\n"
+    );
+
+    tracked = replaceTracked(
+      tracked.text,
+      tracked.positions,
+      /\\noindent\b/g,
+      ""
+    );
+
+    const output = [];
+    const separator = /\n\s*\n+/g;
+    const source = tracked.text;
+    let cursor = 0;
+
+    function emit(from, to) {
+      const raw = source.slice(from, to);
+      const paragraph = raw.trim();
+
+      if (!paragraph) {
+        return;
+      }
+
+      const first = from + (raw.length - raw.trimStart().length);
+      const last = from + raw.trimEnd().length - 1;
+
+      const content = renderInline(
+        paragraph.replace(/\s*\n\s*/g, " "),
+        context
+      );
+
+      const attributes = sourceAttributes(
+        context,
+        tracked.positions[first],
+        tracked.positions[last]
+      );
+
+      output.push(`<p${attributes}>${content}</p>`);
+    }
+
+    let match;
+
+    while ((match = separator.exec(source)) !== null) {
+      emit(cursor, match.index);
+      cursor = match.index + match[0].length;
+    }
+
+    emit(cursor, source.length);
+    return output.join("\n");
+  }
+
   function renderHeading(node, context) {
     const tag = node.level === 1 ? "h1" : "h2";
 
@@ -1905,7 +2121,7 @@
       : "";
 
     return `
-      <${tag} id="${escapeHTML(node.id)}">
+      <${tag} id="${escapeHTML(node.id)}"${sourceAttributes(context, node.start)}>
         ${labelAnchors(node.labels)}
         ${number}
         ${renderInline(node.title, context)}
@@ -2026,7 +2242,7 @@
     if (node.name === "proof") {
       return `
         <details
-          class="theorem-box proof-box"${labelIdAttribute(node)}
+          class="theorem-box proof-box"${labelIdAttribute(node)}${sourceAttributes(context, node.start, node.end - 1)}
           data-toggle-key="${escapeHTML(node.toggleKey)}"
           style="--bar:${environment.color}"
           open
@@ -2048,7 +2264,7 @@
 
       return `
         <div
-          class="reason-box"${labelIdAttribute(node)}
+          class="reason-box"${labelIdAttribute(node)}${sourceAttributes(context, node.start, node.end - 1)}
           data-toggle-key="${escapeHTML(node.toggleKey)}"
         >
           ${renderParenthesis("left")}
@@ -2078,7 +2294,7 @@
 
     return `
       <div
-        class="theorem-box"${labelIdAttribute(node)}
+        class="theorem-box"${labelIdAttribute(node)}${sourceAttributes(context, node.start, node.end - 1)}
         style="--bar:${environment.color}"
       >
         <div class="box-title">
@@ -2109,12 +2325,14 @@
 
       const content = renderFlow(item.children, context);
 
+      const itemSource = sourceAttributes(context, item.start);
+
       if (!item.headingNote) {
-        return `<li>${content}</li>`;
+        return `<li${itemSource}>${content}</li>`;
       }
 
       return `
-        <li class="custom-item">
+        <li class="custom-item"${itemSource}>
           <span class="item-label">${itemLabel}</span>
           <div class="item-body">${content}</div>
         </li>
@@ -2123,7 +2341,7 @@
 
     return `
       ${preamble}
-      <${tag}${className}>
+      <${tag}${className}${sourceAttributes(context, node.start, node.end - 1)}>
         ${items}
       </${tag}>
     `;
@@ -2157,7 +2375,7 @@
       return `
         <li
           class="bibliography-entry"
-          id="${escapeHTML(item.bibId)}"
+          id="${escapeHTML(item.bibId)}"${sourceAttributes(context, item.start)}
         >
           <span class="bib-label">[${label}]</span>
           <div class="bib-content">
@@ -2172,7 +2390,7 @@
     labelWidth = Math.min(labelWidth, 18);
 
     return `
-      <section class="bibliography">
+      <section class="bibliography"${sourceAttributes(context, node.start, node.end - 1)}>
         <h2>参考文献</h2>
         ${preamble}
         <ol
@@ -2217,20 +2435,31 @@
   function renderFlow(nodes, context) {
     const output = [];
     let text = "";
+    let positions = context.sourceMap ? [] : null;
 
     function flushText() {
-      const rendered = renderParagraphs(text, context);
+      const rendered = renderParagraphs(text, context, positions);
 
       if (rendered) {
         output.push(rendered);
       }
 
       text = "";
+      positions = context.sourceMap ? [] : null;
     }
 
     for (const node of nodes) {
       if (node.type === "text") {
         text += node.value;
+
+        if (positions) {
+          for (const piece of node.pieces || []) {
+            for (let index = 0; index < piece.length; index++) {
+              positions.push(piece.start + index);
+            }
+          }
+        }
+
         continue;
       }
 
@@ -2249,7 +2478,7 @@
         output.push(renderHeading(node, context));
       } else if (node.type === "math") {
         output.push(`
-          <div class="math-display">
+          <div class="math-display"${mathSourceAttributes(node, context)}>
             ${labelAnchors(node.labels)}
             ${escapeHTML(node.tex)}
           </div>
@@ -2325,9 +2554,14 @@
 
     return issues;
   }
-  function compileDocument(source, previous = []) {
+  function compileDocument(source, previous = [], options = {}) {
     const clean = normalizeSource(source);
     const context = createContext(clean);
+
+    if (options.sourceMap) {
+      context.sourceMap = true;
+      context.lineStarts = computeLineStarts(clean);
+    }
 
     context.protectedSource = protectMath(clean, context);
 
