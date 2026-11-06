@@ -1066,6 +1066,16 @@
       background: #fff;
     }
 
+    /* 2列表示では、プレビューをソース入力欄と同じ高さにして内部でスクロールする。
+       高さはスクリプトがtextareaの高さに合わせて設定する。 */
+    @media (min-width: 901px) {
+      .preview-wrap.is-synced {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+    }
+
     .syntax-guide > details {
       border: 1px solid var(--site-border);
       background: transparent;
@@ -1311,6 +1321,12 @@
 
       #preview {
         max-width: none;
+      }
+
+      .preview-wrap,
+      .preview-wrap.is-synced {
+        height: auto !important;
+        overflow: visible !important;
       }
     }
   </style>
@@ -1754,6 +1770,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         別の文書を開いたときとページの再読み込み時は、すべて開きます。
         本文の保存・コピーには、プレビュー更新前の入力内容も含まれます。
         プレビューの本文は16px、行間は1.8です。
+        横に並べて表示しているときは、プレビューの高さをソース入力欄に合わせ、プレビュー内でスクロールします。
+        入力欄の右下をドラッグすると、両方の高さを一緒に変えられます。
         プレビューをダブルクリックすると、対応するソースの位置へ移動します。
         ソース上でCtrl+F（Macは⌘F）を押すと検索、Ctrl+H（Macは⌘⌥F）を押すと置換を開きます。
       </div>
@@ -4472,6 +4490,39 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
         jumpToSource(line, endLine, word, occurrence);
       });
+
+      // ================================================================
+      // プレビュー枠の高さをソース入力欄に合わせる
+      // ================================================================
+
+      const previewWrap = previewElement.closest(".preview-wrap");
+      const twoColumns = window.matchMedia("(min-width: 901px)");
+
+      function syncPreviewHeight() {
+        if (!twoColumns.matches) {
+          previewWrap.classList.remove("is-synced");
+          previewWrap.style.height = "";
+          return;
+        }
+
+        // 検索バーの開閉ではソース欄だけが伸びるため、textareaの高さを基準にする。
+        const height = sourceElement.offsetHeight;
+
+        if (height > 0) {
+          previewWrap.classList.add("is-synced");
+          previewWrap.style.height = `${height}px`;
+        }
+      }
+
+      if (typeof ResizeObserver === "function") {
+        // textarea右下のつまみでのリサイズにも追従する。
+        new ResizeObserver(syncPreviewHeight).observe(sourceElement);
+      } else {
+        window.addEventListener("resize", syncPreviewHeight);
+      }
+
+      twoColumns.addEventListener?.("change", syncPreviewHeight);
+      syncPreviewHeight();
 
       initializeWorkspace();
     })();
