@@ -1133,6 +1133,14 @@
       line-height: 1.6;
     }
 
+    .hint kbd {
+      padding: 0 .35em;
+      border: 1px solid #c8bebe;
+      border-radius: 3px;
+      background: #fff;
+      font: 11px ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
     .diagnostics:empty {
       display: none;
     }
@@ -1451,40 +1459,24 @@
     </section>
 
     <p class="workspace-note">
-      公開ページの表題・著者・更新日は、ソースの
-      <code>\title{...}</code>、<code>\author{...}</code>、
-      <code>\date{YYYY-MM-DD}</code>から読み取ります。
-      <code>\title</code>がなければ「無題」、
-      <code>\author</code>がなければサイト既定の著者を使用し、
-      <code>\date</code>がなければ更新日は表示しません。
-      最初のsectionは表題として使用しません。
-      ヘッダー・フッター・リンク先などのサイト設定は、
-      <code>mystyle.js</code>の既定値を使用します。
-    </p>
-
-    <p class="workspace-note">
-      自動保存は、このブラウザー内に置く復旧用の下書きです。
-      独立したバックアップとして、ソースファイルも保存してください。
-      下書きの復元方法を選択するまでは、自動保存を開始しません。
-      ローカルHTMLを直接開いた場合、ブラウザー内保存の挙動は環境に依存します。
-      自動プレビューをオフにすると更新を停止し、オンにすると再開します。
-      公開用HTMLは、自動プレビューの状態にかかわらず最新の入力から生成します。
+      公開ページの表題・著者・更新日は <code>\title</code>・<code>\author</code>・<code>\date{YYYY-MM-DD}</code> から読み取ります。
+      下書きはこのブラウザー内にだけ保存されるので、ソースファイルも保存してください。
     </p>
   </section>
 
   <aside class="syntax-guide" aria-label="対応しているLaTeX記法">
-    <details id="syntaxDisclosure" open>
+    <details id="syntaxDisclosure">
       <summary>対応しているLaTeX記法一覧</summary>
 
       <div class="syntax-content">
         <section class="syntax-group">
-          <h3>参照・番号付け</h3>
+          <h3>表題・見出し・段落</h3>
           <p>
-            <code>\label{key}</code>、
-            <code>\ref{key}</code>、
-            <code>\eqref{key}</code><br>
-            定理番号はsectionごとにリセットします。
-            数式はAMS形式で番号付けします。
+            <code>\title</code>、<code>\author</code>、<code>\date</code>、
+            <code>\section</code>、<code>\subsection</code>、
+            <code>\tableofcontents</code><br>
+            空行で段落、<code>\\</code>で改行。
+            <code>\noindent</code>・<code>\smallskip</code>などは簡易対応。
           </p>
         </section>
 
@@ -1496,45 +1488,17 @@
             <code>corollary</code>、<code>fact</code>、
             <code>remark</code>、<code>statement</code>、
             <code>proof</code>、<code>reason</code><br>
-            定理系環境とproofは角括弧による補足表題にも対応します。
+            <code>\begin{theorem}[補足表題]</code>に対応。
+            定理番号はsectionごとにリセット。
           </p>
         </section>
 
         <section class="syntax-group">
-          <h3>表題・見出し・段落</h3>
-          <p>
-            <code>\title{...}</code>、
-            <code>\author{...}</code>、
-            <code>\date{...}</code>、
-            <code>\section{...}</code>、
-            <code>\subsection{...}</code>、
-            <code>\tableofcontents</code><br>
-            表題・著者・更新日はソースから読み取り、sectionとは独立しています。
-            空行で段落を分け、<code>\\</code>で明示的に改行します。
-            <code>\noindent</code>、<code>\smallskip</code>、
-            <code>\medskip</code>、<code>\bigskip</code>は簡易対応です。
-          </p>
-        </section>
-
-        <section class="syntax-group">
-          <h3>箇条書きと入れ子</h3>
+          <h3>箇条書き</h3>
           <p>
             <code>itemize</code>、<code>enumerate</code>、
-            <code>phase</code>と<code>\item</code><br>
-            <code>\item[ラベル]</code>にも対応します。
-            定理・証明・理由・箇条書きは、同種環境を含めて入れ子にできます。
-            目次では見出し番号だけを表示し、リスト自身の番号は表示しません。
-          </p>
-        </section>
-
-        <section class="syntax-group">
-          <h3>文字装飾・リンク</h3>
-          <p>
-            <code>\textbf{...}</code>、<code>\emph{...}</code>、
-            <code>\textit{...}</code>、<code>\texttt{...}</code><br>
-            <code>\url{...}</code>、<code>\href{URL}{表示文字}</code><br>
-            文字装飾の引数内でも対応コマンドを入れ子にできます。
-            エスケープされていない<code>%</code>以降は行末コメントです。
+            <code>phase</code>、<code>\item[ラベル]</code><br>
+            定理・証明・箇条書きは入れ子にできます。
           </p>
         </section>
 
@@ -1545,8 +1509,29 @@
             <code>$$...$$</code>、<code>\[...\]</code><br>
             <code>equation</code>、<code>align</code>、
             <code>gather</code>、<code>multline</code>、
-            <code>flalign</code>、<code>alignat</code>とその星付き環境。
-            数式内の<code>aligned</code>や<code>cases</code>はMathJaxに渡します。
+            <code>flalign</code>、<code>alignat</code>（星付きも可）
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>参照・文字装飾・リンク</h3>
+          <p>
+            <code>\label</code>、<code>\ref</code>、<code>\eqref</code><br>
+            <code>\textbf</code>、<code>\emph</code>、
+            <code>\textit</code>、<code>\texttt</code>、
+            <code>\url</code>、<code>\href{URL}{表示文字}</code><br>
+            <code>%</code>以降は行末コメント。
+          </p>
+        </section>
+
+        <section class="syntax-group">
+          <h3>参考文献</h3>
+          <p>
+            <code>\cite{key}</code>、<code>\cite[p. 10]{key}</code><br>
+            <code>\begin{thebibliography}{Kun80}</code>内で
+            <code>\bibitem[Kun80]{key}</code>とすると
+            <code>[Kun80]</code>の形で表示します。
+            ラベルを省略するとキーを表示します。
           </p>
         </section>
 
@@ -1572,39 +1557,11 @@
             <code>\mathbbl</code>、<code>\bbepsilon</code>
           </p>
         </section>
-
-        <section class="syntax-group">
-          <h3>参考文献：AMSalpha型の表示</h3>
-          <p>
-            <code>\cite{key}</code>、
-            <code>\cite[注記]{key}</code><br>
-            <code>\begin{thebibliography}{Kun80}</code>と
-            <code>\bibitem[Kun80]{key}</code>を使用すると、
-            本文と文献一覧の双方に角括弧付きのラベルを表示します。
-            複数引用は<code>[Kun80, Jec03]</code>、
-            注記付き引用は<code>[Kun80, p. 10]</code>の形です。
-            表示ラベルが未指定の場合は文献キーを表示し、診断に通知します。
-          </p>
-        </section>
-
-        <section class="syntax-group">
-          <h3>開閉状態と対応範囲</h3>
-          <p>
-            証明・理由は初期状態で開き、プレビュー更新時は状態を保持します。
-            一意のラベルを付けると、移動や編集後も対応を特定できます。
-            TikZ、bussproofs、任意のマクロ定義などには対応していません。
-          </p>
-        </section>
       </div>
 
       <p class="syntax-note">
-        これはブラウザー内の簡易変換であり、完全なLaTeX・BibTeX処理系ではありません。
-        AMSalphaのラベルは、明示的に指定したものを使用します。
-        自由記述の文献本文から著者・年を推測したり、
-        amsalpha.bstによる文献書式の生成や並べ替えを実行したりはしません。
-        厳密なAMSalphaの文献を使用する場合は、BibTeXで生成したラベル・順序・文献本文を使用してください。
-        MathJax本体と、設定に応じた拡張・フォントが読み込める必要があります。
-        ソース保存・読み込みはUTF-8を対象とします。
+        ブラウザー内の簡易変換で、完全なLaTeX・BibTeX処理系ではありません。
+        TikZ、bussproofs、<code>\newcommand</code>などのマクロ定義には対応していません。
       </p>
     </details>
   </aside>
@@ -1764,16 +1721,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
       </div>
 
       <div class="hint">
-        自動プレビューは、入力が止まってから約800ミリ秒後に更新します。
-        IME変換中は新しいプレビュー更新を開始しません。
-        証明・理由の開閉状態は更新時に引き継ぎます。
-        別の文書を開いたときとページの再読み込み時は、すべて開きます。
-        本文の保存・コピーには、プレビュー更新前の入力内容も含まれます。
-        プレビューの本文は16px、行間は1.8です。
-        横に並べて表示しているときは、プレビューの高さをソース入力欄に合わせ、プレビュー内でスクロールします。
-        入力欄の右下をドラッグすると、両方の高さを一緒に変えられます。
         プレビューをダブルクリックすると、対応するソースの位置へ移動します。
-        ソース上でCtrl+F（Macは⌘F）を押すと検索、Ctrl+H（Macは⌘⌥F）を押すと置換を開きます。
+        <kbd>Ctrl</kbd>+<kbd>F</kbd>で検索、<kbd>Ctrl</kbd>+<kbd>H</kbd>で置換（Macは<kbd>⌘</kbd><kbd>F</kbd>／<kbd>⌘</kbd><kbd>⌥</kbd><kbd>F</kbd>）。
       </div>
     </section>
 
