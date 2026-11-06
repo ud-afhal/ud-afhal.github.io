@@ -1,0 +1,362 @@
+\title{Easton forcingとContinuum Coding Axiom}
+\section{$\mathrm{CCA}$の無矛盾性}
+\begin{definition}
+Continuum Coding Axiomとは，次の主張である：
+\[
+\forall \alpha\forall a\subseteq \alpha\exists\theta\forall \xi<\alpha(\xi\in a\leftrightarrow 2^{\omega_{\theta+\xi+1}}= \omega_{\theta+\xi+1}^+)
+\]
+\end{definition}
+目標となるのは，次の定理である：
+\begin{theorem}[folklore]
+任意の集合論の宇宙$V$は，class forcingによって$\mathrm{CCA}$を満たす$\ZFC$のモデルに拡大できる．
+\end{theorem}
+\subsection{Eastonの定理の復習}
+\begin{definition}$\be{\kappa}{regular}$，$\be{\lambda}{cardinal}$に対して，$\kappa$のCohen realを$\lambda$個付け加える強制概念は次で定義される：
+\[
+\mathrm{add}(\kappa,\lambda)=\left\langle \bigcup_{d\in[\lambda\times\kappa]^{<\kappa}}{}^d2,\supseteq,\varnothing\right\rangle
+\]
+\end{definition}
+\begin{remark}
+\begin{enumerate}
+\item $\mathrm{add}(\kappa,\lambda)$は$\kappa$-closed
+\item $\mathrm{add}(\kappa,\lambda)$は$(2^{<\kappa})^+$-c.c.
+\item $|B(\mathrm{add}(\kappa,\lambda))|\leq (\lambda^{<\kappa})^{(2^{<\kappa})}$
+\item $2^{<\kappa}=\kappa\land \lambda^\kappa=\lambda$ならば
+\[\text{``$\mathrm{add}(\kappa,\lambda)$ preserves all cofinalities and cardinals''}\land\mathrm{add}(\kappa,\lambda)\forces\text{``$2^\kappa=\lambda$''}
+\]
+
+このときさらに，$\alpha\in\mathrm{Ord}\setminus [\kappa,\lambda)$に対して$\mathrm{add}(\kappa,\lambda)\forces\text{``$2^\alpha=(2^\alpha)^{\check{V}}$''}$
+\end{enumerate}
+\end{remark}
+\begin{definition}
+$x\subseteq\mathrm{Ord}$がEastonとは，
+\[\forall \be{\lambda}{regular} (\sup(x\cap \lambda)<\lambda)
+\]を満たすことをいう．
+\end{definition}
+\begin{theorem}[Easton]
+$\be{\delta<\gamma}{regular}$，$2^{<\delta}=\delta$，$\forall\alpha\in[\delta,\gamma)(2^{\alpha}=\alpha^+)$とする．
+
+$\be{E:\subseteq\mathrm{Reg}\to\mathrm{Car}}{non-decreasing}$は次を満たすとする：
+\begin{enumerate}
+\item $E\subseteq[\delta,\gamma]^2$
+\item $\forall\kappa\in\dom(E)(\mathrm{cf}(E(\kappa))>\kappa)$
+\end{enumerate}
+このとき，
+\[\mathbb{Q}(E):=\prod_{\kappa\in \dom(E)}^{\text{Easton}}\mathrm{add}(\kappa,E(\kappa))=\set{p\in \prod_{\kappa\in \dom(E)}\mathrm{add}(\kappa,E(\kappa)):\be{\mathrm{supt}(p)}{Easton}}
+\]
+に対して
+\begin{enumerate}
+\item $\mathbb{Q}(E)$は全ての基数，共終数を保存する．
+\item 次が成り立つ：
+\[\mathbb{Q}(E)\forces\text{``$\forall\be{\lambda}{regular}\left( 2^{\lambda}=\max((2^\lambda)^{\check{V}},\min\set{\alpha:\lambda<\mathrm{cf}(\alpha)\land \sup_{\kappa\leq\lambda}E(\kappa)\leq\alpha})\right)$''}
+\]
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+$\be{\lambda}{regular}$に対して
+\[
+\mathbb{Q}(E)=\mathbb{Q}(E|\lambda^+)\times\mathbb{Q}(E|\dom(E)\setminus\lambda^+)\equiv \mathbb{Q}(E|\lambda^+)*\check{\mathbb{Q}(E|\dom(E)\setminus\lambda^+)}
+\]
+
+\begin{enumerate}
+\item $\mathbb{Q}(E|\dom(E)\setminus\lambda^+)$は$\lambda^+$-closedであり，特に
+\begin{equation}\label{eq:closedness}
+\mathbb{Q}(E|\dom(E)\setminus\lambda^+)\forces\text{``$\check{V}^\lambda\subseteq\check{V}$''}
+\end{equation}
+\item $\mathbb{Q}(E|\lambda^+)$は$\lambda^+$-c.c.であり，
+\[
+\lambda<\mathrm{cf}(\alpha)\implies\mathbb{Q}(E|\lambda^+)\forces\text{``$\lambda<\mathrm{cf}^{\check{V}}(\alpha)=\mathrm{cf}(\alpha)$''}
+\]
+特に
+\begin{equation}\label{eq:chaincondition}
+\exists p\in\mathbb{Q}(E|\lambda^+)\left(p\forces\text{``$\mathrm{cf}(\alpha)\leq\lambda$''}\right)\implies \mathrm{cf}(\alpha)\leq\lambda
+\end{equation}
+\end{enumerate}
+\begin{phase}
+\item
+$\checkmark$ $\forall\alpha\in\ON[\exists r\in\mathbb{Q}(E)(r\forces\text{``$\mathrm{cf}(\alpha)=\lambda$''})\to\mathrm{cf}(\alpha)=\lambda]$
+\begin{reason}
+式\ref{eq:closedness}に注意して，$V$における議論と同様にして
+\[
+\mathbb{Q}(E|\dom(E)\setminus\lambda^+)\forces\text{``$\be{(\mathbb{Q}(E|\lambda^+))^{\check{V}}=\mathbb{Q}(E|\lambda^+)}{$\lambda^+$-c.c.}$''}
+\]
+よって，$\mathbb{Q}(E|\dom(E)\setminus\lambda^+)$は式\ref{eq:chaincondition}を強制する，すなわち
+\[
+\mathbb{Q}(E|\dom(E)\setminus\lambda^+)\forces\text{``$
+
+\exists p\in(\mathbb{Q}(E|\lambda^+))^{\check{V}}\left(p\forces\text{``$\mathrm{cf}(\alpha)\leq\lambda$''}\right)\to \mathrm{cf}(\alpha)\leq\lambda
+$''}
+\]
+よって再び式\ref{eq:closedness}より
+\[
+\exists q\in \mathbb{Q}(E|\dom(E)\setminus\lambda^+)\exists \be{\dot{p}}{$\mathbb{Q}(E|\dom(E)\setminus\lambda^+)\forces\text{``$\dot{p}\in (\mathbb{Q}(E|\lambda^+))^{\check{V}}$''}$}(q\forces\text{``$\dot{p}\forces\text{``$\mathrm{cf}(\alpha)\leq\lambda$''}$''})\implies \mathrm{cf}(\alpha)\leq\lambda
+\]
+より
+\[
+\exists r\in\mathbb{Q}(E)(r\forces\text{``$\mathrm{cf}(\alpha)\leq\lambda$''})\implies \mathrm{cf}(\alpha)\leq\lambda
+\]
+特に
+\[
+\exists r\in\mathbb{Q}(E)(r\forces\text{``$\mathrm{cf}(\alpha)=\lambda$''})\implies \mathrm{cf}(\alpha)=\lambda
+\]
+\end{reason}
+$\lambda$は任意であるのに注意して，ジェネリック拡大における正則基数は$V$におけるそれに限ることから，$\mathbb{Q}(E)$は全ての共終数と基数を保つ．
+
+\item $\checkmark$ $\beta_\lambda:=\min\set{\alpha:\lambda<\mathrm{cf}(\alpha)\land\sup_{\kappa\leq\lambda}E(\kappa)\leq\alpha}$に対して，
+\[|\mathbb{Q}(E|\lambda^+)|\leq \max\left(2^\lambda,\beta_\lambda\right)\land \max\left(2^\lambda,\beta_\lambda\right)^\lambda= \max\left(2^\lambda,\beta_\lambda\right)\]
+\begin{reason}
+\begin{enumerate}
+\item $\lambda\in[\delta,\gamma)$の場合：
+\[\beta_\lambda=\min\set{\alpha:\lambda<\mathrm{cf}(\alpha)\land\sup_{\kappa\leq\lambda}E(\kappa)\leq\alpha}\in (\lambda,\gamma]
+\]
+に対して$|\mathbb{Q}(E|\lambda^+)|\leq\beta_\lambda$．さらに
+\[
+\beta_\lambda^\lambda=\sup_{\xi<\beta_\lambda}\xi^\lambda\leq 2^{<\beta_\lambda}=\beta_\lambda
+\]
+\item $\lambda<\delta$の場合：$|\mathbb{Q}(E|\lambda^+)|=1\leq 2^\lambda$
+\item $\lambda\geq\gamma$の場合：$|\mathbb{Q}(E|\lambda^+)|=|\mathbb{Q}(E)|\leq\gamma\leq 2^\lambda$
+
+\end{enumerate}
+\end{reason}
+故に，式\ref{eq:closedness}に注意して，
+
+\[\mathbb{Q}(E|\dom(E)\setminus\lambda^+)\forces \text{``$|(\mathbb{Q}(E|\lambda^+))^{\check{V}}|\leq \max\left(2^\lambda,\beta_\lambda\right)\land \max\left(2^\lambda,\beta_\lambda\right)^\lambda= \max\left(2^\lambda,\beta_\lambda\right)$''}\]
+であり，さらに
+\[
+\mathbb{Q}(E|\dom(E)\setminus\lambda^+)\forces\text{``$\be{(\mathbb{Q}(E|\lambda^+))^{\check{V}}=\mathbb{Q}(E|\lambda^+)}{$\lambda^+$-c.c.}$''}
+\]
+であることから
+\[
+\mathbb{Q}(E|\dom(E)\setminus\lambda^+)\forces\text{``$|B(\mathbb{Q}(E|\lambda^+))|\leq\max(2^\lambda,\beta_\lambda)$''}
+\]
+故に
+\begin{equation}
+
+\mathbb{Q}(E|\dom(E)\setminus\lambda^+)\forces\text{``$\mathbb{Q}(E|\lambda^+)\forces\text{``$2^\lambda= \max\left((2^\lambda)^{\check{V}},\min\set{\alpha:\lambda<\mathrm{cf}(\alpha)\land\sup_{\kappa\leq\lambda}E(\kappa)\leq\alpha}\right) $''}$''}
+\end{equation}
+\end{phase}
+\end{proof}
+\begin{corollary}\label{th:local-CCA}$\be{\theta}{ordinal}$と$\be{\alpha\gg\theta}{limit ordinal}$ s.t. $\theta+\alpha=\alpha$，$a\subseteq\alpha$に対して，$E_a^{\theta,\alpha}\subseteq [\omega_{\theta+1},\omega_{\alpha})^2\subseteq [\omega_{\theta+1},\omega_{\alpha+1}]^2 $を以下で定義する：
+$\xi<\alpha$に対して
+\[
+E_a^{\theta,\alpha}(\omega_{\theta+\xi+1})=\left\{
+\begin{aligned}
+\omega_{\theta+\xi+1}^+&\quad\text{if $\xi\in a$,}\\
+
+\omega_{\theta+\xi+1}^{++}&\quad\text{otherwise.}
+
+\end{aligned}\right.
+\]
+
+このとき，$[\omega_\theta,\omega_{\alpha}]$上での$\mathrm{GCH}$成立の仮定の下で，以下が成立：
+\begin{enumerate}
+\item $\mathbb{Q}(E_a^{\theta,\alpha})$はすべての基数と共終数を保つ
+\item $\mathbb{Q}(E_a^{\theta,\alpha})$は$<\omega_{\theta+1}$-closed
+\item $|\mathbb{Q}(E_a^{\theta,\alpha})|\leq\omega_{\alpha+1}$
+\item $\mathbb{Q}(E_a^{\theta,\alpha})\forces\text{``$a$ is coded into $[\omega_{\theta+1},\omega_\alpha)$''}$
+\end{enumerate}
+特に，$[\omega_{\theta+1},\omega_{\alpha}]$の外の基数に対する冪演算を保存する．
+\end{corollary}
+\subsection{準備}
+\begin{proposition}\label{th:emu}
+$\eta_E:=\sup_{\kappa\in\dom(E)}E(\kappa)^+$に対して，
+
+$\sum_{\kappa\in \dom(E)}E(\kappa)\times\kappa$の順序型は$\eta_E$以下．ただしここで，各$E(\kappa)\times\kappa$には辞書式順序が入り，直和にもその添字を初項とする辞書式順序が入っているとする．
+\end{proposition}
+\begin{proof}
+$\kappa\in\dom(E)$に対して，$\kappa\cdot E(\kappa)=E(\kappa)$より辞書式順序$\langle E(\kappa)\times\kappa,<_{\text{lex}}\rangle$の順序型は$E(\kappa)$．よって，求める順序型は辞書式順序に一致する．
+$\lambda\in \dom(E)$に対して$\langle\sum_{\kappa\leq\lambda}E(\kappa),<_{\text{lex}}\rangle$の順序型は$E(\lambda)\cdot \lambda\leq E(\lambda)^+$以下であり，$\langle\sum_{\kappa\in \dom(E)}E(\kappa),<_{\text{lex}}\rangle$の順序型はこれらの上限として得られるから，定義より$\eta_E$以下である．
+\end{proof}
+\begin{definition}\label{def:codeing-generic}
+命題\ref{th:emu}より保証される
+$e^E:\leq\eta_E\iso \sum_{\kappa\in\dom(E)}E(\kappa)\times\kappa$を取る．
+
+hyper-universe上で議論する．$\be{G}{$\mathbb{Q}(E)$-generic over $V$}$に対して，$G_\kappa:=\set{p(\kappa):p\in G}$とおけば，$\kappa\in\dom(E)$に対して$\bigcup G_\kappa:E(\kappa)\times\kappa\to 2$．そこで
+\[\tilde{G}: \sum_{\kappa\in\dom(\kappa)}E(\kappa)\times\kappa\to 2;\langle\kappa,x\rangle\mapsto\left(\bigcup G_\kappa\right)(x)
+\]
+として
+\[\lceil G\rceil:=\tilde{G}\circ e^E:\leq\eta_E\to 2\]と定義する．
+\end{definition}
+\begin{remark}
+このとき，付け加わる全てのCohen realsは，そのブロックを保ったまま順序数の部分集合にコーディングされているのに注意．
+\end{remark}
+\begin{remark}
+$(\mathbb{Q}(E))^V$を用いることで，$\lceil G\rceil$から$G$を復元できるのに注意する．特に$V[G]=V[\lceil G\rceil]$．
+\end{remark}
+\begin{corollary}\label{th:suc-size}
+\[
+\mathbb{Q}(E^{\theta,\alpha}_a)\forces\text{``$\lceil\dot{G}\rceil\subseteq \omega_{\alpha}$''}
+\]
+\end{corollary}
+\begin{proof}
+定義\ref{def:codeing-generic}ならびに系\ref{th:local-CCA}より明らか．
+\end{proof}
+\begin{proposition}\label{th:dense-argument}
+$\be{\kappa}{regular}$に対して，κのCohen realは，任意の$\kappa$の有界部分集合を途中の区間に持つ．すなわち，任意の$\alpha<\kappa$，$a\subseteq\alpha$に対して
+\[
+\mathrm{add}(\kappa,1)\forces\text{``$\exists \beta<\kappa\left(\chi_{\set{\beta+\xi:\xi\in a}}|[\beta,\beta+\alpha)\subseteq \bigcup\dot{G}:\kappa\to 2\right)$''}
+\]
+\end{proposition}
+\begin{proof}
+\[
+
+\set{p\in \mathrm{add}(\kappa,1):\exists \beta<\kappa(\chi_{\set{\beta+\xi:\xi\in a}}|[\beta,\beta+\alpha)\subseteq p)}
+
+\]
+が$\mathrm{add}(\kappa,1)$の稠密部分集合であることから明らか．
+\end{proof}
+\begin{corollary}\label{th:bounded-app-on-G}
+$\be{G}{$\mathbb{Q}(E)$-generic over $V$}$，$\kappa\in\dom(E)$に対して，$V$における任意の$\kappa$の有界部分集合は$\lceil G\rceil$の途中の区間に現れる．
+\end{corollary}
+\begin{proof}
+$\mathrm{add}(\kappa,1)$から$\mathbb{Q}(E)$への自然な完備埋め込みを考えることで，$\mathbb{Q}(E)$の付け加える$0$番目の$\kappa$のCohen realは，$\mathrm{add}(\kappa,1)$の付け加える$\kappa$のCohen realと見做せる．
+よって命題\ref{th:dense-argument}と，順序数の部分集合へのコーディングがCohen realsのブロックを保つことから明らか．
+\end{proof}
+
+\subsection{主定理の証明}
+狭義増加なクラス関数$f:\mathrm{Ord}\to\mathrm{Ord}$を再帰的に以下で定義する：
+\[f(0)=0,\quad f(\xi+1)=\max(f(\xi)\cdot\omega,\omega_{f(\xi)}),\quad f(\gamma)=\sup_{\xi<\gamma}f(\xi)\quad\text{for $\be{\gamma}{limit}$}\]
+
+$f(\xi+1)\gg f(\xi)$であるのに注意する．
+\begin{itemize}
+\item[$\checkmark$] $\sum_{\xi<\alpha}f(\xi+2)$の順序型は$f(\alpha+1)$以下
+\begin{reason}
+帰納法より明らか．
+\end{reason}
+\end{itemize}
+そこで，$\langle x_\xi\subseteq f(\xi+2):\xi<\alpha\rangle$に対して，$\lceil\langle x_\xi:\xi<\alpha\rangle\rceil\subseteq f(\alpha+1)$は，各$\chi_{x_\xi}|f(\xi+2)$のパターンを順に並べて得られるものとする．
+\begin{definition}[The canonical forcing of the $\mathrm{CCA}$]\label{def:CCA-forcing}
+$\mathrm{GCH}$を仮定する．
+Easton supprot iteration（inaccessibleのlimit stagesでdiret limit，そうでないところでinverse limitを取る）$\langle\mathbb{P}_\alpha:\alpha\in\mathrm{Ord}\rangle$は以下でwell-definedに定義される：
+\[
+ \mathbb{P}_\alpha\forces\text{``$\dot{\mathbb{Q}}_\alpha=\mathbb{Q}(E_{\lceil\langle\lceil\dot{H}_\xi\rceil:\xi<\alpha\rangle\rceil}^{f(\alpha)+1,f(\alpha+1)})$''}
+\]
+
+ここで，$\xi<\alpha$に対して$\be{H_\xi}{$\dot{\mathbb{Q}_\xi}_{G_\xi}$-generic over $V[G_\xi]$}$は$G_\alpha$の誘導するものとする．
+\end{definition}
+
+\begin{remark}\label{th:well-def}
+well-definedであるのは，次から従う：
+\begin{itemize}
+\item[$\checkmark$] $\langle\mathbb{P}_\xi:\xi\leq\alpha\rangle$はwell-definedであり，$\forall\xi<\alpha(\mathbb{P}_{\xi+1}\forces\text{``$\lceil \dot{H}_\xi\rceil\subseteq f(\xi+2))$''}$かつ$|\mathbb{P}_\alpha|\leq\omega_{f(\alpha)+1}$
+\begin{reason}
+帰納法で示す．
+\begin{enumerate}
+\item $\alpha=0$のとき明らか．
+\item $\be{\alpha}{limit}$未満で成り立つとすると，
+$|\mathbb{P}_\alpha|\leq(\sup_{\xi<\alpha}|\mathbb{P}_{\xi}|)^\alpha\leq \omega_{f(\alpha)}^\alpha\leq\omega_{f(\alpha)+1}$
+に注意して明らか．
+
+\item $\alpha$で成り立つとすると，このとき帰納法の仮定より
+\[
+\mathbb{P}_\alpha\forces\text{``$\dot{\mathbb{Q}}_\alpha=\mathbb{Q}(E_{\lceil\langle\lceil\dot{H}_\xi\rceil:\xi<\alpha\rangle\rceil}^{f(\alpha)+1,f(\alpha+1)})$''}
+\]
+はwell-definedである．よって$\mathbb{P}_{\alpha+1}$はwell-definedであり，このとき系\ref{th:suc-size}より$\mathbb{P}_{\alpha+1}\forces\text{``$\lceil\dot{H}_\alpha\rceil\subseteq\omega_{f(\alpha+1)}^{\check{V}[\dot{G}_\alpha]}$''}$．ここで帰納法の仮定より$|\mathbb{P}_\alpha|\leq\omega_{f(\alpha)+1}$に注意して，$\mathbb{P}_\alpha\forces\text{``$\omega_{f(\alpha+1)}^{\check{V}}\leq\omega_{f(\alpha+1)}^{\check{V}[\dot{G}_\alpha]}\leq\omega_{f(\alpha)+2+f(\alpha+1)}^{\check{V}}=\omega_{f(\alpha+1)}^{\check{V}}$''}$より$\mathbb{P}_\alpha\forces\text{``$\omega_{f(\alpha+1)}^{\check{V}}=\omega_{f(\alpha+1)}^{\check{V}[\dot{G}_\alpha]}$''}$に注意して，$\mathbb{P}_{\alpha+1}\forces\text{``$\lceil\dot{H}_\alpha\rceil\subseteq f(\alpha+2)$''}$となる．最後に，系\ref{th:local-CCA}より$\mathbb{P}_\alpha\forces\text{``$|\dot{\mathbb{Q}}_\alpha|\leq\omega_{f(\alpha+1)+1}^{\check{V}[\dot{G}_\alpha]}=\omega_{f(\alpha+1)+1}^{\check{V}}$''}$に注意して，$|\mathbb{P}_{\alpha+1}|=|\mathbb{P}_\alpha*\dot{\mathbb{Q}}_\alpha|\leq\omega_{f(\alpha+1)+1}^{\omega_{f(\alpha)+1}}=\omega_{f(\alpha+1)+1}$より明らか．
+\end{enumerate}
+\end{reason}
+\end{itemize}
+\end{remark}
+
+\begin{remark}
+$\lceil\langle\lceil H_\xi\rceil:\xi<\alpha\rangle\rceil$は，本質的に$G_\alpha$の，順序数の部分集合へのコードと見做せる：
+
+\begin{itemize}
+\item[$\checkmark$]$G_\alpha$の持つ情報は，$\langle H_\xi:\xi<\alpha\rangle$でちょうどである
+\begin{reason}
+帰納法で示す．sucseccorの場合は明らかよりlimitの場合だけ示せば良い．
+
+\[p\in G_\alpha\iff \forall \xi<\alpha(p|\xi\in G_\xi)\]
+を見れば十分．$\forall \xi<\alpha(r\leq p|\xi)$ならば$\forall \xi<\alpha(r|\xi\leq p|\xi)$より$r\leq p$．故に$p=\prod_{\xi<\alpha} p|\xi$であることから明らか．
+\end{reason}
+\end{itemize}
+そこで，$\lceil G_\alpha\rceil:=\lceil\langle \lceil H_\xi\rceil:\xi<\alpha\rangle\rceil$とおく．
+\end{remark}
+\begin{lemma}\label{th:main}
+$\mathrm{GCH}$を仮定する．定義\ref{def:CCA-forcing}の$\langle\mathbb{P}_\alpha:\alpha\in\mathrm{Ord}\rangle$を取る．
+このとき
+
+\[
+
+\forall\xi<\alpha(\mathbb{P}_{\alpha}\forces\text{``$\mathrm{CCA}$ holds for $\lceil \dot{G}_\xi\rceil$''})
+
+\]
+特に，
+\[
+\mathbb{P}_\alpha\forces\text{``$\mathrm{CCA}$ holds for all bounded subsets of $\sup_{\xi<\alpha}\omega_{f(\xi)+2}^{\check{V}[\dot{G}_\xi]}$''}
+\]
+\end{lemma}
+\begin{proof}
+\begin{itemize}
+\item[$\checkmark$] $\forall\xi(|\mathbb{P}_\xi|\leq \omega_{f(\xi)+1})$．特に，$\be{\kappa}{inaccessible}$に対して$\forall\xi<\kappa(|\mathbb{P}_\xi|<\kappa)$．
+\begin{reason}
+注意\ref{th:well-def}からただちに従う．
+\end{reason}
+
+\item[$\checkmark$]
+
+$\mathbb{P}_\alpha=\mathbb{P}_{\xi}*\dot{\mathbb{P}}_{\xi,\alpha}$について$\mathbb{P}_{\xi}\forces\text{``$\be{\dot{\mathbb{P}}_{\xi,\alpha}}{$<\omega_{f(\xi)+2}^{\check{V}[\dot{G}_{\xi}]}$-closed}$''}$．
+\begin{reason}
+$K:=\set{\eta:\be{\mathbb{P}_\eta}{direct limit of $\langle \mathbb{P}_\zeta:\zeta<\eta\rangle$}}=\set{\be{\eta}{inaccsessible}}$，$K_{\xi}^\alpha:=K\cap (\xi,\alpha]$について，$K_{\xi}^\alpha=\varnothing\lor|\mathbb{P}_{\xi}|<\min K_{\xi}^\alpha$より
+\[
+\mathbb{P}_{\xi}\forces\text{``$\forall \be{X}{$K^\alpha_{\xi}$-thin}\exists \be{Y\in\check{V}}{$K_{\xi}^\alpha$-thin}(X\subseteq Y)$''}
+\]
+であり，さらに
+\[
+\forall\eta\geq \xi\left(\mathbb{P}_{\eta}\forces\text{``$\be{\dot{\mathbb{Q}}_\eta=\mathbb{Q}(E _{\lceil\langle\lceil\dot{H}_\zeta\rceil:\zeta<\eta\rangle\rceil}^{f(\eta)+1,f(\eta+1)})}{$<\omega_{f(\xi)+2}^{\check{V}[\dot{G}_{\xi}]}$-closed}$''}\right)
+\]
+より明らか．
+\end{reason}
+
+\item[$\checkmark$] $\forall\xi(\mathbb{P}_{\xi+1}\forces\text{``$\lceil \dot{G}_\xi\rceil$ is coded into $[\omega_{f(\xi)+2}^{\check{V}[\dot{G}_{\xi}]},\omega_{f(\xi+1)} ^{\check{V}[\dot{G}_{\xi}]})$''})$
+\begin{reason}
+$\mathbb{P}_\xi$は$\omega_{f(\xi)+1}$以上での$\mathrm{GCH}$の成立を保つ．$\mathbb{P}_\xi\forces\text{``$\omega_{f(\xi)+1}^{\check{V}}\leq \omega_{f(\xi)+1}^{\check{V}[\dot{G}_\xi]}$''}$より$\mathbb{P}_\xi\forces\text{``$\mathrm{GCH}$ holds above $\omega_{f(\xi)+1}^{\check{V}[\dot{G}_\xi]}$''}$であるから，系\ref{th:local-CCA}より明らか．
+\end{reason}
+\end{itemize}
+
+故に
+\[
+
+\forall\xi<\alpha(\mathbb{P}_{\alpha}\forces\text{``$\lceil \dot{G}_\xi\rceil$ is coded into $[\omega_{f(\xi)+2}^{\check{V}[\dot{G}_{\alpha}]},\omega_{f(\xi+1)} ^{\check{V}[\dot{G}_{\alpha}]})$''})
+\]
+より
+\[
+
+\forall\xi<\alpha(\mathbb{P}_{\alpha}\forces\text{``$\mathrm{CCA}$ holds for $\lceil \dot{G}_\xi\rceil$''})
+
+\]
+となる．
+さらに，任意の$\xi<\alpha$に対して
+
+\[
+\mathbb{P}_\alpha\forces\text{``$\check{V}[\dot{G}_{\xi}]^{< \omega_{f(\xi)+2}^{\check{V}[\dot{G}_\xi]}}\subseteq \check{V}[\dot{G}_{\xi}]$''}
+\]
+\[\mathbb{P}_{\xi}\forces\text{``$\dot{\mathbb{Q}}_{\xi}=\mathbb{Q}(E_{\lceil\dot{G}_{\xi}\rceil}^{f(\xi)+1,f(\xi+1)})\land \omega_{f(\xi)+2}^{\check{V}[\dot{G}_\xi]}\in\dom(E_{\lceil\dot{G}_{\xi}\rceil}^{f(\xi)+1,f(\xi+1)})$''}
+\]
+に注意して，系\ref{th:bounded-app-on-G}より，
+\[
+\mathbb{P}_\alpha\forces\text{``$\mathrm{CCA}$ holds for all bounded subsets of $\omega_{f(\xi)+2} ^{\check{V}[\dot{G}_\xi]} $''}
+\]
+\end{proof}
+\begin{theorem}\label{th:CCA-class-forcing}
+
+$\mathrm{GCH}$を仮定する．定義\ref{def:CCA-forcing}の$\langle\mathbb{P}_\alpha:\alpha\in\mathrm{Ord}\rangle$を取る．class forcing poset $\mathbb{P}:=\bigcup_{\alpha\in\mathrm{Ord}}\mathbb{P}_\alpha$
+とおく．このとき
+
+\[
+
+\forall\alpha\in\mathrm{Ord}(\mathbb{P}\forces\text{``$\mathrm{CCA}$ holds for $\lceil \dot{G}_\alpha\rceil$''})
+
+\]
+特に，$\mathbb{P}\forces\text{``$\mathrm{CCA}$''}$が成り立つ．
+
+\end{theorem}
+\begin{proof}
+クラス強制法であることに由来する幾つかの確認を除いて，本質的に補題\ref{th:main}と同様の証明で示せる．クラス強制法の取り扱いについては，資料を別途作成予定．
+\end{proof}
+
+\begin{corollary}
+任意の集合論の宇宙$V$は，class forcingによって$\mathrm{CCA}$を満たす$\ZFC$のモデルに拡大できる．
+\end{corollary}
+\begin{proof}
+必要なら$\mathrm{GCH}$を強制するclass forcingによって拡大したのち，定理\ref{th:CCA-class-forcing}を適用すれば良い．
+\end{proof}
