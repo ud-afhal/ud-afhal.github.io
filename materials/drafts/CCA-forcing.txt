@@ -18,7 +18,7 @@ Continuum Coding Axiomとは，次の主張である：
 \end{definition}
 \begin{remark}
 \begin{enumerate}
-\item $\mathrm{add}(\kappa,\lambda)$は$\kappa$-closed
+\item $\mathrm{add}(\kappa,\lambda)$は$<\kappa$-closed
 \item $\mathrm{add}(\kappa,\lambda)$は$(2^{<\kappa})^+$-c.c.
 \item $|B(\mathrm{add}(\kappa,\lambda))|\leq (\lambda^{<\kappa})^{(2^{<\kappa})}$
 \item $2^{<\kappa}=\kappa\land \lambda^\kappa=\lambda$ならば
@@ -48,7 +48,7 @@ $\be{E:\subseteq\mathrm{Reg}\to\mathrm{Car}}{non-decreasing}$は次を満たす�
 \begin{enumerate}
 \item $\mathbb{Q}(E)$は全ての基数，共終数を保存する．
 \item 次が成り立つ：
-\[\mathbb{Q}(E)\forces\text{``$\forall\be{\lambda}{regular}\left( 2^{\lambda}=\max((2^\lambda)^{\check{V}},\min\set{\alpha:\lambda<\mathrm{cf}(\alpha)\land \sup_{\kappa\leq\lambda}E(\kappa)\leq\alpha})\right)$''}
+\[\mathbb{Q}(E)\forces\text{``$\forall\be{\lambda}{regular}\left( 2^{\lambda}=\max((2^\lambda)^{\check{V}},\min\set{\alpha\in\mathrm{Car}:\lambda<\mathrm{cf}(\alpha)\land \sup_{\kappa\leq\lambda}E(\kappa)\leq\alpha})\right)$''}
 \]
 \end{enumerate}
 \end{theorem}
@@ -59,7 +59,7 @@ $\be{\lambda}{regular}$に対して
 \]
 
 \begin{enumerate}
-\item $\mathbb{Q}(E|\dom(E)\setminus\lambda^+)$は$\lambda^+$-closedであり，特に
+\item $\mathbb{Q}(E|\dom(E)\setminus\lambda^+)$は$<\lambda^+$-closedであり，特に
 \begin{equation}\label{eq:closedness}
 \mathbb{Q}(E|\dom(E)\setminus\lambda^+)\forces\text{``$\check{V}^\lambda\subseteq\check{V}$''}
 \end{equation}
@@ -74,7 +74,7 @@ $\be{\lambda}{regular}$に対して
 \end{enumerate}
 \begin{phase}
 \item
-$\checkmark$ $\forall\alpha\in\ON[\exists r\in\mathbb{Q}(E)(r\forces\text{``$\mathrm{cf}(\alpha)=\lambda$''})\to\mathrm{cf}(\alpha)=\lambda]$
+$\checkmark$ $\forall\alpha\in\mathrm{Ord}[\exists r\in\mathbb{Q}(E)(r\forces\text{``$\mathrm{cf}(\alpha)=\lambda$''})\to\mathrm{cf}(\alpha)=\lambda]$
 \begin{reason}
 式\ref{eq:closedness}に注意して，$V$における議論と同様にして
 \[
@@ -102,7 +102,7 @@ $''}
 \end{reason}
 $\lambda$は任意であるのに注意して，ジェネリック拡大における正則基数は$V$におけるそれに限ることから，$\mathbb{Q}(E)$は全ての共終数と基数を保つ．
 
-\item $\checkmark$ $\beta_\lambda:=\min\set{\alpha:\lambda<\mathrm{cf}(\alpha)\land\sup_{\kappa\leq\lambda}E(\kappa)\leq\alpha}$に対して，
+\item $\checkmark$ $\beta_\lambda:=\min\set{\alpha\in\mathrm{Car}:\lambda<\mathrm{cf}(\alpha)\land\sup_{\kappa\leq\lambda}E(\kappa)\leq\alpha}$に対して，
 \[|\mathbb{Q}(E|\lambda^+)|\leq \max\left(2^\lambda,\beta_\lambda\right)\land \max\left(2^\lambda,\beta_\lambda\right)^\lambda= \max\left(2^\lambda,\beta_\lambda\right)\]
 \begin{reason}
 \begin{enumerate}
@@ -132,7 +132,7 @@ $\lambda$は任意であるのに注意して，ジェネリック拡大にお�
 故に
 \begin{equation}
 
-\mathbb{Q}(E|\dom(E)\setminus\lambda^+)\forces\text{``$\mathbb{Q}(E|\lambda^+)\forces\text{``$2^\lambda= \max\left((2^\lambda)^{\check{V}},\min\set{\alpha:\lambda<\mathrm{cf}(\alpha)\land\sup_{\kappa\leq\lambda}E(\kappa)\leq\alpha}\right) $''}$''}
+\mathbb{Q}(E|\dom(E)\setminus\lambda^+)\forces\text{``$\mathbb{Q}(E|\lambda^+)\forces\text{``$2^\lambda= \max\left((2^\lambda)^{\check{V}},\min\set{\alpha\in\mathrm{Car}:\lambda<\mathrm{cf}(\alpha)\land\sup_{\kappa\leq\lambda}E(\kappa)\leq\alpha}\right) $''}$''}
 \end{equation}
 \end{phase}
 \end{proof}
@@ -164,15 +164,15 @@ $\eta_E:=\sup_{\kappa\in\dom(E)}E(\kappa)^+$に対して，
 $\sum_{\kappa\in \dom(E)}E(\kappa)\times\kappa$の順序型は$\eta_E$以下．ただしここで，各$E(\kappa)\times\kappa$には辞書式順序が入り，直和にもその添字を初項とする辞書式順序が入っているとする．
 \end{proposition}
 \begin{proof}
-$\kappa\in\dom(E)$に対して，$\kappa\cdot E(\kappa)=E(\kappa)$より辞書式順序$\langle E(\kappa)\times\kappa,<_{\text{lex}}\rangle$の順序型は$E(\kappa)$．よって，求める順序型は辞書式順序に一致する．
-$\lambda\in \dom(E)$に対して$\langle\sum_{\kappa\leq\lambda}E(\kappa),<_{\text{lex}}\rangle$の順序型は$E(\lambda)\cdot \lambda\leq E(\lambda)^+$以下であり，$\langle\sum_{\kappa\in \dom(E)}E(\kappa),<_{\text{lex}}\rangle$の順序型はこれらの上限として得られるから，定義より$\eta_E$以下である．
+$\kappa\in\dom(E)$に対して，$\kappa\cdot E(\kappa)=E(\kappa)$より辞書式順序$\langle E(\kappa)\times\kappa,<_{\text{lex}}\rangle$の順序型は$E(\kappa)$．よって，求める順序型は辞書式順序$\langle\sum_{\kappa\leq\lambda}E(\kappa),<_{\text{lex}}\rangle$の順序型に一致する．
+$\lambda\in \dom(E)$に対して$\langle\sum_{\kappa\leq\lambda}E(\kappa),<_{\text{lex}}\rangle$の順序型は$E(\lambda)\cdot (\lambda+1)\leq E(\lambda)^+$以下であり，$\langle\sum_{\kappa\in \dom(E)}E(\kappa),<_{\text{lex}}\rangle$の順序型はこれらの上限として得られるから，定義より$\eta_E$以下である．
 \end{proof}
-\begin{definition}\label{def:codeing-generic}
+\begin{definition}\label{def:coding-generic}
 命題\ref{th:emu}より保証される
 $e^E:\leq\eta_E\iso \sum_{\kappa\in\dom(E)}E(\kappa)\times\kappa$を取る．
 
 hyper-universe上で議論する．$\be{G}{$\mathbb{Q}(E)$-generic over $V$}$に対して，$G_\kappa:=\set{p(\kappa):p\in G}$とおけば，$\kappa\in\dom(E)$に対して$\bigcup G_\kappa:E(\kappa)\times\kappa\to 2$．そこで
-\[\tilde{G}: \sum_{\kappa\in\dom(\kappa)}E(\kappa)\times\kappa\to 2;\langle\kappa,x\rangle\mapsto\left(\bigcup G_\kappa\right)(x)
+\[\tilde{G}: \sum_{\kappa\in\dom(E)}E(\kappa)\times\kappa\to 2;\langle\kappa,x\rangle\mapsto\left(\bigcup G_\kappa\right)(x)
 \]
 として
 \[\lceil G\rceil:=\tilde{G}\circ e^E:\leq\eta_E\to 2\]と定義する．
@@ -189,10 +189,10 @@ $(\mathbb{Q}(E))^V$を用いることで，$\lceil G\rceil$から$G$を復元で
 \]
 \end{corollary}
 \begin{proof}
-定義\ref{def:codeing-generic}ならびに系\ref{th:local-CCA}より明らか．
+定義\ref{def:coding-generic}ならびに系\ref{th:local-CCA}より明らか．
 \end{proof}
 \begin{proposition}\label{th:dense-argument}
-$\be{\kappa}{regular}$に対して，κのCohen realは，任意の$\kappa$の有界部分集合を途中の区間に持つ．すなわち，任意の$\alpha<\kappa$，$a\subseteq\alpha$に対して
+$\be{\kappa}{regular}$に対して，$\kappa$のCohen realは，任意の$\kappa$の有界部分集合を途中の区間に持つ．すなわち，任意の$\alpha<\kappa$，$a\subseteq\alpha$に対して
 \[
 \mathrm{add}(\kappa,1)\forces\text{``$\exists \beta<\kappa\left(\chi_{\set{\beta+\xi:\xi\in a}}|[\beta,\beta+\alpha)\subseteq \bigcup\dot{G}:\kappa\to 2\right)$''}
 \]
@@ -227,18 +227,18 @@ $f(\xi+1)\gg f(\xi)$であるのに注意する．
 そこで，$\langle x_\xi\subseteq f(\xi+2):\xi<\alpha\rangle$に対して，$\lceil\langle x_\xi:\xi<\alpha\rangle\rceil\subseteq f(\alpha+1)$は，各$\chi_{x_\xi}|f(\xi+2)$のパターンを順に並べて得られるものとする．
 \begin{definition}[The canonical forcing of the $\mathrm{CCA}$]\label{def:CCA-forcing}
 $\mathrm{GCH}$を仮定する．
-Easton supprot iteration（inaccessibleのlimit stagesでdiret limit，そうでないところでinverse limitを取る）$\langle\mathbb{P}_\alpha:\alpha\in\mathrm{Ord}\rangle$は以下でwell-definedに定義される：
+Easton support iteration（inaccessibleのlimit stagesでdirect limit，そうでないところでinverse limitを取る）$\langle\mathbb{P}_\alpha:\alpha\in\mathrm{Ord}\rangle$は以下でwell-definedに定義される：
 \[
  \mathbb{P}_\alpha\forces\text{``$\dot{\mathbb{Q}}_\alpha=\mathbb{Q}(E_{\lceil\langle\lceil\dot{H}_\xi\rceil:\xi<\alpha\rangle\rceil}^{f(\alpha)+1,f(\alpha+1)})$''}
 \]
 
-ここで，$\xi<\alpha$に対して$\be{H_\xi}{$\dot{\mathbb{Q}_\xi}_{G_\xi}$-generic over $V[G_\xi]$}$は$G_\alpha$の誘導するものとする．
+ここで，$\xi<\alpha$に対して$\be{H_\xi}{$\dot{\mathbb{Q}}_\xi{}_{G_\xi}$-generic over $V[G_\xi]$}$は$G_\alpha$の誘導するものとする．
 \end{definition}
 
 \begin{remark}\label{th:well-def}
 well-definedであるのは，次から従う：
 \begin{itemize}
-\item[$\checkmark$] $\langle\mathbb{P}_\xi:\xi\leq\alpha\rangle$はwell-definedであり，$\forall\xi<\alpha(\mathbb{P}_{\xi+1}\forces\text{``$\lceil \dot{H}_\xi\rceil\subseteq f(\xi+2))$''}$かつ$|\mathbb{P}_\alpha|\leq\omega_{f(\alpha)+1}$
+\item[$\checkmark$] $\langle\mathbb{P}_\xi:\xi\leq\alpha\rangle$はwell-definedであり，$\forall\xi<\alpha(\mathbb{P}_{\xi+1}\forces\text{``$\lceil \dot{H}_\xi\rceil\subseteq f(\xi+2)$''})$かつ$|\mathbb{P}_\alpha|\leq\omega_{f(\alpha)+1}$
 \begin{reason}
 帰納法で示す．
 \begin{enumerate}
@@ -263,7 +263,7 @@ $\lceil\langle\lceil H_\xi\rceil:\xi<\alpha\rangle\rceil$は，本質的に$G_\a
 \begin{itemize}
 \item[$\checkmark$]$G_\alpha$の持つ情報は，$\langle H_\xi:\xi<\alpha\rangle$でちょうどである
 \begin{reason}
-帰納法で示す．sucseccorの場合は明らかよりlimitの場合だけ示せば良い．
+帰納法で示す．successorの場合は明らかよりlimitの場合だけ示せば良い．
 
 \[p\in G_\alpha\iff \forall \xi<\alpha(p|\xi\in G_\xi)\]
 を見れば十分．$\forall \xi<\alpha(r\leq p|\xi)$ならば$\forall \xi<\alpha(r|\xi\leq p|\xi)$より$r\leq p$．故に$p=\prod_{\xi<\alpha} p|\xi$であることから明らか．
@@ -280,9 +280,9 @@ $\mathrm{GCH}$を仮定する．定義\ref{def:CCA-forcing}の$\langle\mathbb{P}
 \forall\xi<\alpha(\mathbb{P}_{\alpha}\forces\text{``$\mathrm{CCA}$ holds for $\lceil \dot{G}_\xi\rceil$''})
 
 \]
-特に，
+特に，$\be{\alpha}{limit}$に対して
 \[
-\mathbb{P}_\alpha\forces\text{``$\mathrm{CCA}$ holds for all bounded subsets of $\sup_{\xi<\alpha}\omega_{f(\xi)+2}^{\check{V}[\dot{G}_\xi]}$''}
+\mathbb{P}_\alpha\forces\text{``$\mathrm{CCA}$ holds for all bounded subsets of $f(\alpha)$''}
 \]
 \end{lemma}
 \begin{proof}
@@ -296,7 +296,7 @@ $\mathrm{GCH}$を仮定する．定義\ref{def:CCA-forcing}の$\langle\mathbb{P}
 
 $\mathbb{P}_\alpha=\mathbb{P}_{\xi}*\dot{\mathbb{P}}_{\xi,\alpha}$について$\mathbb{P}_{\xi}\forces\text{``$\be{\dot{\mathbb{P}}_{\xi,\alpha}}{$<\omega_{f(\xi)+2}^{\check{V}[\dot{G}_{\xi}]}$-closed}$''}$．
 \begin{reason}
-$K:=\set{\eta:\be{\mathbb{P}_\eta}{direct limit of $\langle \mathbb{P}_\zeta:\zeta<\eta\rangle$}}=\set{\be{\eta}{inaccsessible}}$，$K_{\xi}^\alpha:=K\cap (\xi,\alpha]$について，$K_{\xi}^\alpha=\varnothing\lor|\mathbb{P}_{\xi}|<\min K_{\xi}^\alpha$より
+$K:=\set{\eta:\be{\mathbb{P}_\eta}{direct limit of $\langle \mathbb{P}_\zeta:\zeta<\eta\rangle$}}=\set{\be{\eta}{inaccessible}}$，$K_{\xi}^\alpha:=K\cap (\xi,\alpha]$について，$K_{\xi}^\alpha=\varnothing\lor|\mathbb{P}_{\xi}|<\min K_{\xi}^\alpha$より
 \[
 \mathbb{P}_{\xi}\forces\text{``$\forall \be{X}{$K^\alpha_{\xi}$-thin}\exists \be{Y\in\check{V}}{$K_{\xi}^\alpha$-thin}(X\subseteq Y)$''}
 \]
@@ -318,14 +318,9 @@ $\mathbb{P}_\xi$は$\omega_{f(\xi)+1}$以上での$\mathrm{GCH}$の成立を保�
 
 \forall\xi<\alpha(\mathbb{P}_{\alpha}\forces\text{``$\lceil \dot{G}_\xi\rceil$ is coded into $[\omega_{f(\xi)+2}^{\check{V}[\dot{G}_{\alpha}]},\omega_{f(\xi+1)} ^{\check{V}[\dot{G}_{\alpha}]})$''})
 \]
-より
-\[
+より$\forall\xi<\alpha(\mathbb{P}_{\alpha}\forces\text{``$\mathrm{CCA}$ holds for $\lceil \dot{G}_\xi\rceil$''})$となる．
 
-\forall\xi<\alpha(\mathbb{P}_{\alpha}\forces\text{``$\mathrm{CCA}$ holds for $\lceil \dot{G}_\xi\rceil$''})
-
-\]
-となる．
-さらに，任意の$\xi<\alpha$に対して
+さらに，$\be{\alpha}{limit}$とすると，任意の$\xi<\alpha$に対して
 
 \[
 \mathbb{P}_\alpha\forces\text{``$\check{V}[\dot{G}_{\xi}]^{< \omega_{f(\xi)+2}^{\check{V}[\dot{G}_\xi]}}\subseteq \check{V}[\dot{G}_{\xi}]$''}
@@ -334,7 +329,11 @@ $\mathbb{P}_\xi$は$\omega_{f(\xi)+1}$以上での$\mathrm{GCH}$の成立を保�
 \]
 に注意して，系\ref{th:bounded-app-on-G}より，
 \[
-\mathbb{P}_\alpha\forces\text{``$\mathrm{CCA}$ holds for all bounded subsets of $\omega_{f(\xi)+2} ^{\check{V}[\dot{G}_\xi]} $''}
+\mathbb{P}_\alpha\forces\text{``$\mathrm{CCA}$ holds for all bounded subsets of $\omega_{f(\xi)+2}^{\check{V}[\dot{G}_\xi]}(\supseteq f(\xi))$''}
+\]
+したがって，
+\[
+\mathbb{P}_\alpha\forces\text{``$\mathrm{CCA}$ holds for all bounded subsets of $f(\alpha)$''}
 \]
 \end{proof}
 \begin{theorem}\label{th:CCA-class-forcing}
