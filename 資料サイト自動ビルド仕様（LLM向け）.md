@@ -199,6 +199,19 @@ ud-afhal.github.io/
 
 - 「`drafts` 以外で `\date` がない資料を、トップの最新欄から除外する」処理は入れていない。表示側のコードは変更していないため、日付つきの資料が 5 件に満たないと、日付なしの資料が最新欄の末尾に出る。除外するなら、表示処理の `renderRecentUpdates` に `date !== null` の条件を足す。ユーザーには伝達済みで、要否は未確認。
 
+## 検索エンジン向けの処理（Nov 9, 2026 追加）
+
+`scripts/compile.js` の最後に、`_site` の中だけを書き換える処理を追加した。リポジトリ側のファイルは変更しない。`mystyle.js` と `editor.html` は変更していない。そのため、`editor.html` の「公開用HTMLを生成」で作った HTML には、以下の canonical と description は付かない。
+
+- 資料一覧の静的化: `index.html` の `#auto-recent-updates`・`#auto-home-materials`、`materials.html` の `#auto-materials-list` について、空の要素の中に、`materials-auto.js` と同じ内容の HTML を書き込む。JavaScript を実行しないクローラーにも資料へのリンクが見えるようにするため。ブラウザでは `materials-auto.js` が同じ内容で描画し直す。表示処理を変えたときは、`compile.js` の `recentUpdatesHTML`・`homeMaterialsHTML`・`materialsListHTML` も合わせて直す。
+- canonical: `ROOT_PAGES`（index・materials・updates・about・links）と各資料ページに、`<link rel="canonical">` を付ける。起点は `SITE_URL`（`https://ud-afhal.github.io`）。`index.html` の canonical はルート（`/`）とする。
+- description: 資料ページに「カテゴリ名：本文の冒頭 120 文字」を付ける。数式は TeX のまま入る。`index.html`・`materials.html` の description は、ソースの HTML に直接書いた。
+- noindex: `NOINDEX_PAGES`（`materials/editor.html`）に `<meta name="robots" content="noindex">` を付ける。
+- `sitemap.xml`: `ROOT_PAGES` と全資料（drafts を含む）を載せる。資料の `lastmod` は `\date`。トップと資料一覧の `lastmod` は、最も新しい資料の日付。`\date` のない資料と、他の手書きページには `lastmod` を付けない。`robots.txt` に `Sitemap:` 行を追加した。
+- `materials.html` の `<title>` を「資料 | Chicken-generic over Rice」に変えた。
+
+手動で必要な作業: Search Console で `https://ud-afhal.github.io/sitemap.xml` を送信する。
+
 ## 今後の変更時の規約
 
 - `mystyle.js` に、コマンドライン機能やファイル入出力を追加しない。変換部に DOM 依存を持ち込まない（Node で動かすため）。
@@ -208,4 +221,5 @@ ud-afhal.github.io/
 - `materials-auto.js` の自動更新は、先頭が `const MATERIALS_AUTO_DATA =` で始まる 1 行だけを対象とする。この行を複数行にしたり、書式を崩したりしない。表示処理は手で編集してよい。
 - カテゴリを追加するときは、`common.js` の `CATEGORIES` と、`materials-auto.js` の `categoryOrder`・`categoryNames` の両方を更新する。
 - ルートに公開したくないファイルを追加するときは、`compile.js` の `EXCLUDED` に加える。それ以外は自動で `_site` にコピーされる。
+- 公開はするが検索結果に出したくないページは `NOINDEX_PAGES` に、sitemap に載せたいルート直下の手書きページは `ROOT_PAGES` に加える。
 - 回答は日本語で、数学者・大学院生に向けて精密に書く。確認できていないことは「未確認」と明記する。ユーザーが仕様確認を求めている間は、実装しない。
