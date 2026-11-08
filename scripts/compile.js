@@ -7,7 +7,7 @@
 //   4. 検索エンジン向けの処理をする（_site の中だけを書き換える）
 //      - 資料一覧を index.html・materials.html に静的な HTML として埋め込む
 //      - 各ページに canonical を、資料ページに description を付ける
-//      - materials/editor.html に noindex を付ける
+//      - materials/editor.html と drafts の資料に noindex を付ける
 //      - sitemap.xml を生成する
 // 生成物はすべて _site に出力し、リポジトリ側には書き戻さない。
 
@@ -42,6 +42,10 @@ const ROOT_PAGES = [
 ];
 // 公開はするが、検索結果には出さないページ。
 const NOINDEX_PAGES = ["materials/editor.html"];
+// sitemap.xml に載せない資料のカテゴリ（公開とサイト内リンクは続ける）。
+const SITEMAP_EXCLUDED_CATEGORIES = new Set(["drafts"]);
+// 資料ページに noindex を付けるカテゴリ（検索結果に出さない）。
+const NOINDEX_CATEGORIES = new Set(["drafts"]);
 // 資料ページの description の最大文字数。
 const DESCRIPTION_LENGTH = 120;
 
@@ -164,16 +168,16 @@ function compileSources() {
       const outputRelative = relative.replace(TEXT_FILE, ".html");
       const output = path.join(OUTPUT, outputRelative);
       const description = makeDescription(category, source);
+      const headTags = [
+        canonicalTag(outputRelative),
+        `<meta name="description" content="${escapeHTML(description)}">`
+      ];
+      if (NOINDEX_CATEGORIES.has(category.key)) {
+        headTags.push('<meta name="robots" content="noindex">');
+      }
 
       fs.mkdirSync(path.dirname(output), { recursive: true });
-      fs.writeFileSync(
-        output,
-        insertIntoHead(html, [
-          canonicalTag(outputRelative),
-          `<meta name="description" content="${escapeHTML(description)}">`
-        ]),
-        "utf8"
-      );
+      fs.writeFileSync(output, insertIntoHead(html, headTags), "utf8");
 
       console.log(`${relative} -> ${path.relative(ROOT, output)}`);
       for (const issue of issues) {
@@ -357,8 +361,12 @@ function optimizeRootPages(items) {
 }
 
 // sitemap.xml を作る。lastmod は資料の \date。
-// トップと資料一覧の lastmod は、最も新しい資料の日付とする。
-function buildSitemap(items) {
+// トップと資料一覧の lastmod は、sitemap に載せる資料のうち最も新しい日付とする。
+// SITEMAP_EXCLUDED_CATEGORIES（drafts）の資料は載せない。
+function buildSitemap(allItems) {
+  const items = allItems.filter((item) => {
+    return !SITEMAP_EXCLUDED_CATEGORIES.has(item.categoryKey);
+  });
   const latest = items.find((item) => item.date !== null)?.date ?? null;
   const entries = [];
 

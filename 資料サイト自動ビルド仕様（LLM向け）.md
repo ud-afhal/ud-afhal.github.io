@@ -206,8 +206,8 @@ ud-afhal.github.io/
 - 資料一覧の静的化: `index.html` の `#auto-recent-updates`・`#auto-home-materials`、`materials.html` の `#auto-materials-list` について、空の要素の中に、`materials-auto.js` と同じ内容の HTML を書き込む。JavaScript を実行しないクローラーにも資料へのリンクが見えるようにするため。ブラウザでは `materials-auto.js` が同じ内容で描画し直す。表示処理を変えたときは、`compile.js` の `recentUpdatesHTML`・`homeMaterialsHTML`・`materialsListHTML` も合わせて直す。
 - canonical: `ROOT_PAGES`（index・materials・updates・about・links）と各資料ページに、`<link rel="canonical">` を付ける。起点は `SITE_URL`（`https://ud-afhal.github.io`）。`index.html` の canonical はルート（`/`）とする。
 - description: 資料ページに「カテゴリ名：本文の冒頭 120 文字」を付ける。数式は TeX のまま入る。`index.html`・`materials.html` の description は、ソースの HTML に直接書いた。
-- noindex: `NOINDEX_PAGES`（`materials/editor.html`）に `<meta name="robots" content="noindex">` を付ける。
-- `sitemap.xml`: `ROOT_PAGES` と全資料（drafts を含む）を載せる。資料の `lastmod` は `\date`。トップと資料一覧の `lastmod` は、最も新しい資料の日付。`\date` のない資料と、他の手書きページには `lastmod` を付けない。`robots.txt` に `Sitemap:` 行を追加した。
+- noindex: `NOINDEX_PAGES`（`materials/editor.html`）と、`NOINDEX_CATEGORIES`（drafts）の資料ページに `<meta name="robots" content="noindex">` を付ける。drafts は公開とサイト内リンクを続けるが、検索結果には出さない。
+- `sitemap.xml`: `ROOT_PAGES` と、drafts 以外の資料を載せる（除外するカテゴリは `SITEMAP_EXCLUDED_CATEGORIES`）。drafts には noindex も付ける（下記）。資料の `lastmod` は `\date`。トップと資料一覧の `lastmod` は、最も新しい資料の日付。`\date` のない資料と、他の手書きページには `lastmod` を付けない。`robots.txt` に `Sitemap:` 行を追加した。
 - `materials.html` の `<title>` を「資料 | Chicken-generic over Rice」に変えた。
 
 手動で必要な作業: Search Console で `https://ud-afhal.github.io/sitemap.xml` を送信する。
