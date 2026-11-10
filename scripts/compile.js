@@ -31,7 +31,7 @@ const DATA_LINE = /^const MATERIALS_AUTO_DATA = .*;$/m;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // 公開URLの起点（末尾のスラッシュなし）。
-const SITE_URL = "https://ud-afhal.github.io";
+const SITE_URL = "https://ud-afhal.org";
 // sitemap.xml に載せる、ルート直下の手書きページ。
 const ROOT_PAGES = [
   "index.html",
