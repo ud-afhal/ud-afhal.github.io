@@ -19,4 +19,4 @@ Disallow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://ud-afhal.github.io/sitemap.xml
+Sitemap: https://ud-afhal.org/sitemap.xml
