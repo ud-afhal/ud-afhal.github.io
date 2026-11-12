@@ -28,7 +28,7 @@
   // author は、ソースに \author{...} がない場合に使う。
   // updatedDate は、ソースに \date{...} がない場合に使う(空なら表示しない)。
   const DEFAULT_SITE = Object.freeze({
-    siteName: "",
+    siteName: "Chicken-generic over Rice",
     headerImageUrl: "/images/header.png",
     stylesheetUrl: "/style.css",
     homeUrl: "/index.html",
@@ -2643,7 +2643,7 @@
     const siteName = escapeHTML(site.siteName.trim());
 
     const pageTitle = siteName
-      ? `${title} — ${siteName}`
+      ? `${title} | ${siteName}`
       : title;
 
     const urls = Object.fromEntries(
