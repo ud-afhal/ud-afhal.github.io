@@ -83,6 +83,8 @@ aside > .panel-title{margin:0;padding:10px 14px;border-bottom:1px solid var(--si
 .cpick.on{border:2px solid var(--accent);background:none}
 .cpick.on input{opacity:1}
 .unit{color:var(--site-muted);font-size:13px}
+.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.nudge button{justify-content:center;font-size:16px}
 .sw button[aria-pressed="true"]{background:transparent;border:2px solid var(--accent)}
 .row{display:flex;gap:8px;align-items:center}
 .row input[type=range]{flex:1;accent-color:var(--accent);height:30px}
@@ -598,6 +600,7 @@ function handlesSVG(){
     return o; }
   const s=sel!=null&&byId(sel); if(!s) return '';
   if(s.kind!=='label') o+=`<path d="${pathD(s)}" fill="none" stroke="#e07a10" stroke-width="${n4(2*px)}" stroke-dasharray="${n4(6*px)} ${n4(4*px)}" pointer-events="none"/>`;
+  if(s.kind!=='label'){ const q=shapeBox(s), m=8*px; if(q) o+=`<path d="M${n4(q[0]-m)} ${n4(-q[3]-m)}H${n4(q[2]+m)}V${n4(-q[1]+m)}H${n4(q[0]-m)}Z" fill="rgba(224,122,16,.04)" stroke="#e07a10" stroke-opacity=".45" stroke-width="${n4(1*px)}" pointer-events="none"/>`; }
   else { const b=shapeBox(s); o+=`<rect x="${n4(b[0])}" y="${n4(-b[3])}" width="${n4(b[2]-b[0])}" height="${n4(b[3]-b[1])}" fill="none" stroke="#e07a10" stroke-width="${n4(2*px)}" stroke-dasharray="${n4(6*px)} ${n4(4*px)}" pointer-events="none"/>`; return o; }
   let hs=vertsOf(s);
   if(s.kind==='circle') hs=[[s.cx,s.cy],[s.cx+s.r,s.cy]];
@@ -635,7 +638,7 @@ function render(){
   if(snapMark){ const px=1/view.scale; o+=`<circle cx="${n4(snapMark[0])}" cy="${n4(-snapMark[1])}" r="${n4(12*px)}" fill="none" stroke="#e07a10" stroke-width="${n4(2*px)}" pointer-events="none"/>`; }
   cv.innerHTML=o;
   renderPanel(); updateBtns(); save();
-  const H={select:multiMode?'タップで選択に追加・解除、空いた所をドラッグで範囲選択（画面移動は2本指）。選び終えたら右のパネルで「グループ化」':'図形をタップで選択・ドラッグで移動。空いた所をドラッグで画面移動、2本指で拡大縮小',
+  const H={select:multiMode?'タップで選択に追加・解除、空いた所をドラッグで範囲選択（画面移動は2本指）。選び終えたら右のパネルで「グループ化」':'図形をタップで選択。選んだ図形はオレンジの枠の中をドラッグで移動（パネルの矢印でも）。空いた所をドラッグで画面移動、2本指で拡大縮小',
     rect:'ドラッグで長方形（斜線などはパネルで切り替え）', line:'ドラッグで線分（矢印はパネルで）', circle:'中心からドラッグで円',
     poly:'タップで頂点を追加。最初の点をタップか「完成」で閉じる', blob:'タップで点を追加。最初の点をタップか「完成」で閉じる', label:'置きたい位置をタップ'};
   hint.textContent=H[tool];
@@ -674,6 +677,7 @@ function multiPanel(){
     <div class="acts">${grouped?'<button id="mUngroup">グループ解除</button>':'<button id="mGroup">グループ化</button>'}${!grouped&&anyGroup?'<button id="mUngroup">グループ解除</button>':''}</div></div>`;
   if(colorable.length) h+=`<div class="field"><h2>色（枠線・破線・斜線・領域・文字に適用）</h2><div class="sw">${SW.map(c=>`<button data-mcolor="${c}" aria-pressed="${colorable.every(t=>colOf(t)===c)}" aria-label="${SWN[c]}"><span style="background:${rgb(c)}"></span></button>`).join('')}${customPick('multi',colOf(colorable[0]))}</div></div>`;
   h+=opRow('mOp',ss[0]);
+  h+=nudgeRow();
   if(hatched.length){ const a=hatched[0].angle??60;
     h+=`<div class="field"><h2>斜線の角度（${hatched.length}個に適用）</h2><div class="row"><input type="range" id="mAng" min="0" max="175" step="5" value="${a}"><input type="number" id="mAngN" min="0" max="180" step="5" value="${a}"></div></div>
     <label class="chk"><input type="checkbox" id="mTint" ${hatched.every(t=>t.tint!==false)?'checked':''}>地を薄く塗る</label>`; }
@@ -689,6 +693,11 @@ function stepMulti(dir){ const set=new Set(selIds);
     if(j<0||j>=doc.shapes.length) continue;
     // s を j の位置へ（間の選択図形ごと順にずらす）
     doc.shapes.splice(i0,1); doc.shapes.splice(j,0,s); } }
+function selBox(){ let b=null; for(const t of selShapes()){ const q=shapeBox(t); if(q) b=b?[Math.min(b[0],q[0]),Math.min(b[1],q[1]),Math.max(b[2],q[2]),Math.max(b[3],q[3])]:q; } return b; }
+function inSelBox(w){ const b=selBox(); if(!b) return false; const m=8/view.scale; return w[0]>=b[0]-m&&w[0]<=b[2]+m&&w[1]>=b[1]-m&&w[1]<=b[3]+m; }
+function nudge(dx,dy){ if(!selIds.length) return; checkpoint(); const st=opt.grid?0.25:0.05;
+  for(const t of selShapes()) translateShape(t,clone(t),dx*st,dy*st); render(); }
+const nudgeRow=()=>`<div class="field"><h2>位置を動かす（${opt.grid?'0.25':'0.05'}ずつ）</h2><div class="nudge"><button data-nudge="-1,0" aria-label="左へ">←</button><button data-nudge="0,1" aria-label="上へ">↑</button><button data-nudge="0,-1" aria-label="下へ">↓</button><button data-nudge="1,0" aria-label="右へ">→</button></div></div>`;
 function translateShape(s,o,dx,dy){
   if(s.kind==='rect'){ s.x1=o.x1+dx; s.x2=o.x2+dx; s.y1=o.y1+dy; s.y2=o.y2+dy; }
   else if(s.kind==='circle'){ s.cx=o.cx+dx; s.cy=o.cy+dy; }
@@ -722,6 +731,7 @@ function renderPanel(){
     if(s.kind!=='label'&&s.kind!=='line') h+=`<label class="chk"><input type="checkbox" id="pFrame" ${s.frame?'checked':''}>クリッピング（この図形の内側だけ表示）</label>`;
     if((s.kind==='poly'||s.kind==='blob')) h+=`<div class="field"><h2>形</h2><div class="acts"><button id="pConv">${s.kind==='poly'?'曲線にする':'多角形にする'}</button><button id="pDelV" ${selV==null||s.pts.length<=3?'disabled':''}>選んだ頂点を削除</button></div></div>`;
   }
+  h+=nudgeRow();
   h+=opRow('pOp',s);
   h+=`<div class="field"><h2>操作</h2><div class="acts"><button id="pUp" ${canStep(s,1)?'':'disabled'}>1つ前へ</button><button id="pDown" ${canStep(s,-1)?'':'disabled'}>1つ後ろへ</button><button id="pFront" ${canStep(s,1)?'':'disabled'}>最前面へ</button><button id="pBack" ${canStep(s,-1)?'':'disabled'}>最背面へ</button><button id="pDup">複製</button><button id="pDel" class="danger">削除</button></div></div>`;
   panel.innerHTML=h;
@@ -730,6 +740,7 @@ panel.addEventListener('pointerdown',()=>checkpoint(),true);
 panel.addEventListener('focusin',e=>{ if(e.target.matches('input[type=text],input[type=number]')) checkpoint(); });
 panel.addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.nudge){ const [x,y]=b.dataset.nudge.split(',').map(Number); nudge(x,y); return; }
   if(selIds.length>1){ const ss=selShapes();
     if(b.id==='mGroup'){ const g=newGroupId(); ss.forEach(t=>t.group=g); toast('グループにしました'); }
     else if(b.id==='mUngroup'){ ss.forEach(t=>delete t.group); toast('グループを解除しました'); }
@@ -815,13 +826,17 @@ cv.addEventListener('pointerdown',e=>{
     if(s&&h){ checkpoint(); act.type='vertex'; act.vi=+h.dataset.h; selV=act.vi; act.orig=clone(s); act.dirty=true; }
     else if(s&&mid){ checkpoint(); const i=+mid.dataset.mid, a=s.pts[i], b=s.pts[(i+1)%s.pts.length];
       s.pts.splice(i+1,0,[(a[0]+b[0])/2,(a[1]+b[1])/2]); act.type='vertex'; act.vi=i+1; selV=i+1; act.orig=clone(s); act.dirty=true; }
+    else if(hit&&!multiMode&&!e.shiftKey&&selIds.length&&!selIds.includes(+hit.dataset.id)&&inSelBox(w)){
+      // 選択中の枠の中では移動を優先し、動かさずに離したときだけ下の図形を選ぶ
+      checkpoint(); act.type='move'; act.origs=selShapes().map(clone); act.dirty=true; act.tapSelect=+hit.dataset.id; }
     else if(hit){ const id=+hit.dataset.id;
       if(multiMode||e.shiftKey){ const grp=expandGroups([id]);
-        if(selIds.includes(id)){ selIds=selIds.filter(x=>!grp.includes(x)); act.type='none'; }
+        if(selIds.includes(id)){ act.toggleOff=grp; } // 動かさずに離したら選択から外す
         else { selIds=expandGroups(selIds.concat(grp)); }
         selV=null; }
       else if(!selIds.includes(id)){ sel=id; selV=null; }
       if(act.type!=='none'&&selIds.length){ checkpoint(); act.type='move'; act.origs=selShapes().map(clone); act.dirty=true; } }
+    else if(selIds.length&&inSelBox(w)){ checkpoint(); act.type='move'; act.origs=selShapes().map(clone); act.dirty=true; }
     else if(multiMode||e.shiftKey){ act.type='marquee'; act.add=true; }
     render();
   } else if(tool==='line'){
@@ -855,8 +870,8 @@ cv.addEventListener('pointermove',e=>{
     view.cx=act.view0.cx-(e.clientX-act.x0)/view.scale; view.cy=act.view0.cy+(e.clientY-act.y0)/view.scale; render(); return; }
   if(act.type==='marquee'){ marquee=[act.w0,w]; render(); return; }
   if(act.type==='move'){
-    const ref=vertsOf(act.origs[0])[0]; let dx=w[0]-act.w0[0], dy=w[1]-act.w0[1];
-    if(opt.grid){ dx=Math.round((ref[0]+dx)*4)/4-ref[0]; dy=Math.round((ref[1]+dy)*4)/4-ref[1]; }
+    let dx=w[0]-act.w0[0], dy=w[1]-act.w0[1];
+    if(opt.grid){ dx=Math.round(dx*4)/4; dy=Math.round(dy*4)/4; } // 方眼の刻みで動かす（元の位置からの相対）
     for(const o of act.origs){ const t=byId(o.id); if(t) translateShape(t,o,dx,dy); }
     render(); return; }
   if(act.type==='none') return;
@@ -887,7 +902,7 @@ function endPtr(e){
       const hit=doc.shapes.filter(t=>{ const q=shapeBox(t); return q&&q[0]>=x0&&q[2]<=x1&&q[1]>=y0&&q[3]<=y1; }).map(t=>t.id);
       selIds=expandGroups(selIds.concat(hit)); selV=null;
       if(hit.length) toast(`${selIds.length}個を選択しています`); } }
-  if(a.type==='move'&&!a.moved){ history.pop(); updateBtns(); }
+  if(a.type==='move'&&!a.moved){ history.pop(); updateBtns(); if(a.toggleOff){ selIds=selIds.filter(x=>!a.toggleOff.includes(x)); selV=null; } if(a.tapSelect!=null){ sel=a.tapSelect; selV=null; } }
   if(a.type==='vertex'&&!a.moved&&byId(sel)&&JSON.stringify(byId(sel))===JSON.stringify(a.orig)){ history.pop(); }
   if(a.type==='create'){ const s=byId(a.created);
     const small= s.kind==='circle'? s.r<0.1 : s.kind==='line'? dist(s.pts[0],s.pts[1])<0.1 : (Math.abs(s.x2-s.x1)<0.1||Math.abs(s.y2-s.y1)<0.1);
@@ -934,6 +949,8 @@ window.addEventListener('keydown',e=>{
   if(e.target.matches('input,textarea')) return;
   const m=e.metaKey||e.ctrlKey;
   if(m&&e.key.toLowerCase()==='z'){ e.preventDefault(); e.shiftKey?redo():undo(); }
+  else if(selIds.length&&e.key.startsWith('Arrow')){ e.preventDefault(); const k=e.shiftKey?4:1;
+    nudge(e.key==='ArrowLeft'?-k:e.key==='ArrowRight'?k:0, e.key==='ArrowUp'?k:e.key==='ArrowDown'?-k:0); }
   else if((e.key==='Delete'||e.key==='Backspace')&&selIds.length){ checkpoint(); doc.shapes=doc.shapes.filter(s=>!selIds.includes(s.id)); selIds=[]; render(); }
   else if(m&&e.key.toLowerCase()==='g'&&selIds.length>1){ e.preventDefault(); checkpoint(); const ss=selShapes(); if(e.shiftKey) ss.forEach(t=>delete t.group); else { const g=newGroupId(); ss.forEach(t=>t.group=g); } render(); }
   else if(e.key==='Escape'){ if(drawing){drawing=null;} else { sel=null; selV=null; } render(); }
