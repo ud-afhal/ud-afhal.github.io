@@ -333,7 +333,7 @@ function labelSVG(s){
     const base = mode==='caption' ? -s.y+0.3333*FS+h : -s.y+(h-d)/2, x0=s.x-W/2;
     let o='';
     if(mode==='boxed') o+=`<rect x="${UC(x0-pad)}" y="${UC(base-h-pad)}" width="${UC(W+2*pad)}" height="${UC(h+d+2*pad)}" fill="#fff"/>`;
-    return o+`<g transform="translate(${UC(x0-m.vb[0]*k)} ${UC(base)}) scale(${UC(k)})" fill="${col}" stroke="${col}" color="${col}">${m.inner}</g>`; }
+    return o+`<g transform="translate(${UC(x0-m.vb[0]*k)} ${UC(base)}) scale(${+(k*OUT).toPrecision(6)})" fill="${col}" stroke="${col}" color="${col}">${m.inner}</g>`; }
   return labelSVGPlain(s);
 }
 function labelSVGPlain(s){
