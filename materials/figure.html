@@ -200,9 +200,14 @@ const STYLE_NAMES = {ambient:'枠線', hatched:'斜線', blob:'領域（薄塗�
 function mix(c,p){ const [r,g,b]=COLORS[c]||COLORS.black, f=p/100;
   const m=v=>Math.round(v*f+255*(1-f)); return `rgb(${m(r)},${m(g)},${m(b)})`; }
 function rgb(c){ return mix(c,100); }
-function n4(v){ const s=(Math.round(v*1e4)/1e4).toString(); return s==='-0'?'0':s; }
+function ANG(v){ return n4raw(v); }
+/* 出力の座標倍率: エディタは 1（cm）、SVG書き出しは pt（WebKit で小さな座標の SVG が歪むのを避ける） */
+let OUT=1;
+const UC=v=>n4raw(v*OUT);
+function n4(v){ return n4raw(v); }
+function n4raw(v){ const s=(Math.round(v*1e4)/1e4).toString(); return s==='-0'?'0':s; }
 function n2(v){ const s=(Math.round(v*100)/100).toString(); return s==='-0'?'0':s; }
-const P = (x,y)=>`${n4(x)} ${n4(-y)}`;
+const P = (x,y)=>`${UC(x)} ${UC(-y)}`;
 
 function vertsOf(s){
   if(s.kind==='rect') return [[s.x1,s.y1],[s.x2,s.y1],[s.x2,s.y2],[s.x1,s.y2]];
@@ -224,7 +229,7 @@ function smoothD(pts){
 }
 function pathD(s){
   if(s.kind==='rect') return `M${P(s.x1,s.y1)}L${P(s.x2,s.y1)}L${P(s.x2,s.y2)}L${P(s.x1,s.y2)}Z`;
-  if(s.kind==='circle'){ const r=n4(s.r); return `M${P(s.cx+s.r,s.cy)}A${r} ${r} 0 1 0 ${P(s.cx-s.r,s.cy)}A${r} ${r} 0 1 0 ${P(s.cx+s.r,s.cy)}Z`; }
+  if(s.kind==='circle'){ const r=UC(s.r); return `M${P(s.cx+s.r,s.cy)}A${r} ${r} 0 1 0 ${P(s.cx-s.r,s.cy)}A${r} ${r} 0 1 0 ${P(s.cx+s.r,s.cy)}Z`; }
   if(s.kind==='poly') return 'M'+s.pts.map(p=>P(p[0],p[1])).join('L')+'Z';
   if(s.kind==='blob') return smoothD(s.pts);
   if(s.kind==='line'){ const [a,b]=lineEnds(s); return `M${P(a[0],a[1])}L${P(b[0],b[1])}`; }
@@ -245,7 +250,7 @@ function look(s){
   switch(s.style){
     case 'hatched': return {fill:s.tint===false?'none':mix(c,8), stroke:rgb(c), sw:LW, hatch:{key:c+'80', col:mix(c,80), angle:s.angle??60}};
     case 'blob':  return {fill:mix(c,12), stroke:rgb(c), sw:LW};
-    case 'aux':   return {fill:'none', stroke:rgb('fsGray'), sw:AUXW, dash:`${n4(3*PT)} ${n4(3*PT)}`};
+    case 'aux':   return {fill:'none', stroke:rgb('fsGray'), sw:AUXW, dash:`${UC(3*PT)} ${UC(3*PT)}`};
     default:      return {fill:'none', stroke:rgb('black'), sw:LW};
   }
 }
@@ -255,8 +260,8 @@ function patternDefs(shapes){
   for(const s of shapes){ const h=look(s).hatch; if(h) seen.set(patId(h),h); }
   let out='';
   for(const [id,h] of seen){
-    out+=`<pattern id="${id}" patternUnits="userSpaceOnUse" width="${n4(HD)}" height="${n4(HD)}" patternTransform="rotate(${n4(-h.angle)})">`+
-         `<line x1="-0.01" y1="${n4(HD/2)}" x2="${n4(HD+0.01)}" y2="${n4(HD/2)}" stroke="${h.col}" stroke-width="${n4(HLW)}"/></pattern>`;
+    out+=`<pattern id="${id}" patternUnits="userSpaceOnUse" width="${UC(HD)}" height="${UC(HD)}" patternTransform="rotate(${ANG(-h.angle)})">`+
+         `<line x1="-0.01" y1="${UC(HD/2)}" x2="${UC(HD+0.01)}" y2="${UC(HD/2)}" stroke="${h.col}" stroke-width="${UC(HLW)}"/></pattern>`;
   }
   return out;
 }
@@ -266,7 +271,7 @@ function shapeSVG(s, part){ // part: 'all' | 'fill' | 'stroke'
     if(L.fill!=='none') o+=`<path d="${d}" fill="${L.fill}"/>`;
     if(L.hatch) o+=`<path d="${d}" fill="url(#${patId(L.hatch)})"/>`;
   }
-  if(part!=='fill') o+=`<path d="${d}" fill="none" stroke="${L.stroke}" stroke-width="${n4(L.sw)}" stroke-linejoin="round"${L.dash?` stroke-dasharray="${L.dash}"`:''}/>`;
+  if(part!=='fill') o+=`<path d="${d}" fill="none" stroke="${L.stroke}" stroke-width="${UC(L.sw)}" stroke-linejoin="round"${L.dash?` stroke-dasharray="${L.dash}"`:''}/>`;
   if(s.kind==='line'&&part!=='fill'){ const [a,b]=s.pts;
     if(s.arrow==='end'||s.arrow==='both') o+=arrowHead(b,a,L.stroke);
     if(s.arrow==='both') o+=arrowHead(a,b,L.stroke); }
@@ -327,8 +332,8 @@ function labelSVG(s){
   if(m){ const col=rgb(s.color||'black'), mode=s.mode||'plain', pad=1.5*PT, {k,W,h,d}=mjMetrics(m);
     const base = mode==='caption' ? -s.y+0.3333*FS+h : -s.y+(h-d)/2, x0=s.x-W/2;
     let o='';
-    if(mode==='boxed') o+=`<rect x="${n4(x0-pad)}" y="${n4(base-h-pad)}" width="${n4(W+2*pad)}" height="${n4(h+d+2*pad)}" fill="#fff"/>`;
-    return o+`<g transform="translate(${n4(x0-m.vb[0]*k)} ${n4(base)}) scale(${n4(k)})" fill="${col}" stroke="${col}" color="${col}">${m.inner}</g>`; }
+    if(mode==='boxed') o+=`<rect x="${UC(x0-pad)}" y="${UC(base-h-pad)}" width="${UC(W+2*pad)}" height="${UC(h+d+2*pad)}" fill="#fff"/>`;
+    return o+`<g transform="translate(${UC(x0-m.vb[0]*k)} ${UC(base)}) scale(${UC(k)})" fill="${col}" stroke="${col}" color="${col}">${m.inner}</g>`; }
   return labelSVGPlain(s);
 }
 function labelSVGPlain(s){
@@ -337,14 +342,14 @@ function labelSVGPlain(s){
   // ベースラインを明示（レンダラ差をなくす）: 中央置き ≈ +0.3em、下置き ≈ inner sep + 文字高
   const y = mode==='caption' ? -s.y+0.3333*FS+0.69*FS : -s.y+0.3*FS;
   let o='';
-  if(mode==='boxed') o+=`<rect x="${n4(s.x-w/2-pad)}" y="${n4(-s.y-FS*0.55-pad)}" width="${n4(w+2*pad)}" height="${n4(FS*1.1+2*pad)}" fill="#fff"/>`;
+  if(mode==='boxed') o+=`<rect x="${UC(s.x-w/2-pad)}" y="${UC(-s.y-FS*0.55-pad)}" width="${UC(w+2*pad)}" height="${UC(FS*1.1+2*pad)}" fill="#fff"/>`;
   let cur=0, ts='';
   for(const r of runs){
     const target=r.lvl===-1?0.25*FS:r.lvl===1?-0.35*FS:0;
     const dy=target-cur; cur=target;
-    ts+=`<tspan${dy?` dy="${n4(dy)}"`:''}${r.lvl?` font-size="${n4(FS*0.7)}"`:''}${r.it?' font-style="italic"':''}>${esc(r.t)}</tspan>`;
+    ts+=`<tspan${dy?` dy="${UC(dy)}"`:''}${r.lvl?` font-size="${UC(FS*0.7)}"`:''}${r.it?' font-style="italic"':''}>${esc(r.t)}</tspan>`;
   }
-  o+=`<text xml:space="preserve" x="${n4(s.x)}" y="${n4(y)}" font-family="'STIX Two Text','Latin Modern Roman','Times New Roman',serif" font-size="${n4(FS)}" fill="${col}" text-anchor="middle">${ts}</text>`;
+  o+=`<text xml:space="preserve" x="${UC(s.x)}" y="${UC(y)}" font-family="'STIX Two Text','Latin Modern Roman','Times New Roman',serif" font-size="${UC(FS)}" fill="${col}" text-anchor="middle">${ts}</text>`;
   return o;
 }
 function shapeBox(s){
@@ -386,7 +391,10 @@ function contentSVG(doc){
 function exportSVG(doc){
   const b=contentBox(doc), m=6*PT+LW;
   const x=b[0]-m, y=-(b[3]+m), w=b[2]-b[0]+2*m, h=b[3]-b[1]+2*m;
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${n4(w)}cm" height="${n4(h)}cm" viewBox="${n4(x)} ${n4(y)} ${n4(w)} ${n4(h)}">${contentSVG(doc)}</svg>\n`;
+  OUT=72/2.54; // 1cm = 28.35pt（CSS の pt）
+  try{
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${UC(w)}pt" height="${UC(h)}pt" viewBox="${UC(x)} ${UC(y)} ${UC(w)} ${UC(h)}">${contentSVG(doc)}</svg>\n`;
+  } finally { OUT=1; }
 }
 /* TikZ */
 const c2=p=>`(${n2(p[0])},${n2(p[1])})`;
