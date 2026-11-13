@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>図の清書エディタ | Chicken-generic over Rice</title>
+<!-- 数式ラベルは MathJax（SVG出力）で組み、図形として SVG に埋め込む。マクロは mystyle.js と共通。 -->
+<script src="mystyle.js"></script>
+<script>
+  (function(){
+    const config = window.Mystyle ? Mystyle.createMathJaxConfig() : {tex:{}};
+    delete config.chtml;
+    config.startup = Object.assign({}, config.startup, {
+      typeset: false,
+      ready(){ MathJax.startup.defaultReady(); MathJax.startup.promise.then(()=>window.dispatchEvent(new Event('mathjax-ready'))); }
+    });
+    // fontCache none: 字形をその場の path で出す / inline 改行なし: 1つの <svg> にまとめる（MathJax 4 は行内数式を分割することがある）
+    config.svg = {fontCache: 'none', linebreaks: {inline: false}};
+    // 図の部品として使うので、読み上げ用の意味解析・メニューは使わない
+    config.options = Object.assign({}, config.options, {
+      enableMenu: false, enableEnrichment: false, enableSpeech: false, enableBraille: false, enableExplorer: false,
+      menuOptions: {settings: {enrich: false, speech: false, braille: false, collapsible: false, assistiveMml: false}}
+    });
+    window.MathJax = config;
+  })();
+</script>
+<script id="mathjax-loader" defer src="/MathJax-4.1.3/tex-svg.js"></script>
+<style>
+:root{
+  /* Chicken-generic over Rice（ud-afhal.github.io）と editor.html に合わせた配色・書体 */
+  --site-background:#f5eded;
+  --site-ink:#202020;
+  --site-border:#8d8585;
+  --site-muted:#555;
+  --accent:#314a67;
+  --danger:#a00000;
+  --select:#e07a10;
+  --paper:#ffffff;
+  --font-ui:Arial, "Yu Gothic", "Meiryo", sans-serif;
+  --font-math:"Times New Roman", serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--site-background);color:var(--site-ink);font-family:var(--font-ui);font-size:14px;line-height:1.55;
+  display:grid;grid-template-rows:auto 1fr;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button,select,input,textarea{font:inherit;color:inherit}
+button{min-height:38px;padding:6px 9px;border:1px solid var(--site-border);border-radius:2px;background:transparent;color:var(--site-ink);
+  font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;touch-action:manipulation}
+button:hover{filter:brightness(.97)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button[aria-pressed="true"],button.primary{border-color:var(--accent);background:var(--accent);color:#fff}
+button:disabled{opacity:.55;cursor:not-allowed;filter:none}
+button svg{width:18px;height:18px;flex:none}
+.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 16px 10px;padding-top:max(8px,env(safe-area-inset-top));
+  background:var(--site-background);border-bottom:1px solid var(--site-border)}
+.logo{display:block;margin-right:8px;flex-shrink:0}
+.logo img{display:block;height:33px;width:auto}
+.grp{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.sep{width:1px;align-self:stretch;background:var(--site-border);margin:0 2px}
+.spacer{flex:1}
+main{display:grid;grid-template-columns:1fr 290px;gap:12px;padding:12px 16px 16px;min-height:0}
+#stage{position:relative;min-height:0;min-width:0;background:var(--paper);border:1px solid var(--site-border)}
+#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+#drawbar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:none;gap:6px;
+  background:var(--paper);border:1px solid var(--site-border);padding:6px}
+#drawbar.on{display:flex}
+#hint{position:absolute;left:10px;top:8px;color:var(--site-muted);font-size:12px;pointer-events:none;
+  background:rgba(255,255,255,.9);padding:1px 6px}
+aside{min-height:0;display:flex;flex-direction:column;border:1px solid var(--site-border);background:var(--paper);overflow:hidden}
+aside > .panel-title{margin:0;padding:10px 14px;border-bottom:1px solid var(--site-border);background:var(--site-background);font-size:14px;font-weight:600}
+#panel{overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:14px}
+#panel h2{font-size:12px;font-weight:400;color:var(--site-muted);margin:0}
+.field{display:flex;flex-direction:column;gap:5px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.seg button{justify-content:center;padding:6px;font-size:13px}
+.sw{display:flex;gap:6px}
+.sw button{width:38px;padding:0;justify-content:center}
+.sw button span{width:18px;height:18px;border-radius:50%;display:block}
+.sw button[aria-pressed="true"]{background:transparent;border:2px solid var(--accent)}
+.row{display:flex;gap:8px;align-items:center}
+.row input[type=range]{flex:1;accent-color:var(--accent);height:30px}
+input[type=number],input[type=text]{width:100%;min-height:38px;padding:8px;border:1px solid var(--site-border);border-radius:0;background:#fff;color:var(--site-ink);font:14px var(--font-ui)}
+input[type=number]{width:72px;font-variant-numeric:tabular-nums}
+label.chk{display:flex;gap:7px;align-items:center;min-height:36px;font-size:14px}
+label.chk input{width:18px;height:18px;margin:0;accent-color:var(--accent)}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.acts button{justify-content:center}
+.danger{color:var(--danger)}
+.empty{color:var(--site-muted);font-size:13px;line-height:1.7;margin:0}
+.dlg{position:fixed;inset:0;background:rgba(32,32,32,.3);display:none;align-items:center;justify-content:center;z-index:10;padding:16px}
+.dlg.on{display:flex}
+.card{background:var(--paper);border:1px solid var(--site-border);width:min(720px,100%);max-height:90%;display:flex;flex-direction:column;overflow:hidden}
+.card header{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 14px;border-bottom:1px solid var(--site-border);background:var(--site-background)}
+.card header h3{margin:0;font-size:14px;font-weight:600;flex:1}
+.card .body{padding:14px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+textarea{width:100%;min-height:240px;border:1px solid var(--site-border);border-radius:0;padding:12px;background:#fff;color:#24292f;
+  font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;-webkit-user-select:text;user-select:text;resize:vertical}
+.tabs{display:flex;gap:4px}
+.prev{border:1px solid var(--site-border);padding:10px;display:flex;justify-content:center;background:
+  repeating-conic-gradient(#f5eded 0 25%, #fff 0 50%) 0 0/16px 16px}
+.prev img{max-width:100%;max-height:260px}
+.note{color:var(--site-muted);font-size:12px;margin:0;line-height:1.6}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--accent);color:#fff;padding:7px 14px;border-radius:2px;
+  font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
+#toast.on{opacity:1}
+@media (orientation:portrait), (max-width:760px){
+  main{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  aside{max-height:40vh}
+}
+@media (max-width:600px){ .bar{padding-left:12px;padding-right:12px} main{padding:10px 12px 12px} }
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="bar" role="toolbar" aria-label="ツール">
+  <a class="logo" href="/index.html" title="Chicken-generic over Rice"><img src="/images/header.png" alt="ホーム"></a>
+  <div class="grp" id="tools">
+    <button data-tool="select" aria-pressed="true" title="選択・移動"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3l14 8-6 1.5L10 19z"/></svg>選択</button>
+    <button id="multi" aria-pressed="false" title="タップした図形を選択に追加・解除">複数</button>
+    <button data-tool="rect" title="長方形"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12"/></svg>長方形</button>
+    <button data-tool="circle" title="円"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/></svg>円</button>
+    <button data-tool="line" title="線分"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19L20 5" stroke-dasharray="3 2.5"/><path d="M14 5h6v6"/></svg>線</button>
+    <button data-tool="poly" title="多角形"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18L7 5l13 3-3 11z"/></svg>多角形</button>
+    <button data-tool="blob" title="閉曲線"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12c0-5 6-8 10-6s5 7 2 10-12 4-12-4z"/></svg>曲線</button>
+    <button data-tool="label" title="文字・数式"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 19L12 5l6 14M8.5 14h7"/></svg>文字</button>
+  </div>
+  <div class="sep"></div>
+  <div class="grp">
+    <button id="undo" title="元に戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 7L4 12l5 5M4 12h11a5 5 0 010 10h-2"/></svg></button>
+    <button id="redo" title="やり直す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 7l5 5-5 5M20 12H9a5 5 0 000 10h2"/></svg></button>
+    <button id="grid" aria-pressed="true" title="方眼に吸着（0.25刻み）">方眼</button>
+    <button id="snap" aria-pressed="true" title="頂点・辺に吸着">吸着</button>
+    <button id="fit" title="全体を表示">全体</button>
+  </div>
+  <div class="spacer"></div>
+  <div class="grp">
+    <button id="fileBtn">ファイル</button>
+    <button id="exportBtn" class="primary">書き出し</button>
+  </div>
+</div>
+<main>
+  <div id="stage">
+    <svg id="cv" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="hint"></div>
+    <div id="drawbar">
+      <button id="dUndo">1点戻す</button>
+      <button id="dCancel">取消</button>
+      <button id="dDone" class="primary">完成</button>
+    </div>
+  </div>
+  <aside aria-label="図形の設定"><h2 class="panel-title">図形の設定</h2><div id="panel"></div></aside>
+</main>
+
+<div class="dlg" id="textDlg" role="dialog" aria-modal="true" aria-labelledby="textTitle">
+  <div class="card" style="width:min(460px,100%)">
+    <header><h3 id="textTitle">文字を入力</h3></header>
+    <div class="body">
+      <input type="text" id="textIn" placeholder="例: projection of $b$, $\mathbb{P}$" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <p class="note">数式は $ で囲みます（$b$、$p_0$、$\pi(b)$、$\forces$ など）。MathJax で組まれ、TikZ にはそのまま書き出されます。</p>
+      <div class="row" style="justify-content:flex-end"><button id="textCancel">やめる</button><button id="textOk" class="primary">決定</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="dlg" id="fileDlg" role="dialog" aria-modal="true" aria-labelledby="fileTitle">
+  <div class="card" style="width:min(460px,100%)">
+    <header><h3 id="fileTitle">ファイル</h3><button data-close>閉じる</button></header>
+    <div class="body">
+      <button id="fNew">新しい図（白紙）</button>
+      <button id="fEx1">例を開く: 帯と射影</button>
+      <button id="fEx2">例を開く: 円の分割</button>
+      <div class="sep" style="height:1px;width:auto;margin:4px 0"></div>
+      <button id="fOpen">保存データ（.json）を開く</button>
+      <input type="file" id="fInput" accept=".json,application/json" hidden>
+      <p class="note">作業中の図はこのブラウザに自動で保存されます。別の端末に移すときは「書き出し」の保存データを使ってください。</p>
+    </div>
+  </div>
+</div>
+
+<div class="dlg" id="expDlg" role="dialog" aria-modal="true" aria-labelledby="expTitle">
+  <div class="card">
+    <header><h3 id="expTitle">書き出し</h3>
+      <div class="tabs"><button data-tab="svg" aria-pressed="true">SVG</button><button data-tab="tikz">TikZ</button><button data-tab="json">保存データ</button></div>
+      <button data-close>閉じる</button></header>
+    <div class="body" id="expBody"></div>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===== core: DOMに依存しない部分（図のデータ → SVG / TikZ） ===== */
+const PT = 2.54/72.27;                       // 1pt (TeX) in cm
+const AL = 4*PT, AW = 3*PT, AI = 1.3*PT; // Stealth 矢印
+const LW = 0.9*PT, HLW = 0.5*PT, HD = 5*PT, AUXW = 0.6*PT, FS = 10*PT;
+const TENSION = 0.75, KSMOOTH = 0.2775*TENSION; // pgf の smooth と同じ係数
+const COLORS = {fsRed:[190,40,40], fsBlue:[40,110,210], fsGreen:[40,140,90], black:[0,0,0], fsGray:[110,110,110]};
+const STYLE_NAMES = {ambient:'枠線', hatched:'斜線', blob:'領域（薄塗り）', aux:'破線'};
+
+function mix(c,p){ const [r,g,b]=COLORS[c]||COLORS.black, f=p/100;
+  const m=v=>Math.round(v*f+255*(1-f)); return `rgb(${m(r)},${m(g)},${m(b)})`; }
+function rgb(c){ return mix(c,100); }
+function n4(v){ const s=(Math.round(v*1e4)/1e4).toString(); return s==='-0'?'0':s; }
+function n2(v){ const s=(Math.round(v*100)/100).toString(); return s==='-0'?'0':s; }
+const P = (x,y)=>`${n4(x)} ${n4(-y)}`;
+
+function vertsOf(s){
+  if(s.kind==='rect') return [[s.x1,s.y1],[s.x2,s.y1],[s.x2,s.y2],[s.x1,s.y2]];
+  if(s.kind==='circle') return [[s.cx,s.cy]];
+  if(s.kind==='poly'||s.kind==='blob'||s.kind==='line') return s.pts;
+  if(s.kind==='label') return [[s.x,s.y]];
+  return [];
+}
+function smoothD(pts){
+  const n=pts.length; if(n<3) return 'M'+pts.map(p=>P(p[0],p[1])).join('L');
+  const g=i=>pts[(i+n)%n]; let d='M'+P(g(0)[0],g(0)[1]);
+  for(let i=0;i<n;i++){
+    const a=g(i-1),b=g(i),c=g(i+1),e=g(i+2);
+    const c1=[b[0]+KSMOOTH*(c[0]-a[0]), b[1]+KSMOOTH*(c[1]-a[1])];
+    const c2=[c[0]-KSMOOTH*(e[0]-b[0]), c[1]-KSMOOTH*(e[1]-b[1])];
+    d+=`C${P(c1[0],c1[1])} ${P(c2[0],c2[1])} ${P(c[0],c[1])}`;
+  }
+  return d+'Z';
+}
+function pathD(s){
+  if(s.kind==='rect') return `M${P(s.x1,s.y1)}L${P(s.x2,s.y1)}L${P(s.x2,s.y2)}L${P(s.x1,s.y2)}Z`;
+  if(s.kind==='circle'){ const r=n4(s.r); return `M${P(s.cx+s.r,s.cy)}A${r} ${r} 0 1 0 ${P(s.cx-s.r,s.cy)}A${r} ${r} 0 1 0 ${P(s.cx+s.r,s.cy)}Z`; }
+  if(s.kind==='poly') return 'M'+s.pts.map(p=>P(p[0],p[1])).join('L')+'Z';
+  if(s.kind==='blob') return smoothD(s.pts);
+  if(s.kind==='line'){ const [a,b]=lineEnds(s); return `M${P(a[0],a[1])}L${P(b[0],b[1])}`; }
+  return '';
+}
+/* 線分: 矢印のぶん端を縮める（TikZ と同じく先端が終点に来る） */
+function lineEnds(s){ let [a,b]=s.pts; const L=dist2(a,b)||1, ux=(b[0]-a[0])/L, uy=(b[1]-a[1])/L, k=AL-AI*0.5;
+  if(s.arrow==='end'||s.arrow==='both') b=[b[0]-ux*k,b[1]-uy*k];
+  if(s.arrow==='both') a=[a[0]+ux*k,a[1]+uy*k];
+  return [a,b]; }
+function dist2(a,b){ return Math.hypot(a[0]-b[0],a[1]-b[1]); }
+function arrowHead(tip,from,col){ const L=dist2(tip,from)||1, ux=(tip[0]-from[0])/L, uy=(tip[1]-from[1])/L, nx=-uy, ny=ux;
+  const back=[tip[0]-ux*AL,tip[1]-uy*AL], inn=[tip[0]-ux*(AL-AI),tip[1]-uy*(AL-AI)];
+  const q=[tip,[back[0]+nx*AW/2,back[1]+ny*AW/2],inn,[back[0]-nx*AW/2,back[1]-ny*AW/2]];
+  return `<path d="M${q.map(p=>P(p[0],p[1])).join('L')}Z" fill="${col}"/>`; }
+function look(s){
+  const c=s.color||'black';
+  switch(s.style){
+    case 'hatched': return {fill:s.tint===false?'none':mix(c,8), stroke:rgb(c), sw:LW, hatch:{key:c+'80', col:mix(c,80), angle:s.angle??60}};
+    case 'blob':  return {fill:mix(c,12), stroke:rgb(c), sw:LW};
+    case 'aux':   return {fill:'none', stroke:rgb('fsGray'), sw:AUXW, dash:`${n4(3*PT)} ${n4(3*PT)}`};
+    default:      return {fill:'none', stroke:rgb('black'), sw:LW};
+  }
+}
+function patId(h){ return `h_${h.key}_${Math.round(h.angle*10)}`; }
+function patternDefs(shapes){
+  const seen=new Map();
+  for(const s of shapes){ const h=look(s).hatch; if(h) seen.set(patId(h),h); }
+  let out='';
+  for(const [id,h] of seen){
+    out+=`<pattern id="${id}" patternUnits="userSpaceOnUse" width="${n4(HD)}" height="${n4(HD)}" patternTransform="rotate(${n4(-h.angle)})">`+
+         `<line x1="-0.01" y1="${n4(HD/2)}" x2="${n4(HD+0.01)}" y2="${n4(HD/2)}" stroke="${h.col}" stroke-width="${n4(HLW)}"/></pattern>`;
+  }
+  return out;
+}
+function shapeSVG(s, part){ // part: 'all' | 'fill' | 'stroke'
+  const L=look(s), d=pathD(s); let o='';
+  if(part!=='stroke'){
+    if(L.fill!=='none') o+=`<path d="${d}" fill="${L.fill}"/>`;
+    if(L.hatch) o+=`<path d="${d}" fill="url(#${patId(L.hatch)})"/>`;
+  }
+  if(part!=='fill') o+=`<path d="${d}" fill="none" stroke="${L.stroke}" stroke-width="${n4(L.sw)}" stroke-linejoin="round"${L.dash?` stroke-dasharray="${L.dash}"`:''}/>`;
+  if(s.kind==='line'&&part!=='fill'){ const [a,b]=s.pts;
+    if(s.arrow==='end'||s.arrow==='both') o+=arrowHead(b,a,L.stroke);
+    if(s.arrow==='both') o+=arrowHead(a,b,L.stroke); }
+  return o;
+}
+/* ラベル: $...$ の中を数式風に（イタリック・添字・ギリシャ文字） */
+const GREEK={alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',varepsilon:'ε',zeta:'ζ',eta:'η',theta:'θ',kappa:'κ',lambda:'λ',mu:'μ',nu:'ν',xi:'ξ',pi:'π',rho:'ρ',sigma:'σ',tau:'τ',phi:'φ',varphi:'φ',chi:'χ',psi:'ψ',omega:'ω',
+  Gamma:'Γ',Delta:'Δ',Theta:'Θ',Lambda:'Λ',Pi:'Π',Sigma:'Σ',Phi:'Φ',Omega:'Ω',in:'∈',notin:'∉',subseteq:'⊆',subset:'⊂',cup:'∪',cap:'∩',le:'≤',leq:'≤',ge:'≥',geq:'≥',times:'×',
+  to:'→',restriction:'↾',upharpoonright:'↾',omega_:'ω',aleph:'ℵ',emptyset:'∅',forces:'⊩',Vdash:'⊩',perp:'⊥',infty:'∞',cdot:'·',ldots:'…',dots:'…',mid:'|'};
+function esc(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function mathRuns(src){ // -> [{t, it, lvl}] lvl: 0 normal, -1 sub, 1 sup
+  const runs=[]; let i=0;
+  const push=(t,it,lvl)=>{ if(t) runs.push({t,it,lvl}); };
+  function group(lvl){ // parse one token or {...}
+    if(src[i]==='{'){ i++; while(i<src.length&&src[i]!=='}') atom(lvl); i++; } else atom(lvl);
+  }
+  function atom(lvl){
+    const ch=src[i];
+    if(ch==='\\'){ let j=i+1; while(j<src.length&&/[A-Za-z]/.test(src[j])) j++;
+      const name=src.slice(i+1,j)||src[j]; i=j===i+1?j+1:j;
+      if(name==='mathrm'||name==='text'||name==='operatorname'){ // upright group
+        if(src[i]==='{'){ i++; let t=''; while(i<src.length&&src[i]!=='}') t+=src[i++]; i++; push(t,false,lvl); } return; }
+      push(GREEK[name]??name, /^[a-z]+$/.test(name)&&GREEK[name]&&name.length>1&&!['in','notin','subseteq','subset','cup','cap','le','leq','ge','geq','times','to','cdot','ldots','dots','mid','perp','infty','emptyset'].includes(name), lvl); return; }
+    if(ch==='_'||ch==='^'){ i++; group(ch==='_'?-1:1); return; }
+    if(ch==='{'){ group(lvl); return; }
+    i++; if(ch===' ') return;
+    push(ch, /[A-Za-z]/.test(ch), lvl);
+  }
+  while(i<src.length) atom(0);
+  return runs;
+}
+function labelRuns(text){
+  const parts=text.split('$'); const runs=[];
+  parts.forEach((p,k)=>{ if(k%2===0){ if(p) runs.push({t:p,it:false,lvl:0}); } else runs.push(...mathRuns(p)); });
+  return runs;
+}
+function labelWidth(text){ return labelRuns(text).reduce((w,r)=>w+[...r.t].length*(r.lvl?0.36:0.5)*FS,0); }
+/* MathJax（SVG出力）で組んだラベル。準備前・失敗時は下の簡易表示を使う */
+const MJ={ready:false, cache:new Map(), promises:new Map(), onUpdate:null};
+function labelTeX(text){
+  return String(text).split('$').map((p,k)=>k%2?p:(p?`\\text{${p.replace(/\\/g,'').replace(/[{}]/g,m=>'\\'+m)}}`:'')).join('');
+}
+function mjPromise(tex){
+  if(!MJ.ready) return Promise.resolve(null);
+  if(MJ.cache.has(tex)) return Promise.resolve(MJ.cache.get(tex));
+  if(!MJ.promises.has(tex)) MJ.promises.set(tex, MathJax.tex2svgPromise(tex,{display:false}).then(node=>{
+      const svg=node.querySelector('svg'); const vb=svg.getAttribute('viewBox').trim().split(/[\s,]+/).map(Number);
+      const m={vb, inner:svg.innerHTML}; MJ.cache.set(tex,m); return m;
+    }).catch(()=>{ MJ.cache.set(tex,null); return null; })
+    .finally(()=>{ MJ.promises.delete(tex); if(MJ.onUpdate) MJ.onUpdate(); }));
+  return MJ.promises.get(tex);
+}
+function mjLabel(text){ const tex=labelTeX(text||''); if(MJ.cache.has(tex)) return MJ.cache.get(tex); mjPromise(tex); return null; }
+function mjMetrics(m){ const k=FS/1000; return {k, W:m.vb[2]*k, h:-m.vb[1]*k, d:(m.vb[3]+m.vb[1])*k}; }
+function ensureLabels(doc){ return Promise.all(doc.shapes.filter(s=>s.kind==='label').map(s=>mjPromise(labelTeX(s.text||'')))); }
+function labelSVG(s){
+  const m=s.text?mjLabel(s.text):null;
+  if(m){ const col=rgb(s.color||'black'), mode=s.mode||'plain', pad=1.5*PT, {k,W,h,d}=mjMetrics(m);
+    const base = mode==='caption' ? -s.y+0.3333*FS+h : -s.y+(h-d)/2, x0=s.x-W/2;
+    let o='';
+    if(mode==='boxed') o+=`<rect x="${n4(x0-pad)}" y="${n4(base-h-pad)}" width="${n4(W+2*pad)}" height="${n4(h+d+2*pad)}" fill="#fff"/>`;
+    return o+`<g transform="translate(${n4(x0-m.vb[0]*k)} ${n4(base)}) scale(${n4(k)})" fill="${col}" stroke="${col}" color="${col}">${m.inner}</g>`; }
+  return labelSVGPlain(s);
+}
+function labelSVGPlain(s){
+  const runs=labelRuns(s.text||''); const col=rgb(s.color||'black');
+  const mode=s.mode||'plain', w=labelWidth(s.text||''), pad=1.5*PT;
+  // ベースラインを明示（レンダラ差をなくす）: 中央置き ≈ +0.3em、下置き ≈ inner sep + 文字高
+  const y = mode==='caption' ? -s.y+0.3333*FS+0.69*FS : -s.y+0.3*FS;
+  let o='';
+  if(mode==='boxed') o+=`<rect x="${n4(s.x-w/2-pad)}" y="${n4(-s.y-FS*0.55-pad)}" width="${n4(w+2*pad)}" height="${n4(FS*1.1+2*pad)}" fill="#fff"/>`;
+  let cur=0, ts='';
+  for(const r of runs){
+    const target=r.lvl===-1?0.25*FS:r.lvl===1?-0.35*FS:0;
+    const dy=target-cur; cur=target;
+    ts+=`<tspan${dy?` dy="${n4(dy)}"`:''}${r.lvl?` font-size="${n4(FS*0.7)}"`:''}${r.it?' font-style="italic"':''}>${esc(r.t)}</tspan>`;
+  }
+  o+=`<text xml:space="preserve" x="${n4(s.x)}" y="${n4(y)}" font-family="'STIX Two Text','Latin Modern Roman','Times New Roman',serif" font-size="${n4(FS)}" fill="${col}" text-anchor="middle">${ts}</text>`;
+  return o;
+}
+function shapeBox(s){
+  if(s.kind==='circle') return [s.cx-s.r,s.cy-s.r,s.cx+s.r,s.cy+s.r];
+  if(s.kind==='label'&&s.text&&MJ.cache.get(labelTeX(s.text))){ const {W,h,d}=mjMetrics(MJ.cache.get(labelTeX(s.text))), p=2*PT;
+    return s.mode==='caption'?[s.x-W/2-p,s.y-0.3333*FS-h-d-p,s.x+W/2+p,s.y]:[s.x-W/2-p,s.y-(h+d)/2-p,s.x+W/2+p,s.y+(h+d)/2+p]; }
+  if(s.kind==='label'){ const w=labelWidth(s.text||'')/2+2*PT, h=FS*0.6+2*PT;
+    return s.mode==='caption'?[s.x-w,s.y-FS*1.4-2*PT,s.x+w,s.y]:[s.x-w,s.y-h,s.x+w,s.y+h]; }
+  const v=vertsOf(s); if(!v.length) return null;
+  let b=[Infinity,Infinity,-Infinity,-Infinity];
+  for(const [x,y] of v){ b=[Math.min(b[0],x),Math.min(b[1],y),Math.max(b[2],x),Math.max(b[3],y)]; }
+  if(s.kind==='blob'){ const m=(b[2]-b[0]+b[3]-b[1])*0.06; b=[b[0]-m,b[1]-m,b[2]+m,b[3]+m]; }
+  return b;
+}
+function contentBox(doc){
+  const frames=doc.shapes.filter(s=>s.frame);
+  const pool=doc.shapes.filter(s=>frames.length?(s.frame||s.kind==='label'):true);
+  let b=null;
+  for(const s of pool){ const q=shapeBox(s); if(!q) continue;
+    b=b?[Math.min(b[0],q[0]),Math.min(b[1],q[1]),Math.max(b[2],q[2]),Math.max(b[3],q[3])]:q; }
+  return b||[0,0,4,2];
+}
+/* 図本体（editor でも書き出しでも同じものを描く） */
+function contentSVG(doc){
+  const frames=doc.shapes.filter(s=>s.frame&&s.kind!=='label');
+  const body=doc.shapes.filter(s=>!s.frame&&s.kind!=='label');
+  const labels=doc.shapes.filter(s=>s.kind==='label');
+  let o=`<defs>${patternDefs(doc.shapes)}`;
+  if(frames.length) o+=`<clipPath id="fsclip">${frames.map(f=>`<path d="${pathD(f)}"/>`).join('')}</clipPath>`;
+  o+='</defs>';
+  for(const f of frames) o+=shapeSVG(f,'fill');
+  o+= frames.length?`<g clip-path="url(#fsclip)">`:'<g>';
+  for(const s of body) o+=shapeSVG(s,'all');
+  o+='</g>';
+  for(const f of frames) o+=shapeSVG(f,'stroke');
+  for(const l of labels) o+=labelSVG(l);
+  return o;
+}
+function exportSVG(doc){
+  const b=contentBox(doc), m=6*PT+LW;
+  const x=b[0]-m, y=-(b[3]+m), w=b[2]-b[0]+2*m, h=b[3]-b[1]+2*m;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${n4(w)}cm" height="${n4(h)}cm" viewBox="${n4(x)} ${n4(y)} ${n4(w)} ${n4(h)}">${contentSVG(doc)}</svg>\n`;
+}
+/* TikZ */
+const c2=p=>`(${n2(p[0])},${n2(p[1])})`;
+function tikzPath(s){
+  if(s.kind==='rect') return `${c2([s.x1,s.y1])} rectangle ${c2([s.x2,s.y2])}`;
+  if(s.kind==='circle') return `${c2([s.cx,s.cy])} circle (${n2(s.r)})`;
+  if(s.kind==='poly') return s.pts.map(c2).join(' -- ')+' -- cycle';
+  if(s.kind==='line') return s.pts.map(c2).join(' -- ');
+  if(s.kind==='blob'){ const rows=[]; for(let i=0;i<s.pts.length;i+=4) rows.push(s.pts.slice(i,i+4).map(c2).join(' '));
+    return `plot[smooth cycle, tension=${TENSION}] coordinates {\n      ${rows.join('\n      ')}}`; }
+  return '';
+}
+function tikzCmd(s){
+  const c=s.color||'fsRed';
+  if(s.kind==='line'){ const a=s.arrow==='end'?', arr':s.arrow==='both'?', arrs':''; return `\\draw[${s.style==='aux'?'aux':'ambient'}${a}]`; }
+  switch(s.style){
+    case 'hatched': { const o=[]; if((s.angle??60)!==60) o.push(`hatch=${n2(s.angle)}`); if(s.tint===false) o.push('tint=false');
+      o.push(`hatched=${s.color||'black'}`); return `\\path[${o.join(', ')}]`; }
+    case 'blob':  return `\\path[blob=${c}]`;
+    case 'aux':   return `\\draw[aux]`;
+    default:      return `\\draw[ambient]`;
+  }
+}
+function tikzOutline(s){ // クリッピングに使った図形の輪郭だけを最後に引き直す
+  if(s.style==='ambient'||!s.style) return `\\draw[ambient]`;
+  if(s.style==='aux') return `\\draw[aux]`;
+  if((s.color||'black')==='black') return `\\draw[ambient]`;
+  return `\\draw[draw=${s.color}, line width=0.9pt]`;
+}
+function tikzLabel(s){
+  const c=s.color||'black'; const key=s.mode==='boxed'?'boxlab':s.mode==='caption'?'caption':'lab';
+  return `\\node[${key}${c==='black'?'':'='+c}] at ${c2([s.x,s.y])} {${s.text||''}};`;
+}
+function exportTikZ(doc){
+  const frames=doc.shapes.filter(s=>s.frame&&s.kind!=='label');
+  const body=doc.shapes.filter(s=>!s.frame&&s.kind!=='label');
+  const labels=doc.shapes.filter(s=>s.kind==='label');
+  const L=[]; const ind='  ';
+  const bodyLines=pre=>body.map(s=>`${pre}${tikzCmd(s)} ${tikzPath(s)};`);
+  for(const f of frames) if(f.style&&f.style!=='ambient'&&f.style!=='aux') L.push(`${ind}${tikzCmd(f)} ${tikzPath(f)};`);
+  if(frames.length){
+    for(const f of frames){ L.push(`${ind}\\begin{scope}`, `${ind}  \\clip ${tikzPath(f)};`, ...bodyLines(ind+'  '), `${ind}\\end{scope}`); }
+    for(const f of frames) L.push(`${ind}${tikzOutline(f)} ${tikzPath(f)};`);
+  } else L.push(...bodyLines(ind));
+  for(const l of labels) L.push(ind+tikzLabel(l));
+  return `\\documentclass[tikz,border=6pt]{standalone}\n\\usepackage{figstyle}\n\\begin{document}\n\\begin{tikzpicture}\n${L.join('\n')}\n\\end{tikzpicture}\n\\end{document}\n`;
+}
+/* 旧形式（帯 strip / 分割片 piece）を斜線 hatched に読み替える */
+function migrate(d){
+  for(const s of d.shapes||[]){
+    if(s.style==='strip'){ s.style='hatched'; s.color=s.color||'fsRed'; s.angle=s.angle??60; s.tint=true; }
+    else if(s.style==='piece'){ s.style='hatched'; s.color='black'; s.angle=s.angle??45; s.tint=false; }
+  }
+  return d;
+}
+/* 例 */
+const EXAMPLES={
+  projection:()=>({shapes:[
+    {id:1,kind:'rect',x1:0,y1:0,x2:4.5,y2:2,style:'ambient',frame:true},
+    {id:2,kind:'rect',x1:1.6,y1:0,x2:2.9,y2:2,style:'hatched',color:'fsRed',angle:60,tint:true},
+    {id:3,kind:'blob',style:'blob',color:'fsBlue',pts:[[1.6,0.85],[1.85,1.05],[2.05,1.45],[2.45,1.82],[2.8,1.7],[2.9,1.25],[2.7,0.8],[2.35,0.55],[1.9,0.55]]},
+    {id:4,kind:'label',x:2.35,y:1.2,text:'$b$',color:'fsBlue',mode:'plain'},
+    {id:5,kind:'label',x:2.25,y:-0.1,text:'projection of $b$',color:'fsRed',mode:'caption'}],nextId:6}),
+  partition:()=>{ const c1=[-1.11,0.52],c2=[-0.53,0.61],c3=[0.83,-0.18],c4=[-0.72,-0.67];
+    const r1=[-2.4,0.33],r2=[0.1,2.7],r3=[1.2,2.5],r4=[2.6,0.4],r5=[-1.85,-2.4];
+    return {shapes:[
+      {id:1,kind:'circle',cx:0,cy:0,r:2,style:'ambient',frame:true},
+      {id:2,kind:'poly',style:'hatched',color:'black',tint:false,angle:90,pts:[c1,r1,[-2.4,2.7],r2,c2]},
+      {id:3,kind:'poly',style:'hatched',color:'black',tint:false,angle:60,pts:[c2,r2,r3,c3]},
+      {id:4,kind:'poly',style:'hatched',color:'black',tint:false,angle:0,pts:[c3,r3,[2.6,2.5],r4]},
+      {id:5,kind:'poly',style:'hatched',color:'black',tint:false,angle:80,pts:[c3,r4,[2.6,-2.4],r5,c4]},
+      {id:6,kind:'poly',style:'hatched',color:'black',tint:false,angle:45,pts:[c4,r5,[-2.4,-2.4],r1,c1]},
+      {id:7,kind:'poly',style:'hatched',color:'black',tint:false,angle:170,pts:[c1,c2,c3,c4]}],nextId:8}; }
+};
+</script>
+
+<script>
+/* ===== UI ===== */
+const $=id=>document.getElementById(id);
+const cv=$('cv'), panel=$('panel'), hint=$('hint');
+const STORE='figedit-doc-v1';
+let doc, selIds=[], selV=null, tool='select', drawing=null, multiMode=false;
+/* グループの1つを選ぶとグループ全体が選ばれる */
+function expandGroups(ids){ const set=new Set(ids);
+  for(const id of ids){ const s=byId(id); if(s&&s.group!=null) for(const t of doc.shapes) if(t.group===s.group) set.add(t.id); }
+  return doc.shapes.filter(t=>set.has(t.id)).map(t=>t.id); }
+// sel: 1つだけ選ばれているときのID（複数なら null）。代入するとグループごと選ぶ
+Object.defineProperty(window,'sel',{get(){ return selIds.length===1?selIds[0]:null; },
+  set(v){ selIds=v==null?[]:expandGroups([v]); }});
+const selShapes=()=>selIds.map(byId).filter(Boolean);
+let opt={grid:true, snap:true}, view={cx:2.25, cy:1, scale:120};
+let history=[], future=[], snapMark=null;
+let downloads={save:async({filename,data})=>{ // ブラウザの通常のダウンロード
+  const url=URL.createObjectURL(new Blob([data],{type:'application/octet-stream'})); const a=document.createElement('a');
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000); return {status:'saved'}; }};
+
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function load(){
+  try{ const s=localStorage.getItem(STORE); if(s){ const d=JSON.parse(s); if(d&&Array.isArray(d.shapes)) return migrate(d); } }catch(e){}
+  return EXAMPLES.projection();
+}
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify(doc)); }catch(e){} }
+function checkpoint(){ const s=JSON.stringify(doc); if(history[history.length-1]!==s){ history.push(s); if(history.length>200) history.shift(); } future=[]; updateBtns(); }
+function undo(){ const cur=JSON.stringify(doc); while(history.length&&history[history.length-1]===cur) history.pop();
+  if(!history.length){ updateBtns(); return; } future.push(cur); doc=JSON.parse(history.pop()); fixSel(); render(); }
+function redo(){ const cur=JSON.stringify(doc); while(future.length&&future[future.length-1]===cur) future.pop();
+  if(!future.length){ updateBtns(); return; } history.push(cur); doc=JSON.parse(future.pop()); fixSel(); render(); }
+function fixSel(){ selIds=selIds.filter(id=>byId(id)); if(selIds.length!==1) selV=null; }
+function byId(id){ return doc.shapes.find(s=>s.id===id); }
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('on'),1600); }
+
+/* ---- view ---- */
+function vb(){ const w=cv.clientWidth/view.scale, h=cv.clientHeight/view.scale; return {x:view.cx-w/2, y:-view.cy-h/2, w, h}; }
+function toWorld(cx,cy){ const r=cv.getBoundingClientRect(), v=vb(); return [v.x+(cx-r.left)/view.scale, -(v.y+(cy-r.top)/view.scale)]; }
+function fit(){
+  const b=contentBox(doc), m=0.6;
+  const w=b[2]-b[0]+2*m, h=b[3]-b[1]+2*m+0.6;
+  view.scale=Math.max(20,Math.min(400, Math.min(cv.clientWidth/w, cv.clientHeight/h)));
+  view.cx=(b[0]+b[2])/2; view.cy=(b[1]+b[3])/2; render();
+}
+
+/* ---- snapping ---- */
+function segProj(p,a,b){ const dx=b[0]-a[0], dy=b[1]-a[1], L=dx*dx+dy*dy; if(!L) return a;
+  let t=((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L; t=Math.max(0,Math.min(1,t)); return [a[0]+t*dx,a[1]+t*dy]; }
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+function snapPt(p, skipId){
+  snapMark=null;
+  const th=14/view.scale;
+  if(opt.snap){
+    let best=null, bd=th;
+    for(const s of doc.shapes){ if(s.id===skipId||s.kind==='label') continue;
+      for(const v of vertsOf(s)){ const d=dist(p,v); if(d<bd){ bd=d; best=v; } } }
+    if(drawing) for(const v of drawing.pts){ const d=dist(p,v); if(d<bd){ bd=d; best=v; } }
+    if(best){ snapMark=[...best]; return [...best]; }
+    bd=th;
+    for(const s of doc.shapes){ if(s.id===skipId||s.kind==='label'||s.kind==='blob') continue;
+      if(s.kind==='circle'){ const d=dist(p,[s.cx,s.cy]); if(Math.abs(d-s.r)<bd&&d>0){ bd=Math.abs(d-s.r); best=[s.cx+(p[0]-s.cx)*s.r/d, s.cy+(p[1]-s.cy)*s.r/d]; } continue; }
+      const v=vertsOf(s);
+      for(let i=0;i<v.length;i++){ const q=segProj(p,v[i],v[(i+1)%v.length]), d=dist(p,q); if(d<bd){ bd=d; best=q; } } }
+    if(best){ snapMark=best; return best; }
+  }
+  if(opt.grid) return [Math.round(p[0]*4)/4, Math.round(p[1]*4)/4];
+  return [Math.round(p[0]*100)/100, Math.round(p[1]*100)/100];
+}
+
+/* ---- render ---- */
+/* 当たり判定用の図形（pointer-events="all" は既定の線幅1=1cm まで反応するので、塗りだけのものは "fill" にする） */
+const boxPath=(x0,y0,x1,y1)=>`M${n4(x0)} ${n4(y0)}H${n4(x1)}V${n4(y1)}H${n4(x0)}Z`;
+const circPath=(cx,cy,r)=>`M${n4(cx-r)} ${n4(cy)}a${n4(r)} ${n4(r)} 0 1 0 ${n4(2*r)} 0a${n4(r)} ${n4(r)} 0 1 0 ${n4(-2*r)} 0Z`;
+function gridSVG(v){
+  if(!opt.grid) return '';
+  let o=''; const x0=Math.floor(v.x*4)/4, y0=Math.floor(v.y*4)/4;
+  const step=view.scale<50?1:0.25;
+  for(let x=x0;x<=v.x+v.w;x+=step){ const major=Math.abs(x-Math.round(x))<1e-6;
+    o+=`<line x1="${n4(x)}" y1="${n4(v.y)}" x2="${n4(x)}" y2="${n4(v.y+v.h)}" stroke="${major?'#e2d6d6':'#f3eeee'}" stroke-width="${1/view.scale}"/>`; }
+  for(let y=y0;y<=v.y+v.h;y+=step){ const major=Math.abs(y-Math.round(y))<1e-6;
+    o+=`<line x1="${n4(v.x)}" y1="${n4(y)}" x2="${n4(v.x+v.w)}" y2="${n4(y)}" stroke="${major?'#e2d6d6':'#f3eeee'}" stroke-width="${1/view.scale}"/>`; }
+  o+=`<line x1="${n4(v.x)}" y1="0" x2="${n4(v.x+v.w)}" y2="0" stroke="#c9b9b9" stroke-width="${1/view.scale}"/><line x1="0" y1="${n4(v.y)}" x2="0" y2="${n4(v.y+v.h)}" stroke="#c9b9b9" stroke-width="${1/view.scale}"/>`;
+  return o;
+}
+function hitSVG(){
+  const px=1/view.scale; let o='';
+  for(const s of doc.shapes){
+    if(s.kind==='label'){ const b=shapeBox(s); o+=`<path data-id="${s.id}" d="${boxPath(b[0],-b[3],b[2],-b[1])}" fill="transparent" pointer-events="fill"/>`; continue; }
+    const filled=s.style==='hatched'||s.style==='blob';
+    o+=`<path data-id="${s.id}" d="${pathD(s)}" fill="${filled?'transparent':'none'}" stroke="transparent" stroke-width="${n4(16*px)}" pointer-events="${filled?'all':'stroke'}"/>`;
+  }
+  return o;
+}
+function handlesSVG(){
+  const px=1/view.scale, r=9*px; let o='';
+  if(selIds.length>1){ let b=null;
+    for(const t of selShapes()){ const q=shapeBox(t); if(!q) continue;
+      o+=`<rect x="${n4(q[0])}" y="${n4(-q[3])}" width="${n4(q[2]-q[0])}" height="${n4(q[3]-q[1])}" fill="none" stroke="#e07a10" stroke-width="${n4(1.5*px)}" stroke-dasharray="${n4(4*px)} ${n4(4*px)}" pointer-events="none"/>`;
+      b=b?[Math.min(b[0],q[0]),Math.min(b[1],q[1]),Math.max(b[2],q[2]),Math.max(b[3],q[3])]:q; }
+    if(b){ const m=6*px; o+=`<rect x="${n4(b[0]-m)}" y="${n4(-b[3]-m)}" width="${n4(b[2]-b[0]+2*m)}" height="${n4(b[3]-b[1]+2*m)}" fill="none" stroke="#e07a10" stroke-width="${n4(2*px)}" pointer-events="none"/>`; }
+    return o; }
+  const s=sel!=null&&byId(sel); if(!s) return '';
+  if(s.kind!=='label') o+=`<path d="${pathD(s)}" fill="none" stroke="#e07a10" stroke-width="${n4(2*px)}" stroke-dasharray="${n4(6*px)} ${n4(4*px)}" pointer-events="none"/>`;
+  else { const b=shapeBox(s); o+=`<rect x="${n4(b[0])}" y="${n4(-b[3])}" width="${n4(b[2]-b[0])}" height="${n4(b[3]-b[1])}" fill="none" stroke="#e07a10" stroke-width="${n4(2*px)}" stroke-dasharray="${n4(6*px)} ${n4(4*px)}" pointer-events="none"/>`; return o; }
+  let hs=vertsOf(s);
+  if(s.kind==='circle') hs=[[s.cx,s.cy],[s.cx+s.r,s.cy]];
+  if(s.kind==='poly'||s.kind==='blob'){
+    const n=s.pts.length;
+    for(let i=0;i<n;i++){ const a=s.pts[i], b=s.pts[(i+1)%n];
+      o+=`<g data-mid="${i}"><circle cx="${n4((a[0]+b[0])/2)}" cy="${n4(-(a[1]+b[1])/2)}" r="${n4(r*0.8)}" fill="#fff" stroke="#e07a10" stroke-width="${n4(1.5*px)}" opacity="0.8"/>`+
+        `<path d="M${n4((a[0]+b[0])/2-r*0.4)} ${n4(-(a[1]+b[1])/2)}h${n4(r*0.8)}M${n4((a[0]+b[0])/2)} ${n4(-(a[1]+b[1])/2-r*0.4)}v${n4(r*0.8)}" stroke="#e07a10" stroke-width="${n4(1.5*px)}"/>`+
+        `<path d="${circPath((a[0]+b[0])/2,-(a[1]+b[1])/2,r*1.3)}" fill="transparent"/></g>`; }
+  }
+  hs.forEach((v,i)=>{ const on=selV===i;
+    o+=`<g data-h="${i}"><circle cx="${n4(v[0])}" cy="${n4(-v[1])}" r="${n4(r)}" fill="${on?'#e07a10':'#fff'}" stroke="#e07a10" stroke-width="${n4(2*px)}"/><path d="${circPath(v[0],-v[1],r*1.6)}" fill="transparent"/></g>`; });
+  return o;
+}
+function drawingSVG(){
+  if(!drawing) return '';
+  const px=1/view.scale; let o='';
+  const pts=drawing.pts.concat(drawing.hover?[drawing.hover]:[]);
+  if(pts.length>=2){
+    const d=(drawing.kind==='blob'&&pts.length>=3)?smoothD(pts):'M'+pts.map(p=>P(p[0],p[1])).join('L')+(pts.length>=3?'Z':'');
+    o+=`<path d="${d}" fill="rgba(49,74,103,.08)" stroke="#314a67" stroke-width="${n4(2*px)}" stroke-dasharray="${n4(5*px)} ${n4(4*px)}"/>`;
+  }
+  drawing.pts.forEach((p,i)=>{ o+=`<circle cx="${n4(p[0])}" cy="${n4(-p[1])}" r="${n4((i===0?8:5)*px)}" fill="${i===0?'#fff':'#314a67'}" stroke="#314a67" stroke-width="${n4(2*px)}"/>`; });
+  return o;
+}
+function render(){
+  const v=vb();
+  cv.setAttribute('viewBox',`${n4(v.x)} ${n4(v.y)} ${n4(v.w)} ${n4(v.h)}`);
+  let o=`<rect x="${n4(v.x)}" y="${n4(v.y)}" width="${n4(v.w)}" height="${n4(v.h)}" fill="#fff"/>`+gridSVG(v);
+  o+=`<g>${contentSVG(doc)}</g>`;
+  if(tool==='select') o+=`<g>${hitSVG()}</g>${handlesSVG()}`;
+  o+=drawingSVG();
+  if(snapMark){ const px=1/view.scale; o+=`<circle cx="${n4(snapMark[0])}" cy="${n4(-snapMark[1])}" r="${n4(12*px)}" fill="none" stroke="#e07a10" stroke-width="${n4(2*px)}" pointer-events="none"/>`; }
+  cv.innerHTML=o;
+  renderPanel(); updateBtns(); save();
+  const H={select:multiMode?'タップした図形を選択に追加・解除します。選び終えたら右のパネルで「グループ化」':'図形をタップで選択・ドラッグで移動。空いた所をドラッグで画面移動、2本指で拡大縮小',
+    rect:'ドラッグで長方形（斜線などはパネルで切り替え）', line:'ドラッグで線分（矢印はパネルで）', circle:'中心からドラッグで円',
+    poly:'タップで頂点を追加。最初の点をタップか「完成」で閉じる', blob:'タップで点を追加。最初の点をタップか「完成」で閉じる', label:'置きたい位置をタップ'};
+  hint.textContent=H[tool];
+}
+function updateBtns(){
+  $('undo').disabled=!history.length; $('redo').disabled=!future.length;
+  $('multi').setAttribute('aria-pressed',multiMode);
+  $('grid').setAttribute('aria-pressed',opt.grid); $('snap').setAttribute('aria-pressed',opt.snap);
+  document.querySelectorAll('#tools button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.tool===tool));
+  $('drawbar').classList.toggle('on', !!drawing);
+  $('dDone').disabled=!drawing||drawing.pts.length<3;
+}
+
+/* ---- panel ---- */
+const SW=['fsRed','fsBlue','fsGreen','black'];
+const SWN={fsRed:'赤',fsBlue:'青',fsGreen:'緑',black:'黒'};
+/* 重なり順: 文字は常に最前面、クリッピング図形は別に描くので、同じ種類どうしの中で入れ替える */
+const layerKind=s=>s.kind==='label'?'label':s.frame?'frame':'body';
+function neighborIndex(s,dir){ const k=layerKind(s); let i=doc.shapes.indexOf(s)+dir;
+  while(i>=0&&i<doc.shapes.length){ if(layerKind(doc.shapes[i])===k) return i; i+=dir; } return -1; }
+function canStep(s,dir){ return neighborIndex(s,dir)>=0; }
+function stepLayer(s,dir){ const j=neighborIndex(s,dir); if(j<0) return; const i=doc.shapes.indexOf(s);
+  doc.shapes[i]=doc.shapes[j]; doc.shapes[j]=s; }
+function multiPanel(){
+  const ss=selShapes(); const grouped=ss.length>1&&ss.every(t=>t.group!=null&&t.group===ss[0].group);
+  const anyGroup=ss.some(t=>t.group!=null);
+  const colorable=ss.filter(t=>t.style==='hatched'||t.style==='blob'||t.kind==='label');
+  const hatched=ss.filter(t=>t.style==='hatched');
+  let h=`<div class="field"><h2>${grouped?'グループ':'複数選択'}（${ss.length}個）</h2>
+    <div class="acts">${grouped?'<button id="mUngroup">グループ解除</button>':'<button id="mGroup">グループ化</button>'}${!grouped&&anyGroup?'<button id="mUngroup">グループ解除</button>':''}</div></div>`;
+  if(colorable.length) h+=`<div class="field"><h2>色（斜線・領域・文字に適用）</h2><div class="sw">${SW.map(c=>`<button data-mcolor="${c}" aria-pressed="${colorable.every(t=>(t.color||'black')===c)}" aria-label="${SWN[c]}"><span style="background:${rgb(c)}"></span></button>`).join('')}</div></div>`;
+  if(hatched.length){ const a=hatched[0].angle??60;
+    h+=`<div class="field"><h2>斜線の角度（${hatched.length}個に適用）</h2><div class="row"><input type="range" id="mAng" min="0" max="175" step="5" value="${a}"><input type="number" id="mAngN" min="0" max="180" step="5" value="${a}"></div></div>
+    <label class="chk"><input type="checkbox" id="mTint" ${hatched.every(t=>t.tint!==false)?'checked':''}>地を薄く塗る</label>`; }
+  h+=`<div class="field"><h2>操作</h2><div class="acts"><button id="pUp" ${canStepMulti(1)?'':'disabled'}>1つ前へ</button><button id="pDown" ${canStepMulti(-1)?'':'disabled'}>1つ後ろへ</button><button id="pFront">最前面へ</button><button id="pBack">最背面へ</button><button id="pDup">複製</button><button id="pDel" class="danger">削除</button></div></div>`;
+  panel.innerHTML=h;
+}
+function canStepMulti(dir){ const set=new Set(selIds); return selShapes().some(s=>{ const k=layerKind(s); let i=doc.shapes.indexOf(s)+dir;
+  while(i>=0&&i<doc.shapes.length){ const t=doc.shapes[i]; if(layerKind(t)===k&&!set.has(t.id)) return true; i+=dir; } return false; }); }
+function stepMulti(dir){ const set=new Set(selIds);
+  const idx=selShapes().map(s=>doc.shapes.indexOf(s)).sort((a,b)=>dir>0?b-a:a-b);
+  for(const i0 of idx){ const s=doc.shapes[i0], k=layerKind(s); let j=i0+dir;
+    while(j>=0&&j<doc.shapes.length&&!(layerKind(doc.shapes[j])===k&&!set.has(doc.shapes[j].id))) j+=dir;
+    if(j<0||j>=doc.shapes.length) continue;
+    // s を j の位置へ（間の選択図形ごと順にずらす）
+    doc.shapes.splice(i0,1); doc.shapes.splice(j,0,s); } }
+function translateShape(s,o,dx,dy){
+  if(s.kind==='rect'){ s.x1=o.x1+dx; s.x2=o.x2+dx; s.y1=o.y1+dy; s.y2=o.y2+dy; }
+  else if(s.kind==='circle'){ s.cx=o.cx+dx; s.cy=o.cy+dy; }
+  else if(s.kind==='label'){ s.x=o.x+dx; s.y=o.y+dy; }
+  else s.pts=o.pts.map(p=>[p[0]+dx,p[1]+dy]); }
+function dupShapes(list){ const gmap=new Map(); const out=[];
+  for(const s of list){ const c=clone(s); c.id=doc.nextId++;
+    if(c.group!=null){ if(!gmap.has(c.group)) gmap.set(c.group,newGroupId()); c.group=gmap.get(c.group); }
+    translateShape(c,clone(c),0.25,-0.25); doc.shapes.push(c); out.push(c.id); }
+  return out; }
+function newGroupId(){ return Math.max(0,...doc.shapes.map(t=>t.group??0))+1; }
+function renderPanel(){
+  if(selIds.length>1){ multiPanel(); return; }
+  const s=sel!=null&&byId(sel);
+  if(!s){ panel.innerHTML=`<h2>使い方</h2><p class="empty">上のツールで図形を描き、選択するとここで種類・色・斜線の角度を変えられます。<br><br>「クリッピング」にチェックを入れた図形の内側だけに他の図形が表示されるので、円の分割のような図ははみ出して描いて構いません。<br><br>「複数」をオンにしてタップすると複数の図形を選べ、まとめて動かしたりグループ化したりできます。<br><br>書き出しから SVG（ホームページ用）と TikZ（figstyle.sty 用）を出力できます。</p>`; return; }
+  let h='';
+  if(s.kind==='label'){
+    h+=`<div class="field"><h2>文字</h2><input type="text" id="pText" value="${esc(s.text||'').replace(/"/g,'&quot;')}" autocomplete="off" autocapitalize="off" spellcheck="false"></div>`;
+    h+=`<div class="field"><h2>置き方</h2><div class="seg">${[['plain','そのまま'],['boxed','白地つき'],['caption','点の下']].map(([k,n])=>`<button data-mode="${k}" aria-pressed="${(s.mode||'plain')===k}">${n}</button>`).join('')}</div></div>`;
+    h+=`<div class="field"><h2>色</h2><div class="sw">${SW.map(c=>`<button data-color="${c}" aria-pressed="${(s.color||'black')===c}" aria-label="${SWN[c]}"><span style="background:${rgb(c)}"></span></button>`).join('')}</div></div>`;
+  } else {
+    const styles=s.kind==='line'?Object.entries(STYLE_NAMES).filter(([k])=>k==='ambient'||k==='aux'):Object.entries(STYLE_NAMES);
+    h+=`<div class="field"><h2>種類</h2><div class="seg" style="grid-template-columns:1fr 1fr">${styles.map(([k,n])=>`<button data-style="${k}" aria-pressed="${(s.style||'ambient')===k}">${n}</button>`).join('')}</div></div>`;
+    if(s.style==='hatched'||s.style==='blob') h+=`<div class="field"><h2>色</h2><div class="sw">${SW.map(c=>`<button data-color="${c}" aria-pressed="${(s.color||'black')===c}" aria-label="${SWN[c]}"><span style="background:${rgb(c)}"></span></button>`).join('')}</div></div>`;
+    if(s.style==='hatched') h+=`<label class="chk"><input type="checkbox" id="pTint" ${s.tint!==false?'checked':''}>地を薄く塗る</label>`;
+    if(s.style==='hatched'){ const a=s.angle??60;
+      h+=`<div class="field"><h2>斜線の角度</h2><div class="row"><input type="range" id="pAng" min="0" max="175" step="5" value="${a}"><input type="number" id="pAngN" min="0" max="180" step="5" value="${a}"></div>
+      <div class="seg" style="grid-template-columns:repeat(6,1fr)">${[0,30,45,60,90,135].map(v=>`<button data-ang="${v}">${v}°</button>`).join('')}</div></div>`; }
+    if(s.kind==='line') h+=`<div class="field"><h2>矢印</h2><div class="seg">${[['none','なし'],['end','終点'],['both','両端']].map(([k,n])=>`<button data-arrow="${k}" aria-pressed="${(s.arrow||'none')===k}">${n}</button>`).join('')}</div><button id="pRev">向きを反転</button></div>`;
+    if(s.kind!=='label'&&s.kind!=='line') h+=`<label class="chk"><input type="checkbox" id="pFrame" ${s.frame?'checked':''}>クリッピング（この図形の内側だけ表示）</label>`;
+    if((s.kind==='poly'||s.kind==='blob')) h+=`<div class="field"><h2>形</h2><div class="acts"><button id="pConv">${s.kind==='poly'?'曲線にする':'多角形にする'}</button><button id="pDelV" ${selV==null||s.pts.length<=3?'disabled':''}>選んだ頂点を削除</button></div></div>`;
+  }
+  h+=`<div class="field"><h2>操作</h2><div class="acts"><button id="pUp" ${canStep(s,1)?'':'disabled'}>1つ前へ</button><button id="pDown" ${canStep(s,-1)?'':'disabled'}>1つ後ろへ</button><button id="pFront" ${canStep(s,1)?'':'disabled'}>最前面へ</button><button id="pBack" ${canStep(s,-1)?'':'disabled'}>最背面へ</button><button id="pDup">複製</button><button id="pDel" class="danger">削除</button></div></div>`;
+  panel.innerHTML=h;
+}
+panel.addEventListener('pointerdown',()=>checkpoint(),true);
+panel.addEventListener('focusin',e=>{ if(e.target.matches('input[type=text],input[type=number]')) checkpoint(); });
+panel.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(selIds.length>1){ const ss=selShapes();
+    if(b.id==='mGroup'){ const g=newGroupId(); ss.forEach(t=>t.group=g); toast('グループにしました'); }
+    else if(b.id==='mUngroup'){ ss.forEach(t=>delete t.group); toast('グループを解除しました'); }
+    else if(b.dataset.mcolor){ ss.forEach(t=>{ if(t.style==='hatched'||t.style==='blob'||t.kind==='label') t.color=b.dataset.mcolor; }); }
+    else if(b.id==='pUp'||b.id==='pDown') stepMulti(b.id==='pUp'?1:-1);
+    else if(b.id==='pFront'){ doc.shapes=doc.shapes.filter(t=>!selIds.includes(t.id)).concat(ss); }
+    else if(b.id==='pBack'){ doc.shapes=ss.concat(doc.shapes.filter(t=>!selIds.includes(t.id))); }
+    else if(b.id==='pDup'){ selIds=dupShapes(ss); }
+    else if(b.id==='pDel'){ doc.shapes=doc.shapes.filter(t=>!selIds.includes(t.id)); selIds=[]; }
+    else return;
+    render(); return; }
+  const s=byId(sel); if(!s) return;
+  if(b.dataset.style){ s.style=b.dataset.style;
+    if(s.style==='hatched'){ s.color=s.color||'black'; if(s.angle==null) s.angle=60; if(s.tint==null) s.tint=true; }
+    if(s.style==='blob') s.color=s.color||'fsBlue'; }
+  else if(b.dataset.color) s.color=b.dataset.color;
+  else if(b.dataset.mode) s.mode=b.dataset.mode;
+  else if(b.dataset.arrow) s.arrow=b.dataset.arrow;
+  else if(b.id==='pRev') s.pts.reverse();
+  else if(b.dataset.ang!=null) s.angle=+b.dataset.ang;
+  else if(b.id==='pConv') s.kind=s.kind==='poly'?'blob':'poly';
+  else if(b.id==='pDelV'){ if(selV!=null&&s.pts.length>3){ s.pts.splice(selV,1); selV=null; } }
+  else if(b.id==='pUp'||b.id==='pDown'){ stepLayer(s, b.id==='pUp'?1:-1); }
+  else if(b.id==='pFront'){ doc.shapes=doc.shapes.filter(x=>x!==s); doc.shapes.push(s); }
+  else if(b.id==='pBack'){ doc.shapes=doc.shapes.filter(x=>x!==s); doc.shapes.unshift(s); }
+  else if(b.id==='pDup'){ const c=clone(s); c.id=doc.nextId++; const d=0.25;
+    if(c.kind==='rect'){c.x1+=d;c.x2+=d;c.y1-=d;c.y2-=d;} else if(c.kind==='circle'){c.cx+=d;c.cy-=d;} else if(c.kind==='label'){c.x+=d;c.y-=d;} else c.pts=c.pts.map(p=>[p[0]+d,p[1]-d]);
+    doc.shapes.push(c); sel=c.id; selV=null; }
+  else if(b.id==='pDel'){ doc.shapes=doc.shapes.filter(x=>x!==s); sel=null; selV=null; }
+  else return;
+  render();
+});
+panel.addEventListener('input',e=>{
+  if(selIds.length>1&&(e.target.id==='mAng'||e.target.id==='mAngN')){ const v=Math.max(0,Math.min(180,+e.target.value||0));
+    selShapes().forEach(t=>{ if(t.style==='hatched') t.angle=v; }); const o=e.target.id==='mAng'?$('mAngN'):$('mAng'); if(o) o.value=v; renderCanvasOnly(); return; }
+  const s=byId(sel); if(!s) return;
+  if(e.target.id==='pText'){ s.text=e.target.value; renderCanvasOnly(); }
+  if(e.target.id==='pAng'||e.target.id==='pAngN'){ const v=Math.max(0,Math.min(180,+e.target.value||0)); s.angle=v;
+    const o=e.target.id==='pAng'?$('pAngN'):$('pAng'); if(o) o.value=v; renderCanvasOnly(); }
+});
+panel.addEventListener('change',e=>{
+  if(selIds.length>1&&e.target.id==='mTint'){ selShapes().forEach(t=>{ if(t.style==='hatched') t.tint=e.target.checked; }); render(); return; }
+  const s=byId(sel); if(!s) return;
+  if(e.target.id==='pFrame'){ s.frame=e.target.checked; render(); }
+  if(e.target.id==='pTint'){ s.tint=e.target.checked; render(); } });
+function renderCanvasOnly(){ const p=renderPanel; renderPanel=()=>{}; render(); renderPanel=p; }
+
+/* ---- pointer handling ---- */
+const ptrs=new Map(); let act=null, pinch=null;
+cv.addEventListener('pointerdown',e=>{
+  e.preventDefault(); cv.setPointerCapture(e.pointerId);
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===2){ // 2本指: 進行中の操作をやめて拡大縮小
+    if(act&&act.created){ doc.shapes=doc.shapes.filter(s=>s.id!==act.created); history.pop(); }
+    else if(act&&act.dirty){ undo(); future=[]; }
+    act=null; snapMark=null;
+    const [a,b]=[...ptrs.values()];
+    pinch={d:Math.hypot(a.x-b.x,a.y-b.y), m:[(a.x+b.x)/2,(a.y+b.y)/2], view:{...view}, w:toWorld((a.x+b.x)/2,(a.y+b.y)/2)};
+    render(); return;
+  }
+  if(ptrs.size>2) return;
+  const w=toWorld(e.clientX,e.clientY);
+  act={x0:e.clientX,y0:e.clientY,w0:w,moved:false,type:'pan',view0:{...view}};
+  const t=e.target;
+  if(tool==='select'){
+    const h=t.closest&&t.closest('[data-h]'), mid=t.closest&&t.closest('[data-mid]'), hit=t.closest&&t.closest('[data-id]');
+    const s=sel!=null&&byId(sel);
+    if(s&&h){ checkpoint(); act.type='vertex'; act.vi=+h.dataset.h; selV=act.vi; act.orig=clone(s); act.dirty=true; }
+    else if(s&&mid){ checkpoint(); const i=+mid.dataset.mid, a=s.pts[i], b=s.pts[(i+1)%s.pts.length];
+      s.pts.splice(i+1,0,[(a[0]+b[0])/2,(a[1]+b[1])/2]); act.type='vertex'; act.vi=i+1; selV=i+1; act.orig=clone(s); act.dirty=true; }
+    else if(hit){ const id=+hit.dataset.id;
+      if(multiMode||e.shiftKey){ const grp=expandGroups([id]);
+        if(selIds.includes(id)){ selIds=selIds.filter(x=>!grp.includes(x)); act.type='none'; }
+        else { selIds=expandGroups(selIds.concat(grp)); }
+        selV=null; }
+      else if(!selIds.includes(id)){ sel=id; selV=null; }
+      if(act.type!=='none'&&selIds.length){ checkpoint(); act.type='move'; act.origs=selShapes().map(clone); act.dirty=true; } }
+    render();
+  } else if(tool==='line'){
+    checkpoint(); const p=snapPt(w); const id=doc.nextId++;
+    doc.shapes.push({id,kind:'line',pts:[p,[...p]],style:'aux',arrow:'none'}); act.type='create'; act.created=id; act.p0=p; render();
+  } else if(tool==='rect'||tool==='circle'){
+    checkpoint(); const p=snapPt(w); const id=doc.nextId++;
+    const s= tool==='circle'?{id,kind:'circle',cx:p[0],cy:p[1],r:0,style:'ambient'}
+      :{id,kind:'rect',x1:p[0],y1:p[1],x2:p[0],y2:p[1],style:'ambient'};
+    doc.shapes.push(s); act.type='create'; act.created=id; act.p0=p; render();
+  } else if(tool==='poly'||tool==='blob'||tool==='label'){ act.type='tap'; }
+});
+cv.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId)){ // ペンのホバー
+    if(drawing&&e.pointerType!=='touch'){ drawing.hover=snapPt(toWorld(e.clientX,e.clientY)); render(); } return; }
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch&&ptrs.size===2){
+    const [a,b]=[...ptrs.values()]; const d=Math.hypot(a.x-b.x,a.y-b.y), m=[(a.x+b.x)/2,(a.y+b.y)/2];
+    view.scale=Math.max(15,Math.min(600,pinch.view.scale*d/pinch.d));
+    const r=cv.getBoundingClientRect();
+    view.cx=pinch.w[0]-((m[0]-r.left)-cv.clientWidth/2)/view.scale;
+    view.cy=pinch.w[1]+((m[1]-r.top)-cv.clientHeight/2)/view.scale;
+    render(); return;
+  }
+  if(!act) return;
+  if(Math.hypot(e.clientX-act.x0,e.clientY-act.y0)>6) act.moved=true;
+  if(!act.moved) return;
+  const w=toWorld(e.clientX,e.clientY);
+  if(act.type==='pan'||(act.type==='tap'&&tool!=='label')){
+    if(act.type==='tap') act.type='pan';
+    view.cx=act.view0.cx-(e.clientX-act.x0)/view.scale; view.cy=act.view0.cy+(e.clientY-act.y0)/view.scale; render(); return; }
+  if(act.type==='move'){
+    const ref=vertsOf(act.origs[0])[0]; let dx=w[0]-act.w0[0], dy=w[1]-act.w0[1];
+    if(opt.grid){ dx=Math.round((ref[0]+dx)*4)/4-ref[0]; dy=Math.round((ref[1]+dy)*4)/4-ref[1]; }
+    for(const o of act.origs){ const t=byId(o.id); if(t) translateShape(t,o,dx,dy); }
+    render(); return; }
+  if(act.type==='none') return;
+  const s=byId(act.created??sel); if(!s) return;
+  if(act.type==='create'){
+    const p=snapPt(w, s.id);
+    if(s.kind==='circle'){ let r=dist(p,act.p0); s.r=opt.grid&&!snapMark?Math.round(r*4)/4:Math.round(r*100)/100; }
+    else if(s.kind==='line') s.pts[1]=p;
+    else { s.x2=p[0]; s.y2=p[1]; }
+  } else if(act.type==='vertex'){
+    const p=snapPt(w, s.id), o=act.orig, i=act.vi;
+    if(s.kind==='rect'){ const map=[['x1','y1'],['x2','y1'],['x2','y2'],['x1','y2']][i]; s[map[0]]=p[0]; s[map[1]]=p[1]; }
+    else if(s.kind==='circle'){ if(i===0){ s.cx=p[0]; s.cy=p[1]; } else { const r=dist(p,[s.cx,s.cy]); s.r=opt.grid&&!snapMark?Math.max(0.25,Math.round(r*4)/4):Math.round(r*100)/100; } }
+    else s.pts[i]=p;
+  }
+  render();
+});
+function endPtr(e){
+  if(!ptrs.has(e.pointerId)) return;
+  ptrs.delete(e.pointerId);
+  if(pinch){ if(ptrs.size===0) pinch=null; return; }
+  const a=act; act=null; snapMark=null; if(!a) return;
+  const w=toWorld(e.clientX,e.clientY);
+  if(a.type==='pan'&&!a.moved&&tool==='select'&&!multiMode){ sel=null; selV=null; }
+  if(a.type==='move'&&!a.moved){ history.pop(); updateBtns(); }
+  if(a.type==='vertex'&&!a.moved&&byId(sel)&&JSON.stringify(byId(sel))===JSON.stringify(a.orig)){ history.pop(); }
+  if(a.type==='create'){ const s=byId(a.created);
+    const small= s.kind==='circle'? s.r<0.1 : s.kind==='line'? dist(s.pts[0],s.pts[1])<0.1 : (Math.abs(s.x2-s.x1)<0.1||Math.abs(s.y2-s.y1)<0.1);
+    if(small){ doc.shapes=doc.shapes.filter(x=>x!==s); history.pop(); }
+    else { sel=s.id; selV=null; setTool('select'); return; } }
+  if(a.type==='tap'&&!a.moved){
+    if(tool==='label'){ openText(snapPt(a.w0)); }
+    else { const p=snapPt(a.w0);
+      if(!drawing) drawing={kind:tool,pts:[]};
+      if(drawing.pts.length>=3&&dist(p,drawing.pts[0])<14/view.scale) finishDrawing();
+      else drawing.pts.push(p);
+      snapMark=null; }
+  }
+  render();
+}
+cv.addEventListener('pointerup',endPtr); cv.addEventListener('pointercancel',endPtr);
+cv.addEventListener('pointerleave',()=>{ if(drawing&&drawing.hover){ drawing.hover=null; render(); } });
+cv.addEventListener('wheel',e=>{ e.preventDefault();
+  const w=toWorld(e.clientX,e.clientY), k=Math.exp(-e.deltaY*(e.ctrlKey?0.01:0.002));
+  view.scale=Math.max(15,Math.min(600,view.scale*k));
+  const r=cv.getBoundingClientRect();
+  view.cx=w[0]-((e.clientX-r.left)-cv.clientWidth/2)/view.scale; view.cy=w[1]+((e.clientY-r.top)-cv.clientHeight/2)/view.scale; render(); },{passive:false});
+
+function finishDrawing(){
+  if(!drawing||drawing.pts.length<3) return;
+  checkpoint();
+  const id=doc.nextId++;
+  const s=drawing.kind==='blob'?{id,kind:'blob',pts:drawing.pts,style:'blob',color:'fsBlue'}:{id,kind:'poly',pts:drawing.pts,style:'hatched',color:'black',angle:45,tint:true};
+  doc.shapes.push(s); drawing=null; sel=id; selV=null; setTool('select');
+}
+$('dDone').onclick=()=>{ finishDrawing(); render(); };
+$('dCancel').onclick=()=>{ drawing=null; render(); };
+$('dUndo').onclick=()=>{ if(drawing){ drawing.pts.pop(); if(!drawing.pts.length) drawing=null; render(); } };
+
+function setTool(t){ if(drawing&&t!==tool){ drawing=null; } tool=t; if(t!=='select'){ sel=null; selV=null; multiMode=false; } render(); }
+document.querySelectorAll('#tools button').forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
+$('undo').onclick=undo; $('redo').onclick=redo;
+$('grid').onclick=()=>{ opt.grid=!opt.grid; render(); };
+$('snap').onclick=()=>{ opt.snap=!opt.snap; render(); };
+$('fit').onclick=fit;
+$('multi').onclick=()=>{ multiMode=!multiMode; if(multiMode&&tool!=='select'){ tool='select'; drawing=null; } render(); };
+window.addEventListener('resize',render);
+window.addEventListener('keydown',e=>{
+  if(e.target.matches('input,textarea')) return;
+  const m=e.metaKey||e.ctrlKey;
+  if(m&&e.key.toLowerCase()==='z'){ e.preventDefault(); e.shiftKey?redo():undo(); }
+  else if((e.key==='Delete'||e.key==='Backspace')&&selIds.length){ checkpoint(); doc.shapes=doc.shapes.filter(s=>!selIds.includes(s.id)); selIds=[]; render(); }
+  else if(m&&e.key.toLowerCase()==='g'&&selIds.length>1){ e.preventDefault(); checkpoint(); const ss=selShapes(); if(e.shiftKey) ss.forEach(t=>delete t.group); else { const g=newGroupId(); ss.forEach(t=>t.group=g); } render(); }
+  else if(e.key==='Escape'){ if(drawing){drawing=null;} else { sel=null; selV=null; } render(); }
+  else if(e.key==='Enter'&&drawing){ finishDrawing(); render(); }
+});
+
+/* ---- text dialog ---- */
+let textAt=null;
+function openText(p){ textAt=p; $('textIn').value=''; $('textDlg').classList.add('on'); setTimeout(()=>$('textIn').focus(),50); }
+function closeText(){ $('textDlg').classList.remove('on'); textAt=null; }
+$('textCancel').onclick=closeText;
+$('textOk').onclick=()=>{ const t=$('textIn').value.trim(); if(t&&textAt){ checkpoint(); const id=doc.nextId++;
+  doc.shapes.push({id,kind:'label',x:textAt[0],y:textAt[1],text:t,color:'black',mode:'plain'}); sel=id; selV=null; tool='select'; } closeText(); render(); };
+$('textIn').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); $('textOk').click(); } if(e.key==='Escape') closeText(); });
+
+/* ---- file dialog ---- */
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.dlg').classList.remove('on'));
+$('fileBtn').onclick=()=>$('fileDlg').classList.add('on');
+function replaceDoc(d){ checkpoint(); doc=d; sel=null; selV=null; drawing=null; $('fileDlg').classList.remove('on'); fit(); }
+$('fNew').onclick=()=>replaceDoc({shapes:[],nextId:1});
+$('fEx1').onclick=()=>replaceDoc(EXAMPLES.projection());
+$('fEx2').onclick=()=>replaceDoc(EXAMPLES.partition());
+$('fOpen').onclick=()=>$('fInput').click();
+$('fInput').onchange=async e=>{ const f=e.target.files[0]; if(!f) return;
+  try{ const d=JSON.parse(await f.text()); if(!Array.isArray(d.shapes)) throw 0;
+    d.nextId=d.nextId||Math.max(0,...d.shapes.map(s=>s.id||0))+1; replaceDoc(migrate(d)); toast('読み込みました'); }
+  catch(err){ toast('このファイルは読み込めませんでした（書き出した保存データを選んでください）'); }
+  e.target.value=''; };
+
+/* ---- export dialog ---- */
+let expTab='svg';
+function copyText(t){
+  const done=()=>toast('コピーしました');
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done,()=>fallbackCopy(t,done)); else fallbackCopy(t,done);
+}
+function fallbackCopy(t,done){ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); done(); }catch(e){ toast('コピーできませんでした。下の欄から手で選択してください'); } ta.remove(); }
+async function saveFile(name,data){
+  if(!downloads){ toast('この表示では保存できません。コピーを使ってください'); return; }
+  try{ await downloads.save({filename:name,data}); toast('ダウンロードしました'); }
+  catch(err){ if(err&&err.code==='declined') return; toast('保存できませんでした。コピーを使ってください'); }
+}
+function renderExport(){
+  document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===expTab));
+  const body=$('expBody'); const name=$('expName')?.value||'figure';
+  let h=`<div class="row"><input type="text" id="expName" value="${esc(name)}" aria-label="ファイル名" style="max-width:240px"><span class="note">ファイル名</span></div>`;
+  if(expTab==='svg'){ const svg=exportSVG(doc);
+    h+=`<div class="prev"><img alt="書き出されるSVGのプレビュー" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}"></div>
+      <div class="row">${downloads?'<button id="xSave" class="primary">SVGを保存</button>':''}<button id="xCopy">SVGのコードをコピー</button></div>
+      <p class="note">${MJ.ready?'文字と数式は MathJax で組み、図形として埋め込んでいます（閲覧側にフォントは不要です）。':'MathJax を読み込めていないため、文字は簡易表示です。'}マクロは mystyle.js と共通です。</p>`;
+    body.innerHTML=h; if($('xSave')) $('xSave').onclick=()=>saveFile(($('expName').value||'figure')+'.svg',svg); $('xCopy').onclick=()=>copyText(svg);
+  } else if(expTab==='tikz'){ const t=exportTikZ(doc);
+    h+=`<textarea readonly id="xTa">${esc(t)}</textarea><div class="row">${downloads?'<button id="xSave">.tex を保存</button>':''}<button id="xCopy" class="primary">TikZをコピー</button></div>
+      <p class="note">figstyle.sty と同じフォルダで ./build.sh にかけると、PDFとSVGになります。クリッピングは \\clip で書き出されます。</p>`;
+    body.innerHTML=h; if($('xSave')) $('xSave').onclick=()=>saveFile(($('expName').value||'figure')+'.tex',t); $('xCopy').onclick=()=>copyText(t);
+  } else { const j=JSON.stringify(doc,null,1);
+    h+=`<textarea readonly>${esc(j)}</textarea><div class="row">${downloads?'<button id="xSave" class="primary">保存データを保存</button>':''}<button id="xCopy">コピー</button></div>
+      <p class="note">あとで「ファイル → 保存データを開く」から読み込むと、続きを編集できます。</p>`;
+    body.innerHTML=h; if($('xSave')) $('xSave').onclick=()=>saveFile(($('expName').value||'figure')+'.json',j); $('xCopy').onclick=()=>copyText(j);
+  }
+}
+$('exportBtn').onclick=()=>{ $('expDlg').classList.add('on'); renderExport(); ensureLabels(doc).then(()=>renderExport()); };
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ expTab=b.dataset.tab; renderExport(); });
+
+/* ---- start ---- */
+doc=load();
+requestAnimationFrame(()=>fit());
+let mjTimer=null;
+MJ.onUpdate=()=>{ clearTimeout(mjTimer); mjTimer=setTimeout(()=>{ renderCanvasOnly(); if($('expDlg').classList.contains('on')) renderExport(); },30); };
+function mjStart(){ if(window.MathJax&&MathJax.tex2svgPromise){ MJ.ready=true; render(); } }
+window.addEventListener('mathjax-ready',mjStart);
+if(window.MathJax&&MathJax.startup&&MathJax.startup.promise&&MathJax.tex2svgPromise) MathJax.startup.promise.then(mjStart);
+</script>
+</body>
+</html>

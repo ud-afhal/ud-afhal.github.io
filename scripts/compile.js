@@ -7,7 +7,7 @@
 //   4. 検索エンジン向けの処理をする（_site の中だけを書き換える）
 //      - 資料一覧を index.html・materials.html に静的な HTML として埋め込む
 //      - 各ページに canonical を、資料ページに description を付ける
-//      - materials/editor.html と drafts の資料に noindex を付ける
+//      - materials/editor.html・materials/figure.html と drafts の資料に noindex を付ける
 //      - sitemap.xml を生成する
 // 生成物はすべて _site に出力し、リポジトリ側には書き戻さない。
 
@@ -41,7 +41,7 @@ const ROOT_PAGES = [
   "links.html"
 ];
 // 公開はするが、検索結果には出さないページ。
-const NOINDEX_PAGES = ["materials/editor.html"];
+const NOINDEX_PAGES = ["materials/editor.html", "materials/figure.html"];
 // sitemap.xml に載せない資料のカテゴリ（公開とサイト内リンクは続ける）。
 const SITEMAP_EXCLUDED_CATEGORIES = new Set(["drafts"]);
 // 資料ページに noindex を付けるカテゴリ（検索結果に出さない）。
