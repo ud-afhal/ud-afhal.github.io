@@ -570,6 +570,22 @@
     "phase"
   ]);
 
+  // 図の環境。番号は文書全体の通し番号（LaTeX の article と同じ）。
+  const FIGURE_NAMES = new Set([
+    "figure",
+    "figure*"
+  ]);
+
+  // \includegraphics の幅・高さで、行幅に対する比として扱う長さ。
+  const RELATIVE_LENGTHS = new Set([
+    "linewidth",
+    "textwidth",
+    "columnwidth",
+    "hsize"
+  ]);
+
+  const CSS_LENGTH = /^(\d+(?:\.\d+)?|\.\d+)\s*(cm|mm|in|pt|px|em|ex|%)$/;
+
   // ================================================================
   // 基本ユーティリティ
   // ================================================================
@@ -785,6 +801,11 @@
       citationCounts: new Map(),
       citedKeys: new Set(citedKeysIn(source)),
       issues: [],
+      // \includegraphics のパス（出現順）。compile.js がファイルの有無を確かめる。
+      images: [],
+      // パスから画像のURLを決める関数（エディターのプレビュー専用）。
+      // 公開用HTMLでは null のままにし、パスをそのまま相対URLとして使う。
+      resolveImage: null,
       declared: {
         title: null,
         author: null,
@@ -1131,7 +1152,7 @@
 
     const pattern = new RegExp(
       `${context.prefix}:(\\d+)@@` +
-      String.raw`|\\(begin|end|section|subsection|title|author|date|tableofcontents|maketitle|item|bibitem|label)\b`,
+      String.raw`|\\(begin|end|section|subsection|title|author|date|tableofcontents|maketitle|item|bibitem|label|includegraphics|caption|centering)\b`,
       "g"
     );
 
@@ -1177,6 +1198,16 @@
       }
 
       return optional;
+    }
+
+    function nearestFigure() {
+      for (let index = stack.length - 1; index > 0; index--) {
+        if (FIGURE_NAMES.has(stack[index].node.name)) {
+          return stack[index].node;
+        }
+      }
+
+      return null;
     }
 
     while ((match = pattern.exec(source)) !== null) {
@@ -1245,11 +1276,24 @@
               if (width) {
                 end = width.end;
               }
+            } else if (FIGURE_NAMES.has(name)) {
+              // 配置指定 [htbp] は読み飛ばす。
+              const placement = readOptional(
+                end,
+                `環境「${name}」の配置指定`
+              );
+
+              if (placement) {
+                end = placement.end;
+              }
+
+              node.caption = null;
             }
 
             if (
               !ENVIRONMENTS[name] &&
               !LIST_NAMES.has(name) &&
+              !FIGURE_NAMES.has(name) &&
               name !== "thebibliography" &&
               name !== "document"
             ) {
@@ -1409,6 +1453,90 @@
         append({
           type: "toc"
         });
+      } else if (command === "centering") {
+        // HTML では図を常に中央に置くため、何もしない。
+      } else if (command === "includegraphics") {
+        const starred = source[end] === "*";
+
+        if (starred) {
+          end++;
+        }
+
+        const options = readOptional(
+          end,
+          "\\includegraphics のオプション"
+        );
+
+        if (options) {
+          end = options.end;
+        }
+
+        const group = readGroup(source, end);
+
+        if (!group || !group.value.trim()) {
+          context.issues.push(
+            "\\includegraphics の引数（画像のパス）を確認してください。"
+          );
+
+          appendText(source.slice(match.index, end), match.index);
+        } else {
+          end = group.end;
+
+          append({
+            type: "image",
+            path: group.value.trim(),
+            options: options ? options.value : "",
+            figure: nearestFigure(),
+            start: match.index,
+            end
+          });
+        }
+      } else if (command === "caption") {
+        // 目次用の短い表題 [..] は読み飛ばす。
+        const short = readOptional(end, "\\caption の短い表題");
+
+        if (short) {
+          end = short.end;
+        }
+
+        const group = readGroup(source, end);
+        const figure = nearestFigure();
+
+        if (!group) {
+          context.issues.push(
+            "\\caption の引数を確認してください。"
+          );
+
+          appendText(source.slice(match.index, end), match.index);
+        } else if (!figure) {
+          end = group.end;
+
+          context.issues.push(
+            "\\caption は figure 環境の中で使ってください。"
+          );
+
+          appendText(group.value, group.start + 1);
+        } else if (figure.caption) {
+          end = group.end;
+
+          context.issues.push(
+            "1つの figure 環境に \\caption が複数あります。2つ目以降は本文として表示します。"
+          );
+
+          appendText(group.value, group.start + 1);
+        } else {
+          end = group.end;
+
+          const caption = {
+            type: "caption",
+            value: group.value,
+            figure,
+            start: match.index
+          };
+
+          figure.caption = caption;
+          append(caption);
+        }
       }
 
       cursor = end;
@@ -1436,6 +1564,7 @@
     let theorem = 0;
     let equation = 0;
     let bibliography = 0;
+    let figure = 0;
 
     const bibliographyLabelOwners = new Map();
 
@@ -1569,6 +1698,23 @@
               (owner || currentTarget)?.number ||
               environment.title
             );
+
+          visit(node.children, node, node);
+          currentTarget = node;
+          continue;
+        }
+
+        if (FIGURE_NAMES.has(node.name)) {
+          // LaTeX と同じく、\caption のある図だけに番号を振る。
+          node.number = node.caption
+            ? String(++figure)
+            : null;
+
+          if (!node.caption) {
+            context.issues.push(
+              `環境「${node.name}」に \\caption がないため、図番号を付けません。`
+            );
+          }
 
           visit(node.children, node, node);
           currentTarget = node;
@@ -2412,6 +2558,258 @@
     `;
   }
 
+  // ================================================================
+  // 図（\includegraphics・figure 環境）
+  // ================================================================
+
+  // \includegraphics のパスから、公開ページでの URL を作る。
+  // http(s) の URL と / で始まるパスはそのまま、それ以外は .txt からの相対パス。
+  function defaultImageURL(path) {
+    const url = safeURL(path);
+
+    if (url === "#") {
+      return null;
+    }
+
+    if (/^[a-z][a-z0-9+.-]*:/i.test(url)) {
+      return url;
+    }
+
+    // 空白や日本語のファイル名に備えて符号化する。既存の %XX は保つ。
+    return encodeURI(url).replace(/%25([0-9A-Fa-f]{2})/g, "%$1");
+  }
+
+  function lengthToCSS(value, key, context) {
+    const text = value.trim();
+
+    const relative = text.match(
+      /^(\d+(?:\.\d+)?|\.\d+)?\s*\\([a-z]+)$/
+    );
+
+    if (relative && RELATIVE_LENGTHS.has(relative[2])) {
+      const ratio = relative[1] === undefined ? 1 : Number(relative[1]);
+      return `${Math.round(ratio * 10000) / 100}%`;
+    }
+
+    const absolute = text.match(CSS_LENGTH);
+
+    if (absolute) {
+      return `${absolute[1]}${absolute[2]}`;
+    }
+
+    context.issues.push(
+      `\\includegraphics の ${key}=${text} は解釈できないため無視します。` +
+      "0.6\\linewidth、8cm、300px、50% のように指定してください。"
+    );
+
+    return null;
+  }
+
+  // "width=0.6\linewidth, alt={...}" を分解する。値の中の { } と , を考慮する。
+  function splitKeyValues(text) {
+    const entries = [];
+    let depth = 0;
+    let current = "";
+
+    for (const character of text) {
+      if (character === "{") {
+        depth++;
+      } else if (character === "}") {
+        depth = Math.max(0, depth - 1);
+      }
+
+      if (character === "," && depth === 0) {
+        entries.push(current);
+        current = "";
+      } else {
+        current += character;
+      }
+    }
+
+    entries.push(current);
+
+    return entries
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+      .map((entry) => {
+        const separator = entry.indexOf("=");
+
+        const key = separator < 0
+          ? entry
+          : entry.slice(0, separator).trim();
+
+        let value = separator < 0
+          ? ""
+          : entry.slice(separator + 1).trim();
+
+        if (value.startsWith("{") && value.endsWith("}")) {
+          value = value.slice(1, -1).trim();
+        }
+
+        return { key, value };
+      });
+  }
+
+  function captionText(figure, context) {
+    if (!figure?.caption) {
+      return "";
+    }
+
+    return htmlToText(
+      renderInline(figure.caption.value, context, false)
+    ).replace(/\s+/g, " ").trim();
+  }
+
+  // 画像1枚を、横並びの行に入る要素として描画する。
+  // 幅の指定は行（本文の幅）に対する flex-basis にし、行に収まらない分は
+  // 各画像を幅の比のまま縮める（flex-shrink）。
+  function renderImage(node, context) {
+    let width = null;
+    let height = null;
+    let alt = null;
+
+    for (const { key, value } of splitKeyValues(node.options)) {
+      if (key === "width" || key === "height") {
+        const css = lengthToCSS(value, key, context);
+
+        if (css && key === "width") {
+          width = css;
+        } else if (css) {
+          height = css;
+        }
+      } else if (key === "alt") {
+        alt = htmlToText(renderInline(value, context, false)).trim();
+      } else if (key === "keepaspectratio") {
+        // 縦横比は常に保つ。
+      } else {
+        context.issues.push(
+          `\\includegraphics のオプション「${key}」には対応していません（width・height・alt のみ）。`
+        );
+      }
+    }
+
+    const path = restoreMathTokens(node.path, context);
+    context.images.push(path);
+
+    if (alt === null) {
+      alt = captionText(node.figure, context) ||
+        path.split("/").pop();
+    }
+
+    const attributes = sourceAttributes(context, node.start);
+
+    function missing(message) {
+      return `
+        <span class="graphic graphic-missing"${attributes}>${escapeHTML(message)}</span>
+      `.trim();
+    }
+
+    if (defaultImageURL(path) === null) {
+      context.issues.push(
+        `画像のパス「${path}」は使えません。相対パス、/ で始まるパス、http(s) の URL のいずれかにしてください。`
+      );
+
+      return missing(`画像「${path}」を表示できません。`);
+    }
+
+    const url = context.resolveImage
+      ? context.resolveImage(path)
+      : defaultImageURL(path);
+
+    if (!url) {
+      // resolveImage を渡すのはエディターだけなので、文言はエディター向け。
+      return missing(
+        `画像「${path}」はプレビューに読み込まれていません（「図を読み込む」で選んでください）。`
+      );
+    }
+
+    const itemStyle = width
+      ? ` style="${escapeHTML(`flex-basis:${width}`)}"`
+      : "";
+
+    const imageStyles = [];
+
+    if (width) {
+      imageStyles.push("width:100%");
+    }
+
+    if (height) {
+      imageStyles.push(`height:${height}`);
+
+      if (!width) {
+        imageStyles.push("width:auto");
+      }
+
+      // 縮めたときに縦横比を崩さない。
+      imageStyles.push("object-fit:contain", "object-position:50% 100%");
+    }
+
+    const imageStyle = imageStyles.length
+      ? ` style="${escapeHTML(imageStyles.join(";"))}"`
+      : "";
+
+    return `
+      <span class="graphic${width ? " graphic-sized" : ""}"${itemStyle}${attributes}><img
+          src="${escapeHTML(url)}"
+          alt="${escapeHTML(alt)}"${imageStyle}
+          loading="lazy"
+          decoding="async"
+        ></span>
+    `.trim();
+  }
+
+  // 続けて書いた \includegraphics をまとめて描画する。
+  // rows は画像ノードの配列の配列（空行か \\ で行を改める）。
+  function renderGraphics(rows, context) {
+    const body = rows.map((row) => {
+      const first = row[0];
+      const last = row.at(-1);
+
+      const attributes = sourceAttributes(
+        context,
+        first.start,
+        last === first ? null : last.start
+      );
+
+      return `
+        <div class="graphic-row"${attributes}>
+          ${row.map((node) => renderImage(node, context)).join("\n")}
+        </div>
+      `;
+    }).join("\n");
+
+    return `
+      <div class="graphics">
+        ${body}
+      </div>
+    `;
+  }
+
+  function renderCaption(node, context) {
+    const figure = node.figure;
+    const content = renderInline(node.value, context).trim();
+
+    return `
+      <figcaption${sourceAttributes(context, node.start)}>
+        <span class="figure-number">図 ${escapeHTML(figure.number ?? "")}</span>${
+          content ? `<span class="caption-text">${content}</span>` : ""
+        }
+      </figcaption>
+    `;
+  }
+
+  function renderFigure(node, context) {
+    const content = renderFlow(node.children, context);
+    const anchors = labelAnchors(node.labels.slice(1));
+
+    return `
+      <figure class="figure"${labelIdAttribute(node)}${sourceAttributes(context, node.start, node.end - 1)}>
+        ${anchors}
+        ${content}
+      </figure>
+    `;
+  }
+
   function renderEnvironment(node, context) {
     if (ENVIRONMENTS[node.name]) {
       return renderBox(node, context);
@@ -2423,6 +2821,10 @@
 
     if (node.name === "thebibliography") {
       return renderBibliography(node, context);
+    }
+
+    if (FIGURE_NAMES.has(node.name)) {
+      return renderFigure(node, context);
     }
 
     const content = renderFlow(node.children, context);
@@ -2456,7 +2858,57 @@
       positions = context.sourceMap ? [] : null;
     }
 
-    for (const node of nodes) {
+    // 画像と画像の間にあってよい文字列（空白・空行・\\）。
+    const GRAPHIC_SEPARATOR = /^(?:\s|\\\\)*$/;
+    const ROW_BREAK = /\n[^\S\n]*\n|\\\\/;
+
+    for (let index = 0; index < nodes.length; index++) {
+      const node = nodes[index];
+
+      if (node.type === "image") {
+        flushText();
+
+        const rows = [[node]];
+        let breakRow = false;
+        let next = index + 1;
+
+        while (next < nodes.length) {
+          const candidate = nodes[next];
+
+          if (
+            (candidate.type === "label" && !candidate.standalone) ||
+            (
+              candidate.type === "text" &&
+              GRAPHIC_SEPARATOR.test(candidate.value)
+            )
+          ) {
+            if (candidate.type === "text" && ROW_BREAK.test(candidate.value)) {
+              breakRow = true;
+            }
+
+            next++;
+            continue;
+          }
+
+          if (candidate.type !== "image") {
+            break;
+          }
+
+          if (breakRow) {
+            rows.push([candidate]);
+          } else {
+            rows.at(-1).push(candidate);
+          }
+
+          breakRow = false;
+          index = next;
+          next++;
+        }
+
+        output.push(renderGraphics(rows, context));
+        continue;
+      }
+
       if (node.type === "text") {
         text += node.value;
 
@@ -2497,6 +2949,8 @@
         `);
       } else if (node.type === "toc") {
         output.push(renderTableOfContents(context));
+      } else if (node.type === "caption") {
+        output.push(renderCaption(node, context));
       } else if (node.type === "environment") {
         output.push(renderEnvironment(node, context));
       }
@@ -2575,6 +3029,10 @@
       context.lineStarts = computeLineStarts(clean);
     }
 
+    if (typeof options.resolveImage === "function") {
+      context.resolveImage = options.resolveImage;
+    }
+
     context.protectedSource = protectMath(clean, context);
 
     const root = parseDocumentTree(context.protectedSource, context);
@@ -2612,6 +3070,7 @@
       html,
       meta,
       toggles,
+      images: Array.from(new Set(context.images)),
       issues: Array.from(new Set([
         ...inspectReferences(clean),
         ...context.issues
@@ -2768,6 +3227,7 @@ const MystyleRuntime = (${createRuntime.toString()})();
 
     return {
       html,
+      images: result.images,
       issues: result.issues
     };
   }

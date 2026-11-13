@@ -157,6 +157,20 @@ function buildMaterialsList() {
   return items;
 }
 
+// \includegraphics の画像のうち、_site に存在しないもの（http(s) の URL は確かめない）。
+function missingImages(images, output) {
+  return images.filter((image) => {
+    if (/^[a-z][a-z0-9+.-]*:/i.test(image)) {
+      return false;
+    }
+    const file = image.replace(/[?#].*$/, "");
+    const target = file.startsWith("/")
+      ? path.join(OUTPUT, file)
+      : path.resolve(path.dirname(output), file);
+    return !target.startsWith(OUTPUT + path.sep) || !fs.existsSync(target);
+  });
+}
+
 function compileSources() {
   const sources = collectSources();
   let failed = 0;
@@ -164,7 +178,7 @@ function compileSources() {
   for (const { category, file, relative } of sources) {
     try {
       const source = readUtf8(file);
-      const { html, issues } = buildPage(source);
+      const { html, issues, images } = buildPage(source);
       const outputRelative = relative.replace(TEXT_FILE, ".html");
       const output = path.join(OUTPUT, outputRelative);
       const description = makeDescription(category, source);
@@ -182,6 +196,13 @@ function compileSources() {
       console.log(`${relative} -> ${path.relative(ROOT, output)}`);
       for (const issue of issues) {
         report("warning", relative, issue);
+      }
+      for (const image of missingImages(images, output)) {
+        report(
+          "warning",
+          relative,
+          `画像「${image}」が公開用フォルダにありません。.txt からの相対パスと、ファイルのコミットを確認してください。`
+        );
       }
     } catch (error) {
       failed++;

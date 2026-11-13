@@ -188,6 +188,62 @@
       text-align: left !important;
     }
 
+    .paper .figure {
+      margin: 1.4em 0;
+      text-align: center;
+    }
+
+    /* 続けて書いた画像は横一列に並べ、間隔は全角1文字分。
+       行に収まらない分は、各画像を幅の比のまま縮める。下端をそろえる。 */
+    .paper .graphics {
+      margin: .6em 0;
+    }
+
+    .paper .graphic-row {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 1em;
+    }
+
+    .paper .graphic-row + .graphic-row {
+      margin-top: 1em;
+    }
+
+    .paper .graphic {
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+
+    .paper .graphic img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .paper .graphic-missing {
+      flex: 1 1 auto;
+      padding: 1.2em 1em;
+      border: 1px dashed var(--site-border);
+      color: #6b7280;
+      font-size: .92em;
+    }
+
+    /* 1行に収まる表題は中央、折り返す表題は左揃え（LaTeX と同じ） */
+    .paper .figure figcaption {
+      display: inline-block;
+      max-width: min(40em, 100%);
+      margin-top: .4em;
+      text-align: left;
+      font-size: .95em;
+    }
+
+    .paper .figure-number {
+      margin-right: .7em;
+      font-weight: 700;
+    }
+
     .paper .theorem-box {
       position: relative;
       min-width: 0;
@@ -1354,6 +1410,10 @@
       ソースを開く
     </button>
 
+    <button id="openImages" class="editor-button" type="button">
+      図を読み込む
+    </button>
+
     <button id="saveSource" class="editor-button" type="button">
       ソースを保存
     </button>
@@ -1374,6 +1434,14 @@
       id="sourceFile"
       type="file"
       accept=".tex,.txt,text/plain,application/x-tex"
+      hidden
+    >
+
+    <input
+      id="imageFiles"
+      type="file"
+      accept="image/*"
+      multiple
       hidden
     >
   </header>
@@ -1525,6 +1593,21 @@
         </section>
 
         <section class="syntax-group">
+          <h3>図</h3>
+          <p>
+            <code>\begin{figure}</code>内で
+            <code>\includegraphics[width=0.6\linewidth]{fig.png}</code>、
+            <code>\caption{...}</code>、<code>\label{fig:...}</code><br>
+            図番号は文書全体の通し番号。幅は<code>\linewidth</code>の倍数、
+            <code>cm</code>・<code>px</code>・<code>%</code>など。
+            <code>height</code>、<code>alt={説明}</code>も可。<br>
+            続けて書いた画像は横に並び、空行か<code>\\</code>で次の行に移ります。<br>
+            パスは.txtからの相対パス。画像は.txtと同じ場所に置き、
+            プレビューでは「図を読み込む」で選びます。
+          </p>
+        </section>
+
+        <section class="syntax-group">
           <h3>参考文献</h3>
           <p>
             <code>\cite{key}</code>、<code>\cite[p. 10]{key}</code><br>
@@ -1562,6 +1645,7 @@
       <p class="syntax-note">
         ブラウザー内の簡易変換で、完全なLaTeX・BibTeX処理系ではありません。
         TikZ、bussproofs、<code>\newcommand</code>などのマクロ定義には対応していません。
+        TikZの図は画像（SVG・PNG）にしてから<code>\includegraphics</code>で配置してください。
       </p>
     </details>
   </aside>
@@ -1765,6 +1849,19 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
 
       let previousToggles = [];
 
+      // プレビュー用の画像（ファイル名 → blob URL）。ブラウザーのメモリにだけ置き、
+      // 下書きには保存しない。公開用HTMLは相対パスのまま出力する。
+      const previewImages = new Map();
+
+      function resolvePreviewImage(path) {
+        if (/^https?:\/\//i.test(path) || path.startsWith("/")) {
+          return path;
+        }
+
+        const name = path.split("/").pop();
+        return previewImages.get(name) ?? null;
+      }
+
       // ================================================================
       // 基本ユーティリティ
       // ================================================================
@@ -1826,6 +1923,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         autoPreview: document.getElementById("autoPreview"),
         fileInput: document.getElementById("sourceFile"),
         openSource: document.getElementById("openSource"),
+        openImages: document.getElementById("openImages"),
+        imageInput: document.getElementById("imageFiles"),
         saveSource: document.getElementById("saveSource"),
         copySource: document.getElementById("copySource"),
         draftSelect: document.getElementById("draftSelect"),
@@ -2940,7 +3039,8 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
             job.source,
             previousToggles,
             {
-              sourceMap: true
+              sourceMap: true,
+              resolveImage: resolvePreviewImage
             }
           );
 
@@ -3477,6 +3577,39 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
         }
       });
 
+      ui.openImages.addEventListener("click", () => {
+        ui.imageInput.click();
+      });
+
+      ui.imageInput.addEventListener("change", () => {
+        const files = Array.from(ui.imageInput.files ?? []);
+        ui.imageInput.value = "";
+
+        if (files.length === 0) {
+          return;
+        }
+
+        for (const file of files) {
+          const previous = previewImages.get(file.name);
+
+          if (previous) {
+            URL.revokeObjectURL(previous);
+          }
+
+          previewImages.set(file.name, URL.createObjectURL(file));
+        }
+
+        setOperationStatus(
+          `図を${files.length}件読み込みました（合計${previewImages.size}件）。` +
+          "ファイル名で照合し、プレビューにだけ使います。下書きには保存されません。",
+          "ok"
+        );
+
+        // ソースが同じでも描画し直す。
+        previewState.lastRendered = null;
+        requestPreview({ initial: true });
+      });
+
       ui.saveSource.addEventListener("click", saveSourceFile);
 
       ui.copySource.addEventListener("click", () => {
@@ -3505,15 +3638,26 @@ $A\subseteq B$ であり、$B\subseteq C$ であるから、推移性により $
               ui.filename.value
             ).replace(/\.(?:tex|txt)$/i, ".html");
 
+            const page = buildPage(sourceElement.value);
+
             downloadText(
               filename,
-              buildPage(sourceElement.value).html,
+              page.html,
               "text/html;charset=utf-8"
             );
 
+            const relativeImages = page.images.filter((path) => {
+              return !/^https?:\/\//i.test(path) && !path.startsWith("/");
+            });
+
             setOperationStatus(
               `公開用HTML「${filename}」のダウンロードを開始しました。` +
-              "プレビューの更新状態にかかわらず、最新の入力を使用しています。",
+              "プレビューの更新状態にかかわらず、最新の入力を使用しています。" +
+              (
+                relativeImages.length
+                  ? `画像${relativeImages.length}件（${relativeImages.join("、")}）を、HTMLからの同じ相対パスに置いてください。`
+                  : ""
+              ),
               "ok"
             );
           } catch (error) {

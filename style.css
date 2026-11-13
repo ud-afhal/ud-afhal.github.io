@@ -167,6 +167,62 @@
       text-align: left !important;
     }
 
+    .paper .figure {
+      margin: 1.4em 0;
+      text-align: center;
+    }
+
+    /* 続けて書いた画像は横一列に並べ、間隔は全角1文字分。
+       行に収まらない分は、各画像を幅の比のまま縮める。下端をそろえる。 */
+    .paper .graphics {
+      margin: .6em 0;
+    }
+
+    .paper .graphic-row {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 1em;
+    }
+
+    .paper .graphic-row + .graphic-row {
+      margin-top: 1em;
+    }
+
+    .paper .graphic {
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+
+    .paper .graphic img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .paper .graphic-missing {
+      flex: 1 1 auto;
+      padding: 1.2em 1em;
+      border: 1px dashed var(--site-border);
+      color: #6b7280;
+      font-size: .92em;
+    }
+
+    /* 1行に収まる表題は中央、折り返す表題は左揃え（LaTeX と同じ） */
+    .paper .figure figcaption {
+      display: inline-block;
+      max-width: min(40em, 100%);
+      margin-top: .4em;
+      text-align: left;
+      font-size: .95em;
+    }
+
+    .paper .figure-number {
+      margin-right: .7em;
+      font-weight: 700;
+    }
+
     .paper .theorem-box {
       position: relative;
       min-width: 0;
