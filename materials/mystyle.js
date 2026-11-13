@@ -31,7 +31,7 @@
     siteName: "Chicken-generic over Rice",
     headerImageUrl: "/images/header.png",
     stylesheetUrl: "/style.css",
-    homeUrl: "/index.html",
+    homeUrl: "/",
     materialsUrl: "/materials.html",
     updatesUrl: "/updates.html",
     aboutUrl: "/about.html",
