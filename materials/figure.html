@@ -382,6 +382,10 @@ function contentSVG(doc){
   o+='</defs>';
   for(const f of frames) o+=shapeSVG(f,'fill');
   o+= frames.length?`<g clip-path="url(#fsclip)">`:'<g>';
+  // Safari(WebKit) は切り抜きの範囲を中身の頂点だけから見積もり、曲線のふくらみを欠けさせることがある。
+  // クリッピング図形全体を覆うほぼ透明な四角を先に置いて、範囲を広げておく。
+  if(frames.length){ let b=null; for(const f of frames){ const q=shapeBox(f); if(q) b=b?[Math.min(b[0],q[0]),Math.min(b[1],q[1]),Math.max(b[2],q[2]),Math.max(b[3],q[3])]:q; }
+    if(b) o+=`<path d="M${P(b[0],b[1])}L${P(b[2],b[1])}L${P(b[2],b[3])}L${P(b[0],b[3])}Z" fill="#fff" fill-opacity="0.002"/>`; }
   for(const s of body) o+=shapeSVG(s,'all');
   o+='</g>';
   for(const f of frames) o+=shapeSVG(f,'stroke');
