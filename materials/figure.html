@@ -500,7 +500,7 @@ const EXAMPLES={
 const $=id=>document.getElementById(id);
 const cv=$('cv'), panel=$('panel'), hint=$('hint');
 const STORE='figedit-doc-v1';
-let doc, selIds=[], selV=null, tool='select', drawing=null, multiMode=false;
+let doc, selIds=[], selV=null, tool='select', drawing=null, multiMode=false, marquee=null;
 /* グループの1つを選ぶとグループ全体が選ばれる */
 function expandGroups(ids){ const set=new Set(ids);
   for(const id of ids){ const s=byId(id); if(s&&s.group!=null) for(const t of doc.shapes) if(t.group===s.group) set.add(t.id); }
@@ -630,10 +630,12 @@ function render(){
   o+=`<g>${contentSVG(doc)}</g>`;
   if(tool==='select') o+=`<g>${hitSVG()}</g>${handlesSVG()}`;
   o+=drawingSVG();
+  if(marquee){ const px=1/view.scale, [a,b]=marquee;
+    o+=`<path d="M${n4(a[0])} ${n4(-a[1])}H${n4(b[0])}V${n4(-b[1])}H${n4(a[0])}Z" fill="rgba(49,74,103,.08)" stroke="#314a67" stroke-width="${n4(1.5*px)}" stroke-dasharray="${n4(5*px)} ${n4(4*px)}" pointer-events="none"/>`; }
   if(snapMark){ const px=1/view.scale; o+=`<circle cx="${n4(snapMark[0])}" cy="${n4(-snapMark[1])}" r="${n4(12*px)}" fill="none" stroke="#e07a10" stroke-width="${n4(2*px)}" pointer-events="none"/>`; }
   cv.innerHTML=o;
   renderPanel(); updateBtns(); save();
-  const H={select:multiMode?'タップした図形を選択に追加・解除します。選び終えたら右のパネルで「グループ化」':'図形をタップで選択・ドラッグで移動。空いた所をドラッグで画面移動、2本指で拡大縮小',
+  const H={select:multiMode?'タップで選択に追加・解除、空いた所をドラッグで範囲選択（画面移動は2本指）。選び終えたら右のパネルで「グループ化」':'図形をタップで選択・ドラッグで移動。空いた所をドラッグで画面移動、2本指で拡大縮小',
     rect:'ドラッグで長方形（斜線などはパネルで切り替え）', line:'ドラッグで線分（矢印はパネルで）', circle:'中心からドラッグで円',
     poly:'タップで頂点を追加。最初の点をタップか「完成」で閉じる', blob:'タップで点を追加。最初の点をタップか「完成」で閉じる', label:'置きたい位置をタップ'};
   hint.textContent=H[tool];
@@ -701,7 +703,7 @@ function newGroupId(){ return Math.max(0,...doc.shapes.map(t=>t.group??0))+1; }
 function renderPanel(){
   if(selIds.length>1){ multiPanel(); return; }
   const s=sel!=null&&byId(sel);
-  if(!s){ panel.innerHTML=`<h2>使い方</h2><p class="empty">上のツールで図形を描き、選択するとここで種類・色・斜線の角度を変えられます。<br><br>「クリッピング」にチェックを入れた図形の内側だけに他の図形が表示されるので、円の分割のような図ははみ出して描いて構いません。<br><br>「複数」をオンにしてタップすると複数の図形を選べ、まとめて動かしたりグループ化したりできます。<br><br>書き出しから SVG（ホームページ用）と TikZ（figstyle.sty 用）を出力できます。</p>`; return; }
+  if(!s){ panel.innerHTML=`<h2>使い方</h2><p class="empty">上のツールで図形を描き、選択するとここで種類・色・斜線の角度を変えられます。<br><br>「クリッピング」にチェックを入れた図形の内側だけに他の図形が表示されるので、円の分割のような図ははみ出して描いて構いません。<br><br>「複数」をオンにしてタップするか、空いた所をドラッグして範囲で囲むと複数の図形を選べ、まとめて動かしたりグループ化したりできます。<br><br>書き出しから SVG（ホームページ用）と TikZ（figstyle.sty 用）を出力できます。</p>`; return; }
   let h='';
   if(s.kind==='label'){
     h+=`<div class="field"><h2>文字</h2><input type="text" id="pText" value="${esc(s.text||'').replace(/"/g,'&quot;')}" autocomplete="off" autocapitalize="off" spellcheck="false"></div>`;
@@ -798,7 +800,7 @@ cv.addEventListener('pointerdown',e=>{
   if(ptrs.size===2){ // 2本指: 進行中の操作をやめて拡大縮小
     if(act&&act.created){ doc.shapes=doc.shapes.filter(s=>s.id!==act.created); history.pop(); }
     else if(act&&act.dirty){ undo(); future=[]; }
-    act=null; snapMark=null;
+    act=null; snapMark=null; marquee=null;
     const [a,b]=[...ptrs.values()];
     pinch={d:Math.hypot(a.x-b.x,a.y-b.y), m:[(a.x+b.x)/2,(a.y+b.y)/2], view:{...view}, w:toWorld((a.x+b.x)/2,(a.y+b.y)/2)};
     render(); return;
@@ -820,6 +822,7 @@ cv.addEventListener('pointerdown',e=>{
         selV=null; }
       else if(!selIds.includes(id)){ sel=id; selV=null; }
       if(act.type!=='none'&&selIds.length){ checkpoint(); act.type='move'; act.origs=selShapes().map(clone); act.dirty=true; } }
+    else if(multiMode||e.shiftKey){ act.type='marquee'; act.add=true; }
     render();
   } else if(tool==='line'){
     checkpoint(); const p=snapPt(w); const id=doc.nextId++;
@@ -850,6 +853,7 @@ cv.addEventListener('pointermove',e=>{
   if(act.type==='pan'||(act.type==='tap'&&tool!=='label')){
     if(act.type==='tap') act.type='pan';
     view.cx=act.view0.cx-(e.clientX-act.x0)/view.scale; view.cy=act.view0.cy+(e.clientY-act.y0)/view.scale; render(); return; }
+  if(act.type==='marquee'){ marquee=[act.w0,w]; render(); return; }
   if(act.type==='move'){
     const ref=vertsOf(act.origs[0])[0]; let dx=w[0]-act.w0[0], dy=w[1]-act.w0[1];
     if(opt.grid){ dx=Math.round((ref[0]+dx)*4)/4-ref[0]; dy=Math.round((ref[1]+dy)*4)/4-ref[1]; }
@@ -877,6 +881,12 @@ function endPtr(e){
   const a=act; act=null; snapMark=null; if(!a) return;
   const w=toWorld(e.clientX,e.clientY);
   if(a.type==='pan'&&!a.moved&&tool==='select'&&!multiMode){ sel=null; selV=null; }
+  if(a.type==='marquee'){ const m=marquee; marquee=null;
+    if(a.moved&&m){ const x0=Math.min(m[0][0],m[1][0]), x1=Math.max(m[0][0],m[1][0]), y0=Math.min(m[0][1],m[1][1]), y1=Math.max(m[0][1],m[1][1]);
+      // 範囲に完全に入っている図形を選ぶ（グループは丸ごと）
+      const hit=doc.shapes.filter(t=>{ const q=shapeBox(t); return q&&q[0]>=x0&&q[2]<=x1&&q[1]>=y0&&q[3]<=y1; }).map(t=>t.id);
+      selIds=expandGroups(selIds.concat(hit)); selV=null;
+      if(hit.length) toast(`${selIds.length}個を選択しています`); } }
   if(a.type==='move'&&!a.moved){ history.pop(); updateBtns(); }
   if(a.type==='vertex'&&!a.moved&&byId(sel)&&JSON.stringify(byId(sel))===JSON.stringify(a.orig)){ history.pop(); }
   if(a.type==='create'){ const s=byId(a.created);
